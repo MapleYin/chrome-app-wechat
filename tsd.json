@@ -1,0 +1,270 @@
+{
+  "version": "v4",
+  "repo": "borisyankov/DefinitelyTyped",
+  "ref": "master",
+  "path": "typings",
+  "bundle": "typings/tsd.d.ts",
+  "installed": {
+    "filesystem/filesystem.d.ts": {
+      "commit": "f470e7569e7046c62866f57bc4fea56ba79975d5"
+    },
+    "chrome/chrome.d.ts": {
+      "commit": "f470e7569e7046c62866f57bc4fea56ba79975d5"
+    },
+    "webrtc/MediaStream.d.ts": {
+      "commit": "f470e7569e7046c62866f57bc4fea56ba79975d5"
+    },
+    "filewriter/filewriter.d.ts": {
+      "commit": "f470e7569e7046c62866f57bc4fea56ba79975d5"
+    },
+    "chrome/chrome-app.d.ts": {
+      "commit": "f470e7569e7046c62866f57bc4fea56ba79975d5"
+    },
+    "chrome/chrome-cast.d.ts": {
+      "commit": "f470e7569e7046c62866f57bc4fea56ba79975d5"
+    },
+    "systemjs/systemjs.d.ts": {
+      "commit": "2a4b0965b8eb69d165498aa8aaca4cba1e46418f"
+    },
+    "es6-promise/es6-promise.d.ts": {
+      "commit": "2a4b0965b8eb69d165498aa8aaca4cba1e46418f"
+    },
+    "requirejs/require.d.ts": {
+      "commit": "f470e7569e7046c62866f57bc4fea56ba79975d5"
+    },
+    "angularjs/angular.d.ts": {
+      "commit": "f470e7569e7046c62866f57bc4fea56ba79975d5"
+    },
+    "jquery/jquery.d.ts": {
+      "commit": "f470e7569e7046c62866f57bc4fea56ba79975d5"
+    },
+    "angular-agility/angular-agility.d.ts": {
+      "commit": "f470e7569e7046c62866f57bc4fea56ba79975d5"
+    },
+    "angular-bootstrap-calendar/angular-bootstrap-calendar.d.ts": {
+      "commit": "f470e7569e7046c62866f57bc4fea56ba79975d5"
+    },
+    "angular-breadcrumb/angular-breadcrumb.d.ts": {
+      "commit": "f470e7569e7046c62866f57bc4fea56ba79975d5"
+    },
+    "moment/moment.d.ts": {
+      "commit": "f470e7569e7046c62866f57bc4fea56ba79975d5"
+    },
+    "angular-ui-router/angular-ui-router.d.ts": {
+      "commit": "f470e7569e7046c62866f57bc4fea56ba79975d5"
+    },
+    "angular-cookie/angular-cookie.d.ts": {
+      "commit": "f470e7569e7046c62866f57bc4fea56ba79975d5"
+    },
+    "angular-deferred-bootstrap/angular-deferred-bootstrap.d.ts": {
+      "commit": "f470e7569e7046c62866f57bc4fea56ba79975d5"
+    },
+    "angular-dialog-service/angular-dialog-service.d.ts": {
+      "commit": "f470e7569e7046c62866f57bc4fea56ba79975d5"
+    },
+    "angular-es/angular-es.d.ts": {
+      "commit": "f470e7569e7046c62866f57bc4fea56ba79975d5"
+    },
+    "angular-environment/angular-environment.d.ts": {
+      "commit": "f470e7569e7046c62866f57bc4fea56ba79975d5"
+    },
+    "angular-ui-bootstrap/angular-ui-bootstrap.d.ts": {
+      "commit": "f470e7569e7046c62866f57bc4fea56ba79975d5"
+    },
+    "angular-dynamic-locale/angular-dynamic-locale.d.ts": {
+      "commit": "f470e7569e7046c62866f57bc4fea56ba79975d5"
+    },
+    "angular-file-upload/angular-file-upload.d.ts": {
+      "commit": "f470e7569e7046c62866f57bc4fea56ba79975d5"
+    },
+    "angular-feature-flags/angular-feature-flags.d.ts": {
+      "commit": "f470e7569e7046c62866f57bc4fea56ba79975d5"
+    },
+    "ng-file-upload/ng-file-upload.d.ts": {
+      "commit": "f470e7569e7046c62866f57bc4fea56ba79975d5"
+    },
+    "angular-fullscreen/angular-fullscreen.d.ts": {
+      "commit": "f470e7569e7046c62866f57bc4fea56ba79975d5"
+    },
+    "angular-bootstrap-lightbox/angular-bootstrap-lightbox.d.ts": {
+      "commit": "f470e7569e7046c62866f57bc4fea56ba79975d5"
+    },
+    "angular-formly/angular-formly.d.ts": {
+      "commit": "f470e7569e7046c62866f57bc4fea56ba79975d5"
+    },
+    "angular-hotkeys/angular-hotkeys.d.ts": {
+      "commit": "f470e7569e7046c62866f57bc4fea56ba79975d5"
+    },
+    "angular-gettext/angular-gettext.d.ts": {
+      "commit": "f470e7569e7046c62866f57bc4fea56ba79975d5"
+    },
+    "angular-google-analytics/angular-google-analytics-service.d.ts": {
+      "commit": "f470e7569e7046c62866f57bc4fea56ba79975d5"
+    },
+    "angular-growl-v2/angular-growl-v2.d.ts": {
+      "commit": "f470e7569e7046c62866f57bc4fea56ba79975d5"
+    },
+    "angular-http-auth/angular-http-auth.d.ts": {
+      "commit": "f470e7569e7046c62866f57bc4fea56ba79975d5"
+    },
+    "angular-httpi/angular-httpi.d.ts": {
+      "commit": "f470e7569e7046c62866f57bc4fea56ba79975d5"
+    },
+    "angular-jwt/angular-jwt.d.ts": {
+      "commit": "f470e7569e7046c62866f57bc4fea56ba79975d5"
+    },
+    "angular-loading-bar/angular-loading-bar.d.ts": {
+      "commit": "f470e7569e7046c62866f57bc4fea56ba79975d5"
+    },
+    "angular-idle/angular-idle.d.ts": {
+      "commit": "f470e7569e7046c62866f57bc4fea56ba79975d5"
+    },
+    "angular-local-storage/angular-local-storage.d.ts": {
+      "commit": "f470e7569e7046c62866f57bc4fea56ba79975d5"
+    },
+    "angular-load/angular-load.d.ts": {
+      "commit": "f470e7569e7046c62866f57bc4fea56ba79975d5"
+    },
+    "localForage/localForage.d.ts": {
+      "commit": "f470e7569e7046c62866f57bc4fea56ba79975d5"
+    },
+    "angular-localForage/angular-localForage.d.ts": {
+      "commit": "f470e7569e7046c62866f57bc4fea56ba79975d5"
+    },
+    "angular-meteor/angular-meteor.d.ts": {
+      "commit": "f470e7569e7046c62866f57bc4fea56ba79975d5"
+    },
+    "angular-locker/angular-locker.d.ts": {
+      "commit": "f470e7569e7046c62866f57bc4fea56ba79975d5"
+    },
+    "meteor/meteor.d.ts": {
+      "commit": "f470e7569e7046c62866f57bc4fea56ba79975d5"
+    },
+    "angular-material/angular-material.d.ts": {
+      "commit": "f470e7569e7046c62866f57bc4fea56ba79975d5"
+    },
+    "angular-notifications/angular-notifications.d.ts": {
+      "commit": "f470e7569e7046c62866f57bc4fea56ba79975d5"
+    },
+    "angular-notify/angular-notify.d.ts": {
+      "commit": "f470e7569e7046c62866f57bc4fea56ba79975d5"
+    },
+    "angular-modal/angular-modal.d.ts": {
+      "commit": "f470e7569e7046c62866f57bc4fea56ba79975d5"
+    },
+    "angular-odata-resources/angular-odata-resources.d.ts": {
+      "commit": "f470e7569e7046c62866f57bc4fea56ba79975d5"
+    },
+    "angular-permission/angular-permission.d.ts": {
+      "commit": "f470e7569e7046c62866f57bc4fea56ba79975d5"
+    },
+    "angular-protractor/angular-protractor.d.ts": {
+      "commit": "f470e7569e7046c62866f57bc4fea56ba79975d5"
+    },
+    "selenium-webdriver/selenium-webdriver.d.ts": {
+      "commit": "f470e7569e7046c62866f57bc4fea56ba79975d5"
+    },
+    "angular-q-spread/angular-q-spread.d.ts": {
+      "commit": "f470e7569e7046c62866f57bc4fea56ba79975d5"
+    },
+    "angular-scenario/angular-scenario.d.ts": {
+      "commit": "f470e7569e7046c62866f57bc4fea56ba79975d5"
+    },
+    "angular-scroll/angular-scroll.d.ts": {
+      "commit": "f470e7569e7046c62866f57bc4fea56ba79975d5"
+    },
+    "signalr/signalr.d.ts": {
+      "commit": "f470e7569e7046c62866f57bc4fea56ba79975d5"
+    },
+    "angular-storage/angular-storage.d.ts": {
+      "commit": "f470e7569e7046c62866f57bc4fea56ba79975d5"
+    },
+    "angular-signalr-hub/angular-signalr-hub.d.ts": {
+      "commit": "f470e7569e7046c62866f57bc4fea56ba79975d5"
+    },
+    "angular-spinner/angular-spinner.d.ts": {
+      "commit": "f470e7569e7046c62866f57bc4fea56ba79975d5"
+    },
+    "angular-toastr/angular-toastr.d.ts": {
+      "commit": "f470e7569e7046c62866f57bc4fea56ba79975d5"
+    },
+    "angular-toasty/angular-toasty.d.ts": {
+      "commit": "f470e7569e7046c62866f57bc4fea56ba79975d5"
+    },
+    "angular-translate/angular-translate.d.ts": {
+      "commit": "f470e7569e7046c62866f57bc4fea56ba79975d5"
+    },
+    "angular-ui-notification/angular-ui-notification.d.ts": {
+      "commit": "f470e7569e7046c62866f57bc4fea56ba79975d5"
+    },
+    "angular-ui-tree/angular-ui-tree.d.ts": {
+      "commit": "f470e7569e7046c62866f57bc4fea56ba79975d5"
+    },
+    "angular-strap/angular-strap.d.ts": {
+      "commit": "f470e7569e7046c62866f57bc4fea56ba79975d5"
+    },
+    "angular-touchspin/angular-touchspin.d.ts": {
+      "commit": "f470e7569e7046c62866f57bc4fea56ba79975d5"
+    },
+    "angular-websocket/angular-websocket.d.ts": {
+      "commit": "f470e7569e7046c62866f57bc4fea56ba79975d5"
+    },
+    "angular-wizard/angular-wizard.d.ts": {
+      "commit": "f470e7569e7046c62866f57bc4fea56ba79975d5"
+    },
+    "angular-ui-sortable/angular-ui-sortable.d.ts": {
+      "commit": "f470e7569e7046c62866f57bc4fea56ba79975d5"
+    },
+    "angular-ui-scroll/angular-ui-scroll.d.ts": {
+      "commit": "f470e7569e7046c62866f57bc4fea56ba79975d5"
+    },
+    "angularLocalStorage/angularLocalStorage.d.ts": {
+      "commit": "f470e7569e7046c62866f57bc4fea56ba79975d5"
+    },
+    "angular-xeditable/angular-xeditable.d.ts": {
+      "commit": "f470e7569e7046c62866f57bc4fea56ba79975d5"
+    },
+    "angularfire/angularfire.d.ts": {
+      "commit": "f470e7569e7046c62866f57bc4fea56ba79975d5"
+    },
+    "angularjs/legacy/angular-scenario-1.2.d.ts": {
+      "commit": "f470e7569e7046c62866f57bc4fea56ba79975d5"
+    },
+    "angularjs-toaster/angularjs-toaster.d.ts": {
+      "commit": "f470e7569e7046c62866f57bc4fea56ba79975d5"
+    },
+    "angular.throttle/angular.throttle.d.ts": {
+      "commit": "f470e7569e7046c62866f57bc4fea56ba79975d5"
+    },
+    "firebase/firebase.d.ts": {
+      "commit": "f470e7569e7046c62866f57bc4fea56ba79975d5"
+    },
+    "angulartics/angulartics.d.ts": {
+      "commit": "f470e7569e7046c62866f57bc4fea56ba79975d5"
+    },
+    "angular-google-analytics/angular-google-analytics.d.ts": {
+      "commit": "f470e7569e7046c62866f57bc4fea56ba79975d5"
+    },
+    "angularjs/angular-animate.d.ts": {
+      "commit": "f470e7569e7046c62866f57bc4fea56ba79975d5"
+    },
+    "angularjs/angular-cookies.d.ts": {
+      "commit": "f470e7569e7046c62866f57bc4fea56ba79975d5"
+    },
+    "angularjs/angular-resource.d.ts": {
+      "commit": "f470e7569e7046c62866f57bc4fea56ba79975d5"
+    },
+    "angularjs/angular-component-router.d.ts": {
+      "commit": "f470e7569e7046c62866f57bc4fea56ba79975d5"
+    },
+    "angularjs/angular-mocks.d.ts": {
+      "commit": "f470e7569e7046c62866f57bc4fea56ba79975d5"
+    },
+    "angularjs/angular-route.d.ts": {
+      "commit": "f470e7569e7046c62866f57bc4fea56ba79975d5"
+    },
+    "angularjs/angular-sanitize.d.ts": {
+      "commit": "f470e7569e7046c62866f57bc4fea56ba79975d5"
+    }
+  }
+}

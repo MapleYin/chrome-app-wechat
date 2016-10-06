@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>We Chat</title>
+
+	<link rel="stylesheet" type="text/css" href="common/css/font-awesome.min.css">
+	<link rel="stylesheet" type="text/css" href="css/main.css">
+</head>
+<body>
+	<section class="chat-container">
+		<aside class="chat-list">
+			<header class="chat-list-header"></header>
+			<section class="chat-list-body">
+				<div class="list-container">
+					<ul class="list" id="chat-list-container"></ul>
+				</div>
+			</section>
+			<footer class="chat-list-footer">
+				<a href="javascript:;"></a>
+				<!-- <a href="javascript:;"></a> -->
+				<a href="javascript:;"></a>
+			</footer>
+		</aside>
+		<section class="chat-detail">
+			<header class="chat-detail-header" id="chat-content-header">
+				<h1 class="username"></h1>
+				<!-- <a href="javascript:;" class="fa fa-cog setting-btn"></a> -->
+			</header>
+			<section class="chat-detail-body" id="chat-content-container">
+			</section>
+			<footer class="chat-detail-footer">
+				<textarea id="message-input" class="message-input"></textarea>
+			</footer>
+		</section>
+	</section>
+</body>
+<iframe src="sandbox.html" style="display: none;" id="sandbox"></iframe>
+<!-- <script type="text/javascript" src="/common/js/chrome.sockets.tcp.xhr.js"></script> -->
+<script type="text/javascript" src="common/js/jquery-3.1.0.min.js"></script>
+<script type="text/javascript" data-main="app/main.js" src="common/js/require.js"></script>
+</html>

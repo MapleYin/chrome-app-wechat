@@ -1,0 +1,55 @@
+.chat-list{
+	.item{
+		border-top: solid 1px rgb(235, 235, 235); 
+		border-bottom: solid 1px rgb(250, 250, 250); 
+		height: 63px;
+		display: flex;
+		align-items:stretch;
+		cursor: pointer;
+		padding: 0 5px;
+		.avatar{
+			height: 42px;
+			width: 42px;
+			border-radius: 100%;
+		}
+		&.active{
+			background: rgb(248, 248, 248);
+		}
+	}
+	.item-header{
+		display: flex;
+		align-items:center;
+		justify-content:center;
+		height: 63px;
+		width: 63px;
+		flex-shrink:0;
+	}
+	.item-body{
+		display: flex;
+		justify-content:center;
+		flex-direction:column;
+		flex-grow:1;
+		overflow: hidden;
+		.info{
+			display: flex;
+			.username{
+				font-size: 14px;
+				display: inline-block;
+				margin: 0 5px 0 0;
+				flex-shrink:1;
+				overflow: hidden;
+				text-overflow:ellipsis;
+			}
+			.message-date{
+				color: rgb(155, 155, 155);
+				flex-shrink:0;
+			}
+		}
+		.message{
+			margin: 0;
+			color: rgb(160, 160, 160);
+			overflow: hidden;
+			text-overflow:ellipsis;
+		}
+	}
+}
