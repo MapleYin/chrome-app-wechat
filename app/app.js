@@ -23,6 +23,7 @@ define(["require", "exports", './tools/wxLogin', './tools/wxChatManager', './con
                     return value.MsgType == 1 || value.MsgType == 3;
                 });
                 self.chatContent.newMessage(userMessages);
+                self.chatList.newMessage(userMessages);
             });
             self.chatList.on('SelectUser', function (userName) {
                 self.chatContent.selectUser(userName, self.wxChatManager.chatListInfo[userName]);

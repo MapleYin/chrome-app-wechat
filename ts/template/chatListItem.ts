@@ -32,8 +32,8 @@ export class ChatListItem extends Template implements ChatListData{
 	id:string;
 	avatar:string;
 	nickName:string;
-	lastDate?:Date;
-	lastMessage?:string;
+	_lastDate?:Date;
+	_lastMessage?:string;
 
 	private data:ChatListData;
 
@@ -54,8 +54,6 @@ export class ChatListItem extends Template implements ChatListData{
 		this.id = this.data.id;
 		this.avatar = this.data.avatar;
 		this.nickName = this.data.nickName;
-		this.lastDate = this.data.lastDate;
-		this.lastMessage = this.data.lastMessage;
 
 		this.render(this.data);
 	}
@@ -67,5 +65,14 @@ export class ChatListItem extends Template implements ChatListData{
 		}else{
 			this.$element.removeClass('active');	
 		}
+	}
+
+	public set lastDate(v : Date) {
+		this._lastDate = v;
+		this.$element.find('.message-date').text(v.toLocaleTimeString());
+	}
+	public set lastMessage(v : string) {
+		this._lastMessage = v;
+		this.$element.find('p.message').text(v);
 	}
 }

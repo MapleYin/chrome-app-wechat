@@ -33,6 +33,7 @@ export class App {
 				return value.MsgType == 1 || value.MsgType == 3;
 			});
 			self.chatContent.newMessage(userMessages);
+			self.chatList.newMessage(userMessages);
 		});
 
 		self.chatList.on('SelectUser',function(userName:string){

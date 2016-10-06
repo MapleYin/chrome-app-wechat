@@ -24,8 +24,6 @@ define(["require", "exports", './template'], function (require, exports, templat
             this.id = this.data.id;
             this.avatar = this.data.avatar;
             this.nickName = this.data.nickName;
-            this.lastDate = this.data.lastDate;
-            this.lastMessage = this.data.lastMessage;
             this.render(this.data);
         }
         set active(v) {
@@ -36,6 +34,14 @@ define(["require", "exports", './template'], function (require, exports, templat
             else {
                 this.$element.removeClass('active');
             }
+        }
+        set lastDate(v) {
+            this._lastDate = v;
+            this.$element.find('.message-date').text(v.toLocaleTimeString());
+        }
+        set lastMessage(v) {
+            this._lastMessage = v;
+            this.$element.find('p.message').text(v);
         }
     }
     exports.ChatListItem = ChatListItem;

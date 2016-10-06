@@ -5,6 +5,7 @@ define(["require", "exports", '../template/chatListItem', '../tools/eventable'],
             super();
             this.$chatListContainer = $('#chat-list-container');
             this.userListItems = [];
+            this.userListItemsInfo = {};
             this.bindEvent();
         }
         setChatListData(chatList, chatListInfo) {
@@ -19,11 +20,27 @@ define(["require", "exports", '../template/chatListItem', '../tools/eventable'],
                     || data.UserName == 'filehelper') {
                     let item = new chatListItem_1.ChatListItem(data);
                     self.userListItems.push(item);
+                    self.userListItemsInfo[data.UserName] = item;
                     self.$chatListContainer.append(item.$element);
                 }
             });
         }
-        newMessage(message) {
+        newMessage(messages) {
+            let self = this;
+            messages.forEach(function (value) {
+                if (value.FromUserName in self.userListItemsInfo) {
+                    let item = self.userListItemsInfo[value.FromUserName];
+                    item.lastMessage = value.Content;
+                    item.lastDate = new Date(value.CreateTime * 1000);
+                    let index = self.userListItems.indexOf(item);
+                    self.userListItems.splice(index, 1);
+                    self.userListItems.unshift(item);
+                }
+            });
+            self.$chatListContainer.empty();
+            self.userListItems.forEach(function (value) {
+                self.$chatListContainer.append(value.$element);
+            });
         }
         selectedItem(index) {
             if (typeof this.activeUserIndex == 'number' && index == this.activeUserIndex) {
