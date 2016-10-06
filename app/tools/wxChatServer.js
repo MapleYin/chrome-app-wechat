@@ -52,6 +52,7 @@ define(["require", "exports", './eventable'], function (require, exports, eventa
                 let groupIds = self.convertCharSet(data.ChatSet);
                 self.getContacts(groupIds);
                 console.log('Start Sync Check');
+                self.syncCheckStartTime = self.timeStamp();
                 self.syncCheck(); // 开始信息同步检测
             });
         }
@@ -82,7 +83,7 @@ define(["require", "exports", './eventable'], function (require, exports, eventa
                     uin: this.baseRequest.Uin,
                     deviceid: this.baseRequest.DeviceID,
                     synckey: this.syncKeyToString(),
-                    _: this.timeStamp()
+                    _: self.syncCheckStartTime++
                 },
                 success: function (data) {
                     let retcode = data.match(MATCH_RETCODE_REG).pop();
@@ -93,7 +94,7 @@ define(["require", "exports", './eventable'], function (require, exports, eventa
                                 self.syncCheck();
                             });
                         }
-                        else {
+                        else if (selector == '0') {
                             self.syncCheck();
                         }
                     }

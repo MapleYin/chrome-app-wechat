@@ -57,6 +57,8 @@ export class WxChatServer extends Eventable{
 	private baseRequest:WxBaseRequest;
 	private syncKey:WxSyncKey;
 
+	private syncCheckStartTime;
+
 	currentUser:User;
 	
 	constructor(loginInfo){
@@ -113,6 +115,7 @@ export class WxChatServer extends Eventable{
 			self.getContacts(groupIds);
 
 			console.log('Start Sync Check');
+			self.syncCheckStartTime = self.timeStamp();
 			self.syncCheck();// 开始信息同步检测
 		});
 	}
@@ -145,7 +148,7 @@ export class WxChatServer extends Eventable{
 				uin : this.baseRequest.Uin,
 				deviceid : this.baseRequest.DeviceID,
 				synckey : this.syncKeyToString(),
-				_ : this.timeStamp()
+				_ : self.syncCheckStartTime++
 			},
 			success : function(data){
 				let retcode = data.match(MATCH_RETCODE_REG).pop();
@@ -155,7 +158,7 @@ export class WxChatServer extends Eventable{
 						self.sync(function(){
 							self.syncCheck();
 						});
-					}else{
+					}else if(selector== '0'){
 						self.syncCheck();
 					}
 					
