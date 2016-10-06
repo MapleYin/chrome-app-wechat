@@ -8,6 +8,7 @@ let GET_CONTACT_URL = 'https://wx.qq.com/cgi-bin/mmwebwx-bin/webwxbatchgetcontac
 let GET_ALL_CONTACT_URL = 'https://wx.qq.com/cgi-bin/mmwebwx-bin/webwxgetcontact';
 let SYNC_CHECK_URL = 'https://webpush.wx.qq.com/cgi-bin/mmwebwx-bin/synccheck';
 let SYNC_URL = 'https://wx.qq.com/cgi-bin/mmwebwx-bin/webwxsync';
+let MESSAGE_SENDING_URL = 'https://wx.qq.com/cgi-bin/mmwebwx-bin/webwxsendmsg';
 
 
 let MATCH_RETCODE_REG = /retcode\s*:\s*\"(.*?)\"/;
@@ -77,6 +78,37 @@ export class WxChatServer extends Eventable{
 
 		this.getAllContacts(); // 所有联系人信息
 
+	}
+
+	sendMessage(toUserName:string,content:string,callback){
+		let self = this;
+		let localID = this.createLocalID();
+		let postData = {
+			BaseRequest : this.baseRequest,
+			Msg : {
+				ClientMsgId : localID,
+				LocalID : localID,
+				Content : content,
+				FromUserName : self.currentUser.UserName,
+				ToUserName : toUserName,
+				Type : 1
+			},
+			Scene : 0
+		};
+
+		let urlParams = {
+			lang : 'zh_CN',
+			pass_ticket : this.passTicket
+		};
+		let url = new URL(MESSAGE_SENDING_URL);
+		for (var key in urlParams) {
+			url['searchParams'].append(key,urlParams[key]);
+		}
+		self.commonJsonPost(url,postData,function(data){
+			if(callback) {
+				callback(data);
+			}
+		});
 	}
 
 	// 拿到初始化信息
@@ -318,6 +350,12 @@ export class WxChatServer extends Eventable{
 		return resultArray.join('|');
 	}
 
+	private createLocalID(){
+		let timeStamp = this.timeStamp();
+		return (timeStamp*10000+this.randomNumber(9999)).toString();
+
+	}
+
 	private getDeviceID() {
     	return "e" + ("" + Math.random().toFixed(15)).substring(2, 17)
 	}
@@ -325,5 +363,9 @@ export class WxChatServer extends Eventable{
 	private timeStamp(){
 		let currentTime = new Date();
 		return currentTime.getTime();
+	}
+
+	private randomNumber(count):number{
+		return Math.floor(Math.random() * count);
 	}
 }

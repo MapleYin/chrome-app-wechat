@@ -6,6 +6,7 @@ define(["require", "exports", './eventable'], function (require, exports, eventa
     let GET_ALL_CONTACT_URL = 'https://wx.qq.com/cgi-bin/mmwebwx-bin/webwxgetcontact';
     let SYNC_CHECK_URL = 'https://webpush.wx.qq.com/cgi-bin/mmwebwx-bin/synccheck';
     let SYNC_URL = 'https://wx.qq.com/cgi-bin/mmwebwx-bin/webwxsync';
+    let MESSAGE_SENDING_URL = 'https://wx.qq.com/cgi-bin/mmwebwx-bin/webwxsendmsg';
     let MATCH_RETCODE_REG = /retcode\s*:\s*\"(.*?)\"/;
     let MATCH_SELECTOR_REG = /selector\s*:\s*\"(.*?)\"/;
     class WxChatServer extends eventable_1.Eventable {
@@ -23,6 +24,35 @@ define(["require", "exports", './eventable'], function (require, exports, eventa
         start() {
             this.getBaseInfo(); // 初始化
             this.getAllContacts(); // 所有联系人信息
+        }
+        sendMessage(toUserName, content, callback) {
+            let self = this;
+            let localID = this.createLocalID();
+            let postData = {
+                BaseRequest: this.baseRequest,
+                Msg: {
+                    ClientMsgId: localID,
+                    LocalID: localID,
+                    Content: content,
+                    FromUserName: self.currentUser.UserName,
+                    ToUserName: toUserName,
+                    Type: 1
+                },
+                Scene: 0
+            };
+            let urlParams = {
+                lang: 'zh_CN',
+                pass_ticket: this.passTicket
+            };
+            let url = new URL(MESSAGE_SENDING_URL);
+            for (var key in urlParams) {
+                url['searchParams'].append(key, urlParams[key]);
+            }
+            self.commonJsonPost(url, postData, function (data) {
+                if (callback) {
+                    callback(data);
+                }
+            });
         }
         // 拿到初始化信息
         // step 1
@@ -227,12 +257,19 @@ define(["require", "exports", './eventable'], function (require, exports, eventa
             });
             return resultArray.join('|');
         }
+        createLocalID() {
+            let timeStamp = this.timeStamp();
+            return (timeStamp * 10000 + this.randomNumber(9999)).toString();
+        }
         getDeviceID() {
             return "e" + ("" + Math.random().toFixed(15)).substring(2, 17);
         }
         timeStamp() {
             let currentTime = new Date();
             return currentTime.getTime();
+        }
+        randomNumber(count) {
+            return Math.floor(Math.random() * count);
         }
     }
     exports.WxChatServer = WxChatServer;

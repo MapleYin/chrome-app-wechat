@@ -24,7 +24,6 @@ export interface User{
 export interface WxMessage{
 	MsgId : number;
 	CreateTime : number;
-	AppMsgType : number;
 	Content : string;
 	StatusNotifyUserName : string;
 	FromUserName : string;

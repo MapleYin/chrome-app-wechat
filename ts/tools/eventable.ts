@@ -6,9 +6,9 @@ export class Eventable{
 		this.eventHandlers[message] = callback;
 	}
 
-	protected dispatchEvent(message:string,data?:any){
+	protected dispatchEvent(message:string,data?:any,callback?){
 		if(message in this.eventHandlers) {
-			this.eventHandlers[message].call(this,data);
+			this.eventHandlers[message].call(this,data,callback);
 		}
 	}
 }

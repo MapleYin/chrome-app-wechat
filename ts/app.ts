@@ -40,6 +40,14 @@ export class App {
 			self.chatContent.selectUser(userName,self.wxChatManager.chatListInfo[userName]);
 		});
 
+		self.chatContent.on('SendingMessage',function(content,callback){
+			self.wxChatManager.sendMessage(this.currentChatUser,content,function(result){
+				if(callback) {
+					callback(result);
+				}
+			});
+		});
+
 		self.wxChatManager.init();
 	}
 }

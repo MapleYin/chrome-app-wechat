@@ -7,9 +7,9 @@ define(["require", "exports"], function (require, exports) {
         on(message, callback) {
             this.eventHandlers[message] = callback;
         }
-        dispatchEvent(message, data) {
+        dispatchEvent(message, data, callback) {
             if (message in this.eventHandlers) {
-                this.eventHandlers[message].call(this, data);
+                this.eventHandlers[message].call(this, data, callback);
             }
         }
     }

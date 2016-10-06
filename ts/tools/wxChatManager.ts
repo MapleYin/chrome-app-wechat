@@ -64,6 +64,10 @@ export class WxChatManager extends Eventable{
 		this.wxChatServer.start();
 	}
 
+	sendMessage(toUserName:string,content:string,callback){
+		this.wxChatServer.sendMessage(toUserName,content,callback);
+	}
+
 	private preProcessingContactList(list:Array<User>):Array<User>{
 		return list;
 	}

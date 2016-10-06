@@ -44,6 +44,9 @@ define(["require", "exports", './wxChatServer', './eventable', '../tools/chromeT
         init() {
             this.wxChatServer.start();
         }
+        sendMessage(toUserName, content, callback) {
+            this.wxChatServer.sendMessage(toUserName, content, callback);
+        }
         preProcessingContactList(list) {
             return list;
         }
