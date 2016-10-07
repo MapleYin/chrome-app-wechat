@@ -14,12 +14,9 @@ define(["require", "exports", './eventable'], function (require, exports, eventa
             super();
             this.didCheckSystemMessage = false;
             this.passTicket = loginInfo.pass_ticket;
-            this.baseRequest = {
-                Uin: loginInfo.wxuin,
-                Sid: loginInfo.wxsid,
-                Skey: loginInfo.skey,
-                DeviceID: this.getDeviceID()
-            };
+            this.Uin = loginInfo.wxuin;
+            this.Sid = loginInfo.wxsid;
+            this.Skey = loginInfo.skey;
         }
         start() {
             this.getBaseInfo(); // 初始化
@@ -29,7 +26,7 @@ define(["require", "exports", './eventable'], function (require, exports, eventa
             let self = this;
             let localID = this.createLocalID();
             let postData = {
-                BaseRequest: this.baseRequest,
+                BaseRequest: this.baseRequest(),
                 Msg: {
                     ClientMsgId: localID,
                     LocalID: localID,
@@ -59,7 +56,7 @@ define(["require", "exports", './eventable'], function (require, exports, eventa
         getBaseInfo() {
             let self = this;
             let postData = {
-                BaseRequest: this.baseRequest
+                BaseRequest: this.baseRequest()
             };
             let urlParams = {
                 r: this.timeStamp(),
@@ -90,7 +87,7 @@ define(["require", "exports", './eventable'], function (require, exports, eventa
         // step 2
         setStatusNotify(FromUserName, ToUserName) {
             let postData = {
-                BaseRequest: this.baseRequest,
+                BaseRequest: this.baseRequest(),
                 ClientMsgId: this.timeStamp(),
                 FromUserName: FromUserName,
                 ToUserName: ToUserName,
@@ -108,10 +105,10 @@ define(["require", "exports", './eventable'], function (require, exports, eventa
                 url: SYNC_CHECK_URL,
                 data: {
                     r: this.timeStamp(),
-                    skey: this.baseRequest.Skey,
-                    sid: this.baseRequest.Sid,
-                    uin: this.baseRequest.Uin,
-                    deviceid: this.baseRequest.DeviceID,
+                    skey: this.Skey,
+                    sid: this.Sid,
+                    uin: this.Uin,
+                    deviceid: this.getDeviceID(),
                     synckey: this.syncKeyToString(),
                     _: self.syncCheckStartTime++
                 },
@@ -139,13 +136,13 @@ define(["require", "exports", './eventable'], function (require, exports, eventa
         sync(callback) {
             let self = this;
             let postData = {
-                BaseRequest: this.baseRequest,
+                BaseRequest: this.baseRequest(),
                 SyncKey: this.syncKey,
                 rr: ~this.timeStamp()
             };
             let urlParams = {
-                sid: this.baseRequest.Sid,
-                skey: this.baseRequest.Skey,
+                sid: this.Sid,
+                skey: this.Skey,
                 lang: 'zh_CN',
                 pass_ticket: this.passTicket
             };
@@ -188,7 +185,7 @@ define(["require", "exports", './eventable'], function (require, exports, eventa
                 };
             });
             let postData = {
-                BaseRequest: this.baseRequest,
+                BaseRequest: this.baseRequest(),
                 Count: contactsListObject.length,
                 List: contactsListObject
             };
@@ -215,7 +212,7 @@ define(["require", "exports", './eventable'], function (require, exports, eventa
                     pass_ticket: this.passTicket,
                     r: this.timeStamp(),
                     seq: 0,
-                    skey: this.baseRequest.Skey
+                    skey: this.Skey
                 },
                 dataType: 'json',
                 xhrFields: {
@@ -260,6 +257,14 @@ define(["require", "exports", './eventable'], function (require, exports, eventa
         createLocalID() {
             let timeStamp = this.timeStamp();
             return (timeStamp * 10000 + this.randomNumber(9999)).toString();
+        }
+        baseRequest() {
+            return {
+                Uin: this.Uin,
+                Sid: this.Sid,
+                Skey: this.Skey,
+                DeviceID: this.getDeviceID()
+            };
         }
         getDeviceID() {
             return "e" + ("" + Math.random().toFixed(15)).substring(2, 17);

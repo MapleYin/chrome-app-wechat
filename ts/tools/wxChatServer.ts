@@ -55,8 +55,11 @@ export class WxChatServer extends Eventable{
 	private didCheckSystemMessage:boolean = false;
 
 	private passTicket;
-	private baseRequest:WxBaseRequest;
 	private syncKey:WxSyncKey;
+
+	private Uin:string;
+	private	Sid:string;
+	private	Skey:string;
 
 	private syncCheckStartTime;
 
@@ -65,12 +68,9 @@ export class WxChatServer extends Eventable{
 	constructor(loginInfo){
 		super();
 		this.passTicket = loginInfo.pass_ticket;
-		this.baseRequest = {
-			Uin : loginInfo.wxuin,
-			Sid : loginInfo.wxsid,
-			Skey : loginInfo.skey,
-			DeviceID : this.getDeviceID()
-		};
+		this.Uin = loginInfo.wxuin;
+		this.Sid = loginInfo.wxsid;
+		this.Skey = loginInfo.skey;
 	}
 
 	start(){
@@ -84,7 +84,7 @@ export class WxChatServer extends Eventable{
 		let self = this;
 		let localID = this.createLocalID();
 		let postData = {
-			BaseRequest : this.baseRequest,
+			BaseRequest : this.baseRequest(),
 			Msg : {
 				ClientMsgId : localID,
 				LocalID : localID,
@@ -116,7 +116,7 @@ export class WxChatServer extends Eventable{
 	private getBaseInfo(){
 		let self = this;
 		let postData = {
-			BaseRequest : this.baseRequest
+			BaseRequest : this.baseRequest()
 		};
 
 		let urlParams = {
@@ -156,7 +156,7 @@ export class WxChatServer extends Eventable{
 	// step 2
 	private setStatusNotify(FromUserName,ToUserName){
 		let postData = {
-			BaseRequest : this.baseRequest,
+			BaseRequest : this.baseRequest(),
 			ClientMsgId : this.timeStamp(),
 			FromUserName : FromUserName,
 			ToUserName : ToUserName,
@@ -175,10 +175,10 @@ export class WxChatServer extends Eventable{
 			url : SYNC_CHECK_URL,
 			data : {
 				r : this.timeStamp(),
-				skey : this.baseRequest.Skey,
-				sid : this.baseRequest.Sid,
-				uin : this.baseRequest.Uin,
-				deviceid : this.baseRequest.DeviceID,
+				skey : this.Skey,
+				sid : this.Sid,
+				uin : this.Uin,
+				deviceid : this.getDeviceID(),
 				synckey : this.syncKeyToString(),
 				_ : self.syncCheckStartTime++
 			},
@@ -193,7 +193,6 @@ export class WxChatServer extends Eventable{
 					}else if(selector== '0'){
 						self.syncCheck();
 					}
-					
 				}else{
 					console.log('logout!');
 				}
@@ -206,14 +205,14 @@ export class WxChatServer extends Eventable{
 	private sync(callback){
 		let self = this;
 		let postData = {
-			BaseRequest : this.baseRequest,
+			BaseRequest : this.baseRequest(),
 			SyncKey : this.syncKey,
 			rr : ~this.timeStamp()
 		};
 
 		let urlParams = {
-			sid : this.baseRequest.Sid,
-			skey : this.baseRequest.Skey,
+			sid : this.Sid,
+			skey : this.Skey,
 			lang : 'zh_CN',
 			pass_ticket : this.passTicket
 		};
@@ -264,7 +263,7 @@ export class WxChatServer extends Eventable{
 		});
 
 		let postData = {
-			BaseRequest : this.baseRequest,
+			BaseRequest : this.baseRequest(),
 			Count : contactsListObject.length,
 			List : contactsListObject
 		};
@@ -294,7 +293,7 @@ export class WxChatServer extends Eventable{
 				pass_ticket : this.passTicket,
 				r : this.timeStamp(),
 				seq : 0,
-				skey : this.baseRequest.Skey
+				skey : this.Skey
 			},
 			dataType:'json',
 			xhrFields: {
@@ -354,6 +353,15 @@ export class WxChatServer extends Eventable{
 		let timeStamp = this.timeStamp();
 		return (timeStamp*10000+this.randomNumber(9999)).toString();
 
+	}
+
+	private baseRequest():WxBaseRequest{
+		return {
+			Uin : this.Uin,
+			Sid : this.Sid,
+			Skey : this.Skey,
+			DeviceID : this.getDeviceID()
+		}
 	}
 
 	private getDeviceID() {
