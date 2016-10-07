@@ -1,4 +1,4 @@
-define(["require", "exports", '../template/chatContentItem', '../tools/eventable'], function (require, exports, chatContentItem_1, eventable_1) {
+define(["require", "exports", '../template/chatContentItem', '../tools/eventable', '../tools/wxChatManager'], function (require, exports, chatContentItem_1, eventable_1, wxChatManager_1) {
     "use strict";
     class ChatContent extends eventable_1.Eventable {
         constructor() {
@@ -22,16 +22,13 @@ define(["require", "exports", '../template/chatContentItem', '../tools/eventable
                 }
             });
         }
-        selectUser(username, currentUser) {
-            let name = currentUser.RemarkName || currentUser.NickName.replace(/<.+?>.*?<\/.+?>/g, '');
+        selectUser(username) {
+            let selectUserInfo = wxChatManager_1.wxChatManager.chatListInfo[username];
+            let name = selectUserInfo.RemarkName || selectUserInfo.NickName.replace(/<.+?>.*?<\/.+?>/g, '');
             this.$chatContentHeader.find('.username').text(name);
-            this.currentChatUser = currentUser.UserName;
+            this.currentChatUser = username;
             this.displayMessageContent(username);
             this.$inputTextarea.focus();
-        }
-        setChatListData(chatListInfo, selfUser) {
-            this.chatListInfo = chatListInfo;
-            this.selfUser = selfUser;
         }
         newMessage(messages) {
             let self = this;
@@ -39,7 +36,7 @@ define(["require", "exports", '../template/chatContentItem', '../tools/eventable
             messages.forEach(function (value) {
                 var fromUserName = value.FromUserName;
                 let toUserName = value.ToUserName;
-                if (fromUserName == self.selfUser.UserName) {
+                if (fromUserName == wxChatManager_1.wxChatManager.currentUser.UserName) {
                     fromUserName = toUserName;
                 }
                 if (!(fromUserName in self.messageList)) {
@@ -59,7 +56,7 @@ define(["require", "exports", '../template/chatContentItem', '../tools/eventable
                     this.messageList[this.currentChatUser] = [];
                 }
                 this.messageList[this.currentChatUser].push(fakeMessage);
-                this.dispatchEvent('SendingMessage', message, function (result) {
+                wxChatManager_1.wxChatManager.sendMessage(this.currentChatUser, message, function (result) {
                     if (result.BaseResponse.Ret == 0) {
                         fakeMessage.MsgId = result.MsgId;
                     }
@@ -73,7 +70,7 @@ define(["require", "exports", '../template/chatContentItem', '../tools/eventable
                 MsgId: 0,
                 MsgType: 1,
                 Content: message,
-                FromUserName: this.selfUser.UserName,
+                FromUserName: wxChatManager_1.wxChatManager.currentUser.UserName,
                 ToUserName: this.currentChatUser,
                 CreateTime: time.getTime(),
                 StatusNotifyUserName: ''
@@ -93,12 +90,12 @@ define(["require", "exports", '../template/chatContentItem', '../tools/eventable
             messages.forEach(function (value) {
                 var fromUserInfo;
                 var isSelf = false;
-                if (value.FromUserName == self.selfUser.UserName) {
+                if (value.FromUserName == wxChatManager_1.wxChatManager.currentUser.UserName) {
                     isSelf = true;
-                    fromUserInfo = self.selfUser;
+                    fromUserInfo = wxChatManager_1.wxChatManager.currentUser;
                 }
                 else {
-                    fromUserInfo = self.chatListInfo[value.FromUserName];
+                    fromUserInfo = wxChatManager_1.wxChatManager.chatListInfo[value.FromUserName];
                 }
                 let item = new chatContentItem_1.ChatContentItem(value, fromUserInfo, isSelf);
                 self.$chatContentContainer.append(item.$element);

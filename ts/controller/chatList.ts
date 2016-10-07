@@ -1,3 +1,4 @@
+import {wxChatManager} from '../tools/wxChatManager'
 import {User,WxMessage} from '../models/wxModels'
 import {ChatListItem} from '../template/chatListItem'
 import {Eventable} from '../tools/eventable'
@@ -7,28 +8,25 @@ export class ChatList extends Eventable{
 	private activeUserIndex:number;
 	private userListItems:Array<ChatListItem> = [];
 	private userListItemsInfo = {};
-	private chatListInfo;
 
 	constructor(){
 		super();
 		this.bindEvent();
 	}
 
-	setChatListData(chatList:Array<string>,chatListInfo){
+	updateChatList(){
 		let self = this;
 		let list:JQuery;
 		this.$chatListContainer.empty();
 		this.userListItems = [];
-		this.chatListInfo = chatListInfo;
-		chatList.forEach(function(value){
-			let data:User = chatListInfo[value];
-			if( (data.VerifyFlag == 0 && data.UserName.slice(0,1) == '@')
-			 || data.UserName == 'filehelper') {
-				let item = new ChatListItem(data);
-				self.userListItems.push(item);
-				self.userListItemsInfo[data.UserName] = item;
-				self.$chatListContainer.append(item.$element);
-			}
+
+		wxChatManager.chatList.forEach(function(value){
+			let data:User = wxChatManager.chatListInfo[value];
+			let item = new ChatListItem(data);
+			self.userListItems.push(item);
+			self.userListItemsInfo[data.UserName] = item;
+			self.$chatListContainer.append(item.$element);
+			self.$chatListContainer.addBack()
 		});
 	}
 

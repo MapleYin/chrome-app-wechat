@@ -10,15 +10,15 @@ define(["require", "exports", './eventable'], function (require, exports, eventa
     let MATCH_RETCODE_REG = /retcode\s*:\s*\"(.*?)\"/;
     let MATCH_SELECTOR_REG = /selector\s*:\s*\"(.*?)\"/;
     class WxChatServer extends eventable_1.Eventable {
-        constructor(loginInfo) {
-            super();
+        constructor() {
+            super(...arguments);
             this.didCheckSystemMessage = false;
+        }
+        start(loginInfo) {
             this.passTicket = loginInfo.pass_ticket;
             this.Uin = loginInfo.wxuin;
             this.Sid = loginInfo.wxsid;
             this.Skey = loginInfo.skey;
-        }
-        start() {
             this.getBaseInfo(); // 初始化
             this.getAllContacts(); // 所有联系人信息
         }
@@ -277,5 +277,5 @@ define(["require", "exports", './eventable'], function (require, exports, eventa
             return Math.floor(Math.random() * count);
         }
     }
-    exports.WxChatServer = WxChatServer;
+    exports.wxChatServer = new WxChatServer();
 });

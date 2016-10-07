@@ -1,5 +1,5 @@
 import {WxLogin} from './tools/wxLogin'
-import {WxChatManager} from './tools/wxChatManager'
+import {wxChatManager} from './tools/wxChatManager'
 import {WxMessage} from './models/wxModels'
 import {ChatList} from './controller/chatList'
 import {ChatContent} from './controller/chatContent'
@@ -8,13 +8,13 @@ export class App {
 	private wxLogin = new WxLogin();
 	private chatList = new ChatList();
 	private chatContent = new ChatContent();
-	private wxChatManager:WxChatManager;
+
+
 	constructor(redirectUrl) {
 		let self = this;
 		this.wxLogin.init(redirectUrl).then(function(value){
-			self.wxChatManager = new WxChatManager(value.data);
-
 			self.init();
+			wxChatManager.init(value.data);
 		});
 	}
 
@@ -22,13 +22,12 @@ export class App {
 	init(){
 		let self = this;
 
-		self.wxChatManager.on('AddChatUsers',function(){
+		wxChatManager.on('AddChatUsers',function(){
 			console.log('AddChatUsers');
-			self.chatList.setChatListData(this.chatList,this.chatListInfo);
-			self.chatContent.setChatListData(this.chatListInfo,this.currentUser);
+			self.chatList.updateChatList();
 		});
 
-		self.wxChatManager.on('newMessage',function(messages:Array<WxMessage>){
+		wxChatManager.on('newMessage',function(messages:Array<WxMessage>){
 			let userMessages:Array<WxMessage> = messages.filter(function(value){
 				return value.MsgType == 1 || value.MsgType == 3;
 			});
@@ -37,17 +36,7 @@ export class App {
 		});
 
 		self.chatList.on('SelectUser',function(userName:string){
-			self.chatContent.selectUser(userName,self.wxChatManager.chatListInfo[userName]);
+			self.chatContent.selectUser(userName);
 		});
-
-		self.chatContent.on('SendingMessage',function(content,callback){
-			self.wxChatManager.sendMessage(this.currentChatUser,content,function(result){
-				if(callback) {
-					callback(result);
-				}
-			});
-		});
-
-		self.wxChatManager.init();
 	}
 }

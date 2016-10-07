@@ -7,18 +7,17 @@ define(["require", "exports", './tools/wxLogin', './tools/wxChatManager', './con
             this.chatContent = new chatContent_1.ChatContent();
             let self = this;
             this.wxLogin.init(redirectUrl).then(function (value) {
-                self.wxChatManager = new wxChatManager_1.WxChatManager(value.data);
                 self.init();
+                wxChatManager_1.wxChatManager.init(value.data);
             });
         }
         init() {
             let self = this;
-            self.wxChatManager.on('AddChatUsers', function () {
+            wxChatManager_1.wxChatManager.on('AddChatUsers', function () {
                 console.log('AddChatUsers');
-                self.chatList.setChatListData(this.chatList, this.chatListInfo);
-                self.chatContent.setChatListData(this.chatListInfo, this.currentUser);
+                self.chatList.updateChatList();
             });
-            self.wxChatManager.on('newMessage', function (messages) {
+            wxChatManager_1.wxChatManager.on('newMessage', function (messages) {
                 let userMessages = messages.filter(function (value) {
                     return value.MsgType == 1 || value.MsgType == 3;
                 });
@@ -26,16 +25,8 @@ define(["require", "exports", './tools/wxLogin', './tools/wxChatManager', './con
                 self.chatList.newMessage(userMessages);
             });
             self.chatList.on('SelectUser', function (userName) {
-                self.chatContent.selectUser(userName, self.wxChatManager.chatListInfo[userName]);
+                self.chatContent.selectUser(userName);
             });
-            self.chatContent.on('SendingMessage', function (content, callback) {
-                self.wxChatManager.sendMessage(this.currentChatUser, content, function (result) {
-                    if (callback) {
-                        callback(result);
-                    }
-                });
-            });
-            self.wxChatManager.init();
         }
     }
     exports.App = App;

@@ -50,7 +50,7 @@ interface WxContactResponse{
 	MemberList : Array<any>	;
 }
 
-export class WxChatServer extends Eventable{
+class WxChatServer extends Eventable{
 
 	private didCheckSystemMessage:boolean = false;
 
@@ -64,16 +64,13 @@ export class WxChatServer extends Eventable{
 	private syncCheckStartTime;
 
 	currentUser:User;
-	
-	constructor(loginInfo){
-		super();
+
+	start(loginInfo){
 		this.passTicket = loginInfo.pass_ticket;
 		this.Uin = loginInfo.wxuin;
 		this.Sid = loginInfo.wxsid;
 		this.Skey = loginInfo.skey;
-	}
 
-	start(){
 		this.getBaseInfo(); // 初始化
 
 		this.getAllContacts(); // 所有联系人信息
@@ -377,3 +374,8 @@ export class WxChatServer extends Eventable{
 		return Math.floor(Math.random() * count);
 	}
 }
+
+
+
+
+export let wxChatServer = new WxChatServer();

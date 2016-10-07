@@ -1,13 +1,12 @@
 define(["require", "exports", './wxChatServer', './eventable', '../tools/chromeTools'], function (require, exports, wxChatServer_1, eventable_1, chromeTools_1) {
     "use strict";
     class WxChatManager extends eventable_1.Eventable {
-        constructor(loginInfo) {
+        constructor() {
             super();
             this.chatList = [];
             this.chatListInfo = {};
             let self = this;
-            this.wxChatServer = new wxChatServer_1.WxChatServer(loginInfo);
-            this.wxChatServer.on('InitDone', function () {
+            wxChatServer_1.wxChatServer.on('InitDone', function () {
                 self.currentUser = this.currentUser;
                 if (self.currentUser.HeadImgUrl.search(/chrome-extension/) == -1) {
                     chromeTools_1.fetchRemoteImage('https://wx.qq.com' + self.currentUser.HeadImgUrl, function (localUrl) {
@@ -15,10 +14,19 @@ define(["require", "exports", './wxChatServer', './eventable', '../tools/chromeT
                     });
                 }
             });
-            this.wxChatServer.on('AddChatUsers', function (list) {
+            wxChatServer_1.wxChatServer.on('AddChatUsers', function (list) {
                 list = self.preProcessingContactList(list);
                 list = list.sort(function (value1, value2) {
                     return value2.ContactFlag - value1.ContactFlag;
+                });
+                list.filter(function (value) {
+                    if ((value.VerifyFlag == 0 && value.UserName.slice(0, 1) == '@')
+                        || value.UserName == 'filehelper') {
+                        return true;
+                    }
+                    else {
+                        return false;
+                    }
                 });
                 list.forEach(function (value) {
                     if (!(value.UserName in self.chatListInfo)) {
@@ -33,19 +41,19 @@ define(["require", "exports", './wxChatServer', './eventable', '../tools/chromeT
                 });
                 self.dispatchEvent('AddChatUsers');
             });
-            this.wxChatServer.on('GetAllContactUsers', function (list) {
+            wxChatServer_1.wxChatServer.on('GetAllContactUsers', function (list) {
                 self.allContact = list;
             });
-            this.wxChatServer.on('newMessage', function (list) {
+            wxChatServer_1.wxChatServer.on('newMessage', function (list) {
                 console.log('Here Come the New Messages');
                 self.dispatchEvent('newMessage', list);
             });
         }
-        init() {
-            this.wxChatServer.start();
+        init(loginInfo) {
+            wxChatServer_1.wxChatServer.start(loginInfo);
         }
         sendMessage(toUserName, content, callback) {
-            this.wxChatServer.sendMessage(toUserName, content, callback);
+            wxChatServer_1.wxChatServer.sendMessage(toUserName, content, callback);
         }
         preProcessingContactList(list) {
             return list;
@@ -53,5 +61,5 @@ define(["require", "exports", './wxChatServer', './eventable', '../tools/chromeT
         processNewMessage() {
         }
     }
-    exports.WxChatManager = WxChatManager;
+    exports.wxChatManager = new WxChatManager();
 });

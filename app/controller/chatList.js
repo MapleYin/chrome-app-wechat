@@ -1,4 +1,4 @@
-define(["require", "exports", '../template/chatListItem', '../tools/eventable'], function (require, exports, chatListItem_1, eventable_1) {
+define(["require", "exports", '../tools/wxChatManager', '../template/chatListItem', '../tools/eventable'], function (require, exports, wxChatManager_1, chatListItem_1, eventable_1) {
     "use strict";
     class ChatList extends eventable_1.Eventable {
         constructor() {
@@ -8,21 +8,18 @@ define(["require", "exports", '../template/chatListItem', '../tools/eventable'],
             this.userListItemsInfo = {};
             this.bindEvent();
         }
-        setChatListData(chatList, chatListInfo) {
+        updateChatList() {
             let self = this;
             let list;
             this.$chatListContainer.empty();
             this.userListItems = [];
-            this.chatListInfo = chatListInfo;
-            chatList.forEach(function (value) {
-                let data = chatListInfo[value];
-                if ((data.VerifyFlag == 0 && data.UserName.slice(0, 1) == '@')
-                    || data.UserName == 'filehelper') {
-                    let item = new chatListItem_1.ChatListItem(data);
-                    self.userListItems.push(item);
-                    self.userListItemsInfo[data.UserName] = item;
-                    self.$chatListContainer.append(item.$element);
-                }
+            wxChatManager_1.wxChatManager.chatList.forEach(function (value) {
+                let data = wxChatManager_1.wxChatManager.chatListInfo[value];
+                let item = new chatListItem_1.ChatListItem(data);
+                self.userListItems.push(item);
+                self.userListItemsInfo[data.UserName] = item;
+                self.$chatListContainer.append(item.$element);
+                self.$chatListContainer.addBack();
             });
         }
         newMessage(messages) {

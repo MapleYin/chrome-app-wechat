@@ -1,15 +1,14 @@
 import {User,WxMessage} from '../models/wxModels'
 import {ChatContentItem} from '../template/chatContentItem'
 import {Eventable} from '../tools/eventable'
+import {wxChatManager} from '../tools/wxChatManager'
 
 export class ChatContent extends Eventable{
 	private $chatContentHeader:JQuery = $('#chat-content-header');
 	private $chatContentContainer:JQuery = $('#chat-content-container');
 	private $inputTextarea:JQuery = $('#message-input');
 	private messageList = {};
-	private chatListInfo;
 	currentChatUser:string;
-	private selfUser:User;
 
 	constructor(){
 		super();
@@ -28,20 +27,14 @@ export class ChatContent extends Eventable{
 		});
 	}
 
-
-	selectUser(username:string,currentUser:User){
-		let name = currentUser.RemarkName || currentUser.NickName.replace(/<.+?>.*?<\/.+?>/g,'')
+	selectUser(username:string){
+		let selectUserInfo:User = wxChatManager.chatListInfo[username];
+		let name = selectUserInfo.RemarkName || selectUserInfo.NickName.replace(/<.+?>.*?<\/.+?>/g,'')
 		this.$chatContentHeader.find('.username').text(name);
-		this.currentChatUser = currentUser.UserName;
+		this.currentChatUser = username;
 		this.displayMessageContent(username);
 		this.$inputTextarea.focus();
 	}
-
-	setChatListData(chatListInfo,selfUser:User){
-		this.chatListInfo = chatListInfo;
-		this.selfUser = selfUser;
-	}
-
 
 	newMessage(messages:Array<WxMessage>){
 		let self = this;
@@ -50,7 +43,7 @@ export class ChatContent extends Eventable{
 			var fromUserName:string = value.FromUserName;
 			let toUserName:string = value.ToUserName;
 
-			if(fromUserName == self.selfUser.UserName) {
+			if(fromUserName == wxChatManager.currentUser.UserName) {
 				fromUserName = toUserName;
 			}
 			if(!(fromUserName in self.messageList)) {
@@ -72,11 +65,13 @@ export class ChatContent extends Eventable{
 				this.messageList[this.currentChatUser] = [];
 			}
 			this.messageList[this.currentChatUser].push(fakeMessage);
-			this.dispatchEvent('SendingMessage',message,function(result){
+
+			wxChatManager.sendMessage(this.currentChatUser,message,function(result){
 				if(result.BaseResponse.Ret == 0) {
 					fakeMessage.MsgId = result.MsgId;
 				}
 			});
+
 			this.updateMessageContent([fakeMessage]);
 		}
 	}
@@ -87,7 +82,7 @@ export class ChatContent extends Eventable{
 			MsgId : 0,
 			MsgType : 1,
 			Content : message,
-			FromUserName : this.selfUser.UserName,
+			FromUserName : wxChatManager.currentUser.UserName,
 			ToUserName : this.currentChatUser,
 			CreateTime : time.getTime(),
 			StatusNotifyUserName : ''
@@ -109,11 +104,11 @@ export class ChatContent extends Eventable{
 		messages.forEach(function(value){
 			var fromUserInfo:User;
 			var isSelf = false;
-			if(value.FromUserName == self.selfUser.UserName) {
+			if(value.FromUserName == wxChatManager.currentUser.UserName) {
 				isSelf = true;
-				fromUserInfo = self.selfUser;
+				fromUserInfo = wxChatManager.currentUser;
 			}else{
-				fromUserInfo = self.chatListInfo[value.FromUserName];
+				fromUserInfo = wxChatManager.chatListInfo[value.FromUserName];
 			}
 			let item = new ChatContentItem(value,fromUserInfo,isSelf);
 			self.$chatContentContainer.append(item.$element);
