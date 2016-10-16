@@ -1,100 +1,49 @@
-export enum StatusCode{
-	success = 0,
-	unauthorized = 100,
-	accounterror = 101, // 账号或密码错误
-	missparams = 200,
-	universal = 500
-}
+import {Eventable} from '../baseClass/eventable'
 
-export interface ResponseArrayInfo<T>{
-	page:Number;
-	count:Number;
-	list:[T];
-}
+let EXEC_COOKIE_REG = /<(\w+)>(?!<)(.+?)</g
 
-export interface ResponseObject<T>{
-	code : Number;
-	message:String;
-	data?:T;
-}
+export class BaseServer extends Eventable{
 
-export interface ResponseArray<T>{
-	code : Number;
-	message:String;
-	data:ResponseArrayInfo<T>;
-}
-export class BaseServer{
-	baseUrl: String;
+	static passTicket:string;
+	static Uin:string;
+	static Sid:string;
+	static Skey:string;
 
-	constructor(){
-	}
 
-	protected post<T>(url:string,params:Object,options?:Object):Promise<T>{
-		let body:string = JSON.stringify(params);
-		let xhr = new XMLHttpRequest();
-		for (var key in options) {
-			xhr[key] = options[key];
+
+
+	get(originUrl:string,params?,headers?,options?):Promise<Response>{
+		let url = new URL(originUrl);
+		for (var key in params) {
+			url['searchParams'].append(key,params[key]);
 		}
-		xhr.open('POST',url);
-		xhr.send(body);
 
-		return this.eventHandler<T>(xhr);
-	}
-	protected get<T>(url:string,params?:Object,options?):Promise<T>{
-		let xhr = new XMLHttpRequest();
-		if(params) {
-			url+= '?'+this.convertParamsToSearchString(params);
-		}
-		for (var key in options) {
-			xhr[key] = options[key];
-		}
-		xhr.open('GET',url);
-		xhr.send();
-
-		return this.eventHandler<T>(xhr);
-	}
-
-	protected eventHandler<T>(xhr:XMLHttpRequest):Promise<T>{
-		return new Promise(function(resolve,reject){
-			xhr.addEventListener('readystatechange',function(){
-				if (this.readyState === this.DONE) {
-					if(this.status == 200) {
-						resolve({
-							code : 0,
-							message:'ok',
-							data:this.response
-						});
-					}else{
-						resolve({
-							code : this.status,
-							message:this.response
-						});
-					}
-				}
-			});
-
-			xhr.addEventListener('error',function(error){
-				reject(error);
-			});
+		return fetch(url.toString(),{
+			credentials : 'include',
+			headers : headers
 		});
 	}
 
-	protected setHttpHeader(xhr,headers:Object){
-		var key;
-		for(key in headers){
-			xhr.setRequestHeader(key,headers[key]);
-		}
+	post(originUrl:string,params?,headers?,options?):Promise<Response>{
+		return fetch(originUrl.toString(),{
+			credentials : 'include',
+			body : params,
+			headers : headers
+		});
 	}
-	protected convertParamsToSearchString(params:any):string{
-		if(typeof params == 'object') {
-			var paramsArray = [];
-			for (var key in params) {
-				var value = params[key];
-				paramsArray.push(key+"="+value);
+
+	protected convertXMLToJSON(XMLString):any{
+		var json = {},
+			result;
+		while(result = EXEC_COOKIE_REG.exec(XMLString)){
+			if(result.length == 3) {
+				json[result[1]] = result[2];
 			}
-			return paramsArray.join('&');
-		}else{
-			return params;
 		}
+		return json;
+	}
+
+	protected getTimeStamp(){
+		return + new Date()
 	}
 }

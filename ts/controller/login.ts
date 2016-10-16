@@ -1,9 +1,8 @@
-import {WxLogin} from '../tools/wxLogin'
+import {loginServer} from '../servers/loginServer'
 
 
 
 export class Login{
-	wxLogin = new WxLogin();
 	constructor(){
 		let self = this;
 
@@ -15,20 +14,11 @@ export class Login{
 
 	start($QRCode){
 		let self = this;
-		this.wxLogin.start().then(function(value){
-			// qrcode
-			$QRCode.attr('src',value.data);
-			return value.next;
-		}).then(function(value){
-			// 二维码已扫描
-			return value.next;
-		}).then(function(value){
-			// 登录已确认
-			self.jumpToMain(value.data);
-		}).catch(function(error){
-			if(error == 'refreash') {
-				self.start($QRCode);
-			}
+		loginServer.getQRImageUrl().then(function(value){
+			$QRCode.attr('src',value);
+			return loginServer.waitForScan(false);
+		}).then(function(redirectUrl){
+			self.jumpToMain(redirectUrl);
 		});
 	}
 

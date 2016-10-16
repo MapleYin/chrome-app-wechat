@@ -1,13 +1,13 @@
-import {wxChatManager} from '../tools/wxChatManager'
-import {User,WxMessage} from '../models/wxModels'
+import {chatManager} from '../manager/chatManager'
+import {User,Message} from '../models/wxInterface'
 import {ChatListItem} from '../template/chatListItem'
-import {Eventable} from '../tools/eventable'
+import {BaseController} from './baseController'
 
-export class ChatList extends Eventable{
+export class ChatList extends BaseController{
 	private $chatListContainer:JQuery = $('#chat-list-container');
 	private activeUserIndex:number;
 	private userListItems:Array<ChatListItem> = [];
-	private userListItemsInfo = {};
+	private userListItemsInfo:{[key:string]:ChatListItem} = {};
 
 	constructor(){
 		super();
@@ -20,8 +20,8 @@ export class ChatList extends Eventable{
 		this.$chatListContainer.empty();
 		this.userListItems = [];
 
-		wxChatManager.chatList.forEach(function(value){
-			let data:User = wxChatManager.chatListInfo[value];
+		chatManager.chatList.forEach(function(value){
+			let data:User = chatManager.chatListInfo[value];
 			let item = new ChatListItem(data);
 			self.userListItems.push(item);
 			self.userListItemsInfo[data.UserName] = item;
@@ -30,7 +30,7 @@ export class ChatList extends Eventable{
 		});
 	}
 
-	newMessage(messages:Array<WxMessage>){
+	newMessage(messages:Array<Message>){
 		let self = this;
 		messages.forEach(function(value){
 			if(value.FromUserName in self.userListItemsInfo) {

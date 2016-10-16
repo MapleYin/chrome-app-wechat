@@ -1,9 +1,9 @@
-import {User,WxMessage} from '../models/wxModels'
+import {User,Message} from '../models/wxInterface'
 import {ChatContentItem} from '../template/chatContentItem'
-import {Eventable} from '../tools/eventable'
-import {wxChatManager} from '../tools/wxChatManager'
+import {BaseController} from './baseController'
+import {chatManager} from '../manager/chatManager'
 
-export class ChatContent extends Eventable{
+export class ChatContent extends BaseController{
 	private $chatContentHeader:JQuery = $('#chat-content-header');
 	private $chatContentContainer:JQuery = $('#chat-content-container');
 	private $inputTextarea:JQuery = $('#message-input');
@@ -28,7 +28,7 @@ export class ChatContent extends Eventable{
 	}
 
 	selectUser(username:string){
-		let selectUserInfo:User = wxChatManager.chatListInfo[username];
+		let selectUserInfo:User = chatManager.chatListInfo[username];
 		let name = selectUserInfo.RemarkName || selectUserInfo.NickName.replace(/<.+?>.*?<\/.+?>/g,'')
 		this.$chatContentHeader.find('.username').text(name);
 		this.currentChatUser = username;
@@ -36,14 +36,14 @@ export class ChatContent extends Eventable{
 		this.$inputTextarea.focus();
 	}
 
-	newMessage(messages:Array<WxMessage>){
+	newMessage(messages:Array<Message>){
 		let self = this;
-		let currentUserMessage:Array<WxMessage> = [];
+		let currentUserMessage:Array<Message> = [];
 		messages.forEach(function(value){
 			var fromUserName:string = value.FromUserName;
 			let toUserName:string = value.ToUserName;
 
-			if(fromUserName == wxChatManager.currentUser.UserName) {
+			if(fromUserName == chatManager.currentUser.UserName) {
 				fromUserName = toUserName;
 			}
 			if(!(fromUserName in self.messageList)) {
@@ -60,13 +60,13 @@ export class ChatContent extends Eventable{
 
 	sendMessage(message:string){
 		if(message.length > 0) {
-			let fakeMessage:WxMessage = this.createFakeMessage(message);
+			let fakeMessage:Message = this.createFakeMessage(message);
 			if(!(this.currentChatUser in this.messageList)) {
 				this.messageList[this.currentChatUser] = [];
 			}
 			this.messageList[this.currentChatUser].push(fakeMessage);
 
-			wxChatManager.sendMessage(this.currentChatUser,message,function(result){
+			chatManager.sendMessage(this.currentChatUser,message,function(result){
 				if(result.BaseResponse.Ret == 0) {
 					fakeMessage.MsgId = result.MsgId;
 				}
@@ -76,13 +76,13 @@ export class ChatContent extends Eventable{
 		}
 	}
 
-	private createFakeMessage(message:string):WxMessage{
+	private createFakeMessage(message:string):Message{
 		let time = new Date();
 		return {
 			MsgId : 0,
 			MsgType : 1,
 			Content : message,
-			FromUserName : wxChatManager.currentUser.UserName,
+			FromUserName : chatManager.currentUser.UserName,
 			ToUserName : this.currentChatUser,
 			CreateTime : time.getTime(),
 			StatusNotifyUserName : ''
@@ -91,12 +91,12 @@ export class ChatContent extends Eventable{
 
 	private displayMessageContent(userName){
 		let self = this;
-		let messages:Array<WxMessage> = this.messageList[userName];
+		let messages:Array<Message> = this.messageList[userName];
 		self.$chatContentContainer.empty();
 		this.updateMessageContent(messages);
 	}
 
-	private updateMessageContent(messages:Array<WxMessage>){
+	private updateMessageContent(messages:Array<Message>){
 		let self = this;
 		if(!messages) {
 			return;
@@ -104,11 +104,11 @@ export class ChatContent extends Eventable{
 		messages.forEach(function(value){
 			var fromUserInfo:User;
 			var isSelf = false;
-			if(value.FromUserName == wxChatManager.currentUser.UserName) {
+			if(value.FromUserName == chatManager.currentUser.UserName) {
 				isSelf = true;
-				fromUserInfo = wxChatManager.currentUser;
+				fromUserInfo = chatManager.currentUser;
 			}else{
-				fromUserInfo = wxChatManager.chatListInfo[value.FromUserName];
+				fromUserInfo = chatManager.chatListInfo[value.FromUserName];
 			}
 			let item = new ChatContentItem(value,fromUserInfo,isSelf);
 			self.$chatContentContainer.append(item.$element);

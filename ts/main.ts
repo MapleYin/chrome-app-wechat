@@ -1,8 +1,8 @@
-import {App} from './app'
+// import {App} from './app'
 
 
-chrome.storage.sync.get('redirectUrl',function(item:any){
-	new App(item.redirectUrl);
-});
+// chrome.storage.sync.get('redirectUrl',function(item:any){
+// 	new App(item.redirectUrl);
+// });
 // 
 // new App('ds');

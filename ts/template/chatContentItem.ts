@@ -1,4 +1,4 @@
-import {User,WxMessage} from '../models/wxModels';
+import {User,Message} from '../models/wxInterface';
 import {Template} from './template'
 
 
@@ -19,7 +19,6 @@ interface ChatContentData{
 	content : string;
 	nickName:string;
 	date?:Date;
-	className? :string;
 }
 
 export class ChatContentItem extends Template implements ChatContentData{
@@ -28,19 +27,35 @@ export class ChatContentItem extends Template implements ChatContentData{
 	content : string;
 	date? : Date;
 
-	private data:ChatContentData;
-
-	constructor(itemData:WxMessage,fromUser:User,isSelf:boolean){
+	constructor(itemData:Message,fromUser:User,isSelf:boolean){
 		super(templateString);
 
-		this.data = {
-			avatar : fromUser.HeadImgUrl,
-			nickName : fromUser.NickName,
-			content : itemData.Content,
-			className : isSelf ? 'self' : ''
-		};
+		this.avatar = fromUser.HeadImgUrl;
+		this.nickName = fromUser.NickName;
+		this.content = itemData.Content;
 
-		this.render(this.data);
+		this.render({
+			avatar : this.avatar,
+			nickName : this.nickName,
+			content : this.content,
+			className : isSelf ? 'self' : ''
+		});
+	}
+
+	private convertContentToFit(itemData:Message):string{
+		var content:string = '';
+		switch (itemData.MsgType) {
+			case 1:
+				content = itemData.Content;
+				break;
+			case 2: 
+				
+				break; 
+			default:
+				// code...
+				break;
+		}
+		return '';
 	}
 
 

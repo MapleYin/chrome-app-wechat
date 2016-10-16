@@ -13,13 +13,29 @@ define(["require", "exports", './template'], function (require, exports, templat
     class ChatContentItem extends template_1.Template {
         constructor(itemData, fromUser, isSelf) {
             super(templateString);
-            this.data = {
-                avatar: fromUser.HeadImgUrl,
-                nickName: fromUser.NickName,
-                content: itemData.Content,
+            this.avatar = fromUser.HeadImgUrl;
+            this.nickName = fromUser.NickName;
+            this.content = itemData.Content;
+            this.render({
+                avatar: this.avatar,
+                nickName: this.nickName,
+                content: this.content,
                 className: isSelf ? 'self' : ''
-            };
-            this.render(this.data);
+            });
+        }
+        convertContentToFit(itemData) {
+            var content = '';
+            switch (itemData.MsgType) {
+                case 1:
+                    content = itemData.Content;
+                    break;
+                case 2:
+                    break;
+                default:
+                    // code...
+                    break;
+            }
+            return '';
         }
     }
     exports.ChatContentItem = ChatContentItem;

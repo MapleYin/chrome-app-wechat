@@ -1,4 +1,4 @@
-define(["require", "exports", '../tools/wxChatManager', '../template/chatListItem', '../tools/eventable'], function (require, exports, wxChatManager_1, chatListItem_1, eventable_1) {
+define(["require", "exports", '../manager/chatManager', '../template/chatListItem', '../baseClass/eventable'], function (require, exports, chatManager_1, chatListItem_1, eventable_1) {
     "use strict";
     class ChatList extends eventable_1.Eventable {
         constructor() {
@@ -13,8 +13,8 @@ define(["require", "exports", '../tools/wxChatManager', '../template/chatListIte
             let list;
             this.$chatListContainer.empty();
             this.userListItems = [];
-            wxChatManager_1.wxChatManager.chatList.forEach(function (value) {
-                let data = wxChatManager_1.wxChatManager.chatListInfo[value];
+            chatManager_1.chatManager.chatList.forEach(function (value) {
+                let data = chatManager_1.chatManager.chatListInfo[value];
                 let item = new chatListItem_1.ChatListItem(data);
                 self.userListItems.push(item);
                 self.userListItemsInfo[data.UserName] = item;

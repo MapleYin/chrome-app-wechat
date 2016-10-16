@@ -1,5 +1,5 @@
 import {Template} from './template';
-import {User} from '../models/wxModels';
+import {User} from '../models/wxInterface';
 import {escape} from '../tools/chromeTools'
 
 
