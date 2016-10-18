@@ -22,6 +22,16 @@ define(["require", "exports", './baseManager', '../models/wxInterface', '../mode
         startMessageCheck() {
             messageServer_1.messageServer.syncCheck();
         }
+        sendTextMessage(username, content) {
+            let message = messageServer_1.messageServer.createSendingMessage(username, content, wxInterface_1.MessageType.TEXT);
+            this.commonMsgProcess(message);
+            //messageServer.sendMessage(message).then().catch();
+            messageServer_1.messageServer.sendMessage(message).then(result => {
+                message.MsgId = result.MsgId;
+            }).catch(reason => {
+            });
+            return message;
+        }
         messageProcess(message) {
             let self = this;
             let user = contactManager_1.contactManager.getContact(message.FromUserName, '', true);
@@ -113,6 +123,7 @@ define(["require", "exports", './baseManager', '../models/wxInterface', '../mode
             }
         }
         textMsgProcess(message) {
+            this.dispatchEvent('userMessage', message);
         }
         appMsgProcess(message) {
         }

@@ -66,25 +66,39 @@ define(["require", "exports", './coreServer', '../utility/notificationCenter'], 
                 });
             });
         }
-        sendMessage(toUserName, content) {
+        sendMessage(message) {
             let self = this;
-            let localID = this.createLocalID();
             let postData = {
                 BaseRequest: this.class.baseRequest(),
                 Msg: {
-                    ClientMsgId: localID,
-                    LocalID: localID,
-                    Content: content,
-                    FromUserName: self.class.account.UserName,
-                    ToUserName: toUserName,
-                    Type: 1
+                    ClientMsgId: message.LocalID,
+                    LocalID: message.LocalID,
+                    Content: message.Content,
+                    FromUserName: message.FromUserName,
+                    ToUserName: message.ToUserName,
+                    Type: message.MsgType
                 },
                 Scene: 0
             };
             return self.commonJsonPost(MESSAGE_SENDING_URL, {
                 lang: 'zh_CN',
                 pass_ticket: this.class.passTicket
-            }, postData);
+            }, postData).then(response => {
+                return response.json();
+            });
+        }
+        createSendingMessage(toUserName, content, msgType) {
+            let localID = this.createLocalID();
+            let self = this;
+            return {
+                ClientMsgId: localID,
+                LocalID: localID,
+                Content: content,
+                FromUserName: self.class.account.UserName,
+                ToUserName: toUserName,
+                MsgType: msgType,
+                CreateTime: self.getTimeStamp()
+            };
         }
         // webwxstatusnotify
         setStatusNotify(ToUserName, notifyCode) {

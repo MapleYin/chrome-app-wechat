@@ -83,24 +83,24 @@ export interface IUser{
 };
 
 export interface IMessage{
-	MsgId : number;
-	LocalID?: number;
-	ClientMsgId?:number;
+	MsgId?: number;
+	LocalID?: string|number;
+	ClientMsgId?:string|number;
 	CreateTime : number;
 	Content : string;
 	FromUserName : string;
 	ToUserName : string;
 	MsgType : MessageType;
-	SubMsgType : MessageType;
-	AppMsgType : AppMsgType;
-	FileName : string;
-	FileSize : string;
-	ForwardFlag : number;
-	Status : number;
-	StatusNotifyCode : number;
-	StatusNotifyUserName : string;
-	Url : string;
-	VoiceLength : number;
+	SubMsgType?: MessageType;
+	AppMsgType?: AppMsgType;
+	FileName?: string;
+	FileSize?: string;
+	ForwardFlag?: number;
+	Status?: number;
+	StatusNotifyCode?: number;
+	StatusNotifyUserName?: string;
+	Url?: string;
+	VoiceLength?: number;
 
 	RecommendInfo?:IRecommendInfo;
 

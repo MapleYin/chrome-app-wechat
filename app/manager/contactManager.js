@@ -1,4 +1,4 @@
-define(["require", "exports", './baseManager', './emoticonManager', '../servers/contactServer', '../models/wxInterface', '../models/userModel', '../utility/contactListHelper', '../utility/notificationCenter'], function (require, exports, baseManager_1, emoticonManager_1, contactServer_1, wxInterface_1, userModel_1, contactListHelper_1, notificationCenter_1) {
+define(["require", "exports", './baseManager', './emoticonManager', './chatManager', '../servers/contactServer', '../models/wxInterface', '../models/userModel', '../utility/contactListHelper', '../utility/notificationCenter'], function (require, exports, baseManager_1, emoticonManager_1, chatManager_1, contactServer_1, wxInterface_1, userModel_1, contactListHelper_1, notificationCenter_1) {
     "use strict";
     // BatchgetContact 函数截流
     let delayAddBatchgetContact = (function (delay) {
@@ -138,6 +138,7 @@ define(["require", "exports", './baseManager', './emoticonManager', '../servers/
                 }
                 else {
                     notificationCenter_1.NotificationCenter.post('contact.init.success');
+                    chatManager_1.chatManager.updateChatList();
                 }
             });
         }

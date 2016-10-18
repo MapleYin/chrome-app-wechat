@@ -33,6 +33,19 @@ class MessageManager extends BaseManager{
 		messageServer.syncCheck();
 	}
 
+
+	sendTextMessage(username:string,content:string):IMessage{
+		let message:IMessage = messageServer.createSendingMessage(username,content,MessageType.TEXT);
+		this.commonMsgProcess(message);
+		//messageServer.sendMessage(message).then().catch();
+		messageServer.sendMessage(message).then(result=>{
+			message.MsgId = result.MsgId;
+		}).catch(reason=>{
+
+		});
+		return message;
+	}
+
 	private messageProcess(message:IMessage){
 		let self = this;
 		let user = contactManager.getContact(message.FromUserName,'',true);
@@ -142,7 +155,7 @@ class MessageManager extends BaseManager{
 	}
 
 	private textMsgProcess(message:IMessage){
-
+		this.dispatchEvent<IMessage>('userMessage',message);
 	}
 
 	private appMsgProcess(message:IMessage){

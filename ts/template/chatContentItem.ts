@@ -1,4 +1,5 @@
 import {IUser,IMessage} from '../models/wxInterface';
+import {UserModel} from '../models/userModel';
 import {Template} from './template'
 
 
@@ -6,7 +7,7 @@ let templateString =
 `
 <div class="item {{className}}">
 	<figure class="avatar">
-		<img src="{{avatar}}" alt="">
+		<img src="/images/wechat_avatar_default.png" data-src="{{avatar}}" alt="{{nickName}}">
 	</figure>
 	<section class="content">
 		<p>{{content}}</p>
@@ -27,36 +28,17 @@ export class ChatContentItem extends Template implements ChatContentData{
 	content : string;
 	date? : Date;
 
-	constructor(itemData:IMessage,fromUser:IUser,isSelf:boolean){
+	constructor(content:string,sender:UserModel){
 		super(templateString);
-
-		this.avatar = fromUser.HeadImgUrl;
-		this.nickName = fromUser.NickName;
-		this.content = itemData.Content;
+		this.avatar = sender.HeadImgUrl;
+		this.nickName = sender.getDisplayName();
+		this.content = content;
 
 		this.render({
 			avatar : this.avatar,
 			nickName : this.nickName,
 			content : this.content,
-			className : isSelf ? 'self' : ''
+			className : sender.isSelf ? 'self' : ''
 		});
 	}
-
-	private convertContentToFit(itemData:IMessage):string{
-		var content:string = '';
-		switch (itemData.MsgType) {
-			case 1:
-				content = itemData.Content;
-				break;
-			case 2: 
-				
-				break; 
-			default:
-				// code...
-				break;
-		}
-		return '';
-	}
-
-
 }

@@ -6,10 +6,10 @@ import {chatManager} from './manager/chatManager'
 import {messageManager} from './manager/messageManager'
 
 import {ChatListController} from './controller/chatListController'
-import {ChatContent} from './controller/chatContent'
+import {ChatContentController} from './controller/chatContentController'
 export class App {
 	private chatListController = new ChatListController();
-	private chatContent = new ChatContent();
+	private chatContentController = new ChatContentController();
 
 
 	constructor(redirectUrl) {
@@ -47,10 +47,11 @@ export class App {
 		let self = this;
 
 		NotificationCenter.on('chat.init.success,contact.init.success',(e)=>{
-			if(e.eventName == 'contact.init.success') {
-				chatManager.updateChatList();
-			}
 			self.chatListController.updateChatList();
+		});
+
+		self.chatListController.on<string>('SelectUser',username=>{
+			self.chatContentController.selectUser(username);
 		});
 
 

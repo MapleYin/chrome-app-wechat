@@ -1,5 +1,5 @@
 import {CoreServer} from './coreServer'
-import {ISyncKey,ISyncResponse,StatusNotifyCode} from '../models/wxInterface'
+import {ISyncKey,ISyncResponse,StatusNotifyCode,MessageType,IMessage} from '../models/wxInterface'
 import {NotificationCenter} from '../utility/notificationCenter'
 
 let SYNC_CHECK_URL = 'https://webpush.wx.qq.com/cgi-bin/mmwebwx-bin/synccheck';
@@ -77,25 +77,40 @@ class MessageServer extends CoreServer{
 	}
 
 
-	sendMessage(toUserName:string,content:string):Promise<Response>{
+	sendMessage(message:IMessage):Promise<any>{
 		let self = this;
-		let localID = this.createLocalID();
 		let postData = {
 			BaseRequest : this.class.baseRequest(),
 			Msg : {
-				ClientMsgId : localID,
-				LocalID : localID,
-				Content : content,
-				FromUserName : self.class.account.UserName,
-				ToUserName : toUserName,
-				Type : 1
+				ClientMsgId : message.LocalID,
+				LocalID : message.LocalID,
+				Content : message.Content,
+				FromUserName : message.FromUserName,
+				ToUserName : message.ToUserName,
+				Type : message.MsgType
 			},
 			Scene : 0
 		};
 		return self.commonJsonPost(MESSAGE_SENDING_URL,{
 			lang : 'zh_CN',
 			pass_ticket : this.class.passTicket
-		},postData);
+		},postData).then(response=>{
+			return response.json();
+		});
+	}
+
+	createSendingMessage(toUserName:string,content:string,msgType:MessageType):IMessage{
+		let localID = this.createLocalID();
+		let self = this;
+		return {
+			ClientMsgId : localID,
+			LocalID : localID,
+			Content : content,
+			FromUserName : self.class.account.UserName,
+			ToUserName : toUserName,
+			MsgType : msgType,
+			CreateTime : self.getTimeStamp()
+		}
 	}
 
 	// webwxstatusnotify

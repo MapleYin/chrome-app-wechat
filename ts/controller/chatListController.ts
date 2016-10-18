@@ -6,7 +6,7 @@ import {BaseController} from './baseController'
 export class ChatListController extends BaseController{
 	private $chatListContainer:JQuery = $('#chat-list-container');
 	private activeUserIndex:number;
-	private userListItems:Array<ChatListItem> = [];
+	private userListItems:ChatListItem[] = [];
 	private userListItemsInfo:{[key:string]:ChatListItem} = {};
 
 	constructor(){
@@ -59,7 +59,7 @@ export class ChatListController extends BaseController{
 		}
 		this.activeUserIndex = index;
 
-		this.dispatchEvent('SelectUser',item.id);
+		this.dispatchEvent<string>('SelectUser',item.id);
 	}
 
 	private bindEvent(){

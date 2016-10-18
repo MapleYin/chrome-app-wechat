@@ -1,6 +1,6 @@
 import {BaseManager} from './baseManager'
 import {emoticonManager} from './emoticonManager'
-
+import {chatManager} from './chatManager'
 
 import {contactServer} from '../servers/contactServer'
 import {IUser,IMessage,TextInfoMap,IBatchgetContactParams,IGroupMember} from '../models/wxInterface'
@@ -156,6 +156,7 @@ class ContactManager extends BaseManager{
 				NotificationCenter.post('contact.init.fetching');
 			}else{
 				NotificationCenter.post('contact.init.success');
+				chatManager.updateChatList();
 			}
 		});
 	}

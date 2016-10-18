@@ -3,7 +3,7 @@ define(["require", "exports", './template'], function (require, exports, templat
     let templateString = `
 <div class="item {{className}}">
 	<figure class="avatar">
-		<img src="{{avatar}}" alt="">
+		<img src="/images/wechat_avatar_default.png" data-src="{{avatar}}" alt="{{nickName}}">
 	</figure>
 	<section class="content">
 		<p>{{content}}</p>
@@ -11,31 +11,17 @@ define(["require", "exports", './template'], function (require, exports, templat
 </div>
 `;
     class ChatContentItem extends template_1.Template {
-        constructor(itemData, fromUser, isSelf) {
+        constructor(content, sender) {
             super(templateString);
-            this.avatar = fromUser.HeadImgUrl;
-            this.nickName = fromUser.NickName;
-            this.content = itemData.Content;
+            this.avatar = sender.HeadImgUrl;
+            this.nickName = sender.getDisplayName();
+            this.content = content;
             this.render({
                 avatar: this.avatar,
                 nickName: this.nickName,
                 content: this.content,
-                className: isSelf ? 'self' : ''
+                className: sender.isSelf ? 'self' : ''
             });
-        }
-        convertContentToFit(itemData) {
-            var content = '';
-            switch (itemData.MsgType) {
-                case 1:
-                    content = itemData.Content;
-                    break;
-                case 2:
-                    break;
-                default:
-                    // code...
-                    break;
-            }
-            return '';
         }
     }
     exports.ChatContentItem = ChatContentItem;
