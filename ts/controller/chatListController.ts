@@ -1,9 +1,9 @@
 import {chatManager} from '../manager/chatManager'
-import {User,Message} from '../models/wxInterface'
+import {IUser,IMessage} from '../models/wxInterface'
 import {ChatListItem} from '../template/chatListItem'
 import {BaseController} from './baseController'
 
-export class ChatList extends BaseController{
+export class ChatListController extends BaseController{
 	private $chatListContainer:JQuery = $('#chat-list-container');
 	private activeUserIndex:number;
 	private userListItems:Array<ChatListItem> = [];
@@ -16,21 +16,19 @@ export class ChatList extends BaseController{
 
 	updateChatList(){
 		let self = this;
-		let list:JQuery;
 		this.$chatListContainer.empty();
 		this.userListItems = [];
-
-		chatManager.chatList.forEach(function(value){
-			let data:User = chatManager.chatListInfo[value];
-			let item = new ChatListItem(data);
+		console.time('updateChatListElement');
+		chatManager.chatListInfo.forEach(function(user,index){
+			let item = new ChatListItem(user);
 			self.userListItems.push(item);
-			self.userListItemsInfo[data.UserName] = item;
+			self.userListItemsInfo[user.UserName] = item;
 			self.$chatListContainer.append(item.$element);
-			self.$chatListContainer.addBack()
 		});
+		console.timeEnd('updateChatListElement');
 	}
 
-	newMessage(messages:Array<Message>){
+	newMessage(messages:IMessage[]){
 		let self = this;
 		messages.forEach(function(value){
 			if(value.FromUserName in self.userListItemsInfo) {

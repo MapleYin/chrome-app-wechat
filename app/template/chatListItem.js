@@ -19,7 +19,7 @@ define(["require", "exports", './template'], function (require, exports, templat
             this.data = {
                 id: itemData.UserName,
                 avatar: itemData.HeadImgUrl,
-                nickName: itemData.RemarkName || itemData.NickName.replace(/<.+?>.*?<\/.+?>/g, '')
+                nickName: itemData.RemarkName || itemData.NickName
             };
             this.id = this.data.id;
             this.avatar = this.data.avatar;

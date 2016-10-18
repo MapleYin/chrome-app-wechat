@@ -5,11 +5,17 @@ define(["require", "exports"], function (require, exports) {
             this.eventHandlers = {};
         }
         on(message, callback) {
-            this.eventHandlers[message] = callback;
+            if (!(message in this.eventHandlers)) {
+                this.eventHandlers[message] = [];
+            }
+            this.eventHandlers[message].push(callback);
         }
         dispatchEvent(message, data, callback) {
+            let self = this;
             if (message in this.eventHandlers) {
-                this.eventHandlers[message].call(this, data, callback);
+                this.eventHandlers[message].forEach(function (value) {
+                    value.call(self, data, callback);
+                });
             }
         }
     }

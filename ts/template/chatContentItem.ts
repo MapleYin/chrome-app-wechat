@@ -1,4 +1,4 @@
-import {User,Message} from '../models/wxInterface';
+import {IUser,IMessage} from '../models/wxInterface';
 import {Template} from './template'
 
 
@@ -27,7 +27,7 @@ export class ChatContentItem extends Template implements ChatContentData{
 	content : string;
 	date? : Date;
 
-	constructor(itemData:Message,fromUser:User,isSelf:boolean){
+	constructor(itemData:IMessage,fromUser:IUser,isSelf:boolean){
 		super(templateString);
 
 		this.avatar = fromUser.HeadImgUrl;
@@ -42,7 +42,7 @@ export class ChatContentItem extends Template implements ChatContentData{
 		});
 	}
 
-	private convertContentToFit(itemData:Message):string{
+	private convertContentToFit(itemData:IMessage):string{
 		var content:string = '';
 		switch (itemData.MsgType) {
 			case 1:

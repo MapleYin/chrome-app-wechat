@@ -1,5 +1,6 @@
 import {CoreServer} from './coreServer'
 import {ISyncKey,ISyncResponse,StatusNotifyCode} from '../models/wxInterface'
+import {NotificationCenter} from '../utility/notificationCenter'
 
 let SYNC_CHECK_URL = 'https://webpush.wx.qq.com/cgi-bin/mmwebwx-bin/synccheck';
 let SYNC_URL = 'https://wx.qq.com/cgi-bin/mmwebwx-bin/webwxsync';
@@ -33,9 +34,7 @@ class MessageServer extends CoreServer{
 			response.json().then(function(result:ISyncResponse){
 				if(result.BaseResponse.Ret == 0) {
 					self.syncKey = result.SyncKey;
-					// if(!self.didCheckSystemMessage) {
-					// 	self.checkForSystemMessageOnceForLatestContact(result.AddMsgList);
-					// }
+					NotificationCenter.post<ISyncResponse>('sync.get.success',result);
 					return result;
 				}else{
 					throw result.BaseResponse;

@@ -1,14 +1,15 @@
-define(["require", "exports", './baseServer'], function (require, exports, baseServer_1) {
+define(["require", "exports", './coreServer'], function (require, exports, coreServer_1) {
     "use strict";
     let GETUUID_URL = 'https://login.weixin.qq.com/jslogin';
     let GETQRCODE_URL = 'https://login.weixin.qq.com/qrcode/';
     let WAITLOGIN_URL = 'https://login.weixin.qq.com/cgi-bin/mmwebwx-bin/login';
     let LOGIN_URL = 'https://wx.qq.com/cgi-bin/mmwebwx-bin/webwxnewloginpage';
     let LOGIN_ICON_URL = 'https://login.wx.qq.com/cgi-bin/mmwebwx-bin/login';
+    let INIT_URL = 'https://wx.qq.com/cgi-bin/mmwebwx-bin/webwxinit';
     let MATCH_CODE_REG = /code\s*=\s*(.*?)\s*?;/;
     let MATCH_UUID_REG = /uuid\s*=\s*\"(.*?)\"\s*?;/;
     let MATCH_REDIRECT_URI_REG = /redirect_uri\s*=\s*\"(.*?)\"\s*?;/;
-    class LoginServer extends baseServer_1.BaseServer {
+    class LoginServer extends coreServer_1.CoreServer {
         constructor() {
             super();
         }
@@ -28,27 +29,6 @@ define(["require", "exports", './baseServer'], function (require, exports, baseS
                         console.log('Get QRCode Image');
                         return objURL;
                     });
-                });
-            });
-        }
-        // 获取UUID
-        getUUID() {
-            let self = this;
-            return this.get(GETUUID_URL, {
-                appid: 'wx782c26e4c19acffb',
-                fun: 'new',
-                lang: 'zh_CN',
-                _: this.getTimeStamp()
-            }).then(function (value) {
-                return value.text().then(function (result) {
-                    let code = result.match(MATCH_CODE_REG).pop();
-                    let UUID = result.match(MATCH_UUID_REG).pop();
-                    if (code == '200') {
-                        return UUID;
-                    }
-                    else {
-                        throw 'Get UUID Error With Code :' + code;
-                    }
                 });
             });
         }
@@ -81,14 +61,34 @@ define(["require", "exports", './baseServer'], function (require, exports, baseS
                 });
             });
         }
-        appInit(redirectUrl) {
+        // 拿到初始化信息
+        getBaseInfo(urlString) {
             let self = this;
-            let url = new URL(redirectUrl);
-            return this.getCookies(url);
+            return this.getCookies(urlString).then(() => {
+                return this.commonJsonPost(INIT_URL, {
+                    r: this.getTimeStamp(),
+                    lang: 'zh_CN',
+                    pass_ticket: this.class.passTicket
+                }).then(function (response) {
+                    console.log('WX Init Done');
+                    return response.json().then((result) => {
+                        console.log('Get User Info');
+                        self.class.account = result.User;
+                        return result;
+                    });
+                });
+            });
+            // self.setStatusNotify(data.User.UserName,data.User.UserName);
+            // // add latest contact list
+            // self.dispatchEvent('AddChatUsers',data.ContactList);
+            // // fetch rest group
+            // let groupIds:Array<string> = self.convertCharSet(data.ChatSet);
+            // self.getContacts(groupIds);
         }
         // 初始化得到cookie
-        getCookies(url) {
+        getCookies(urlString) {
             let self = this;
+            let url = new URL(urlString);
             return this.get(LOGIN_URL, {
                 ticket: url['searchParams'].get('ticket'),
                 uuid: url['searchParams'].get('uuid'),
@@ -101,10 +101,34 @@ define(["require", "exports", './baseServer'], function (require, exports, baseS
                 return response.text().then(function (result) {
                     let responseInfo = self.convertXMLToJSON(result);
                     if (responseInfo.ret === '0') {
-                        return responseInfo;
+                        self.class.passTicket = responseInfo.pass_ticket;
+                        self.class.Uin = responseInfo.wxuin;
+                        self.class.Sid = responseInfo.wxsid;
+                        self.class.Skey = responseInfo.skey;
                     }
                     else {
                         throw responseInfo;
+                    }
+                });
+            });
+        }
+        // 获取UUID
+        getUUID() {
+            let self = this;
+            return this.get(GETUUID_URL, {
+                appid: 'wx782c26e4c19acffb',
+                fun: 'new',
+                lang: 'zh_CN',
+                _: this.getTimeStamp()
+            }).then(function (value) {
+                return value.text().then(function (result) {
+                    let code = result.match(MATCH_CODE_REG).pop();
+                    let UUID = result.match(MATCH_UUID_REG).pop();
+                    if (code == '200') {
+                        return UUID;
+                    }
+                    else {
+                        throw 'Get UUID Error With Code :' + code;
                     }
                 });
             });

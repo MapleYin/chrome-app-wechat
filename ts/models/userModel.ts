@@ -1,29 +1,10 @@
-import {IUser,IGroupMember} from './wxInterface'
+import {IUser,IGroupMember,ContactFlag,ChatRoomNotify,UserAttrVerifyFlag} from './wxInterface'
 import {contactManager} from '../manager/contactManager'
 
 
 
 let SpicalAccounts = ["weibo", "qqmail", "fmessage", "tmessage", "qmessage", "qqsync", "floatbottle", "lbsapp", "shakeapp", "medianote", "qqfriend", "readerapp", "blogapp", "facebookapp", "masssendapp", "meishiapp", "feedsapp", "voip", "blogappweixin", "weixin", "brandsessionholder", "weixinreminder", "wxid_novlwrv3lqwv11", "gh_22b87fa7cb3c", "officialaccounts", "notification_messages"];
 let ShieldAccounts = ["newsapp", "wxid_novlwrv3lqwv11", "gh_22b87fa7cb3c", "notification_messages"];
-
-enum CONTACTFLAG{
-	CONTACT = 1,
-	CHATCONTACT = 2,
-	CHATROOMCONTACT = 4,
-	BLACKLISTCONTACT = 8,
-	DOMAINCONTACT = 16,
-	HIDECONTACT = 32,
-	FAVOURCONTACT = 64,
-	RDAPPCONTACT = 128,
-	SNSBLACKLISTCONTACT = 256,
-	NOTIFYCLOSECONTACT = 512,
-	TOPCONTACT = 2048,
-}
-
-enum CHATROOM_NOTIFY{
-	CLOSE = 0,
-	OPEN = 1
-}
 
 export class UserModel{
 
@@ -39,6 +20,8 @@ export class UserModel{
 	City : string;
 	Province : string;
 
+	NoticeCount : number;
+
 	// group
 	EncryChatRoomId : string;
 	MemberList : Array<IGroupMember>;
@@ -50,6 +33,7 @@ export class UserModel{
 	// status
 	isContact : boolean;
 	isBlackContact : boolean;
+	isBrandContact : boolean;
 	isConversationContact : boolean;
 	isRoomContact : boolean;
 	isMuted : boolean;
@@ -58,27 +42,28 @@ export class UserModel{
 	hasPhotoAlbum : boolean;
 	MMFromBatchget:boolean = false;
 	MMBatchgetMember:boolean = false;
+	isSelf : boolean = false;
 
 
 	protected class = (this.constructor as typeof UserModel);
 
-	constructor(userInfo:IUser){
-		this.updateUserInfo(userInfo);
+	constructor(userInfo:IUser,isSelf?:boolean){
+		this.updateUserInfo(userInfo,isSelf);
 	}
 
 	set contactFlag(contactFlag : number) {
 		this._contactFlag = contactFlag;
-		this.isContact = !!(contactFlag & CONTACTFLAG.CONTACT);
-		this.isBlackContact = !!(contactFlag & CONTACTFLAG.BLACKLISTCONTACT);
+		this.isContact = !!(contactFlag & ContactFlag.CONTACT);
+		this.isBlackContact = !!(contactFlag & ContactFlag.BLACKLISTCONTACT);
 		this.isMuted = this.isRoomContact ? 
-			this.Statues === CHATROOM_NOTIFY.CLOSE : 
-			!!(contactFlag & CONTACTFLAG.NOTIFYCLOSECONTACT);
+			this.Statues === ChatRoomNotify.CLOSE : 
+			!!(contactFlag & ContactFlag.NOTIFYCLOSECONTACT);
 
-		this.isTop = !!(contactFlag & CONTACTFLAG.TOPCONTACT);
+		this.isTop = !!(contactFlag & ContactFlag.TOPCONTACT);
 	}
 
 
-	updateUserInfo(userInfo:IUser){
+	updateUserInfo(userInfo:IUser,isSelf?:boolean){
 		// property
 		this.UserName = userInfo.UserName;
 		this.NickName = userInfo.NickName;
@@ -97,9 +82,16 @@ export class UserModel{
 		this.Statues = userInfo.Statues;
 		this.contactFlag = userInfo.ContactFlag;
 		
-		this.hasPhotoAlbum = !!(1 & userInfo.SnsFlag);	
+		this.hasPhotoAlbum = !!(1 & userInfo.SnsFlag);
 
 		this.isShieldUser = this.class.isShieldUser(this.UserName);
+
+		this.isBrandContact = !!(userInfo.VerifyFlag & UserAttrVerifyFlag.BIZ_BRAND);
+		if(isSelf != undefined) {
+			this.isSelf = isSelf;
+		}else if(contactManager.account){
+			this.isSelf = userInfo.UserName == contactManager.account.UserName;
+		}
 	}
 
 	

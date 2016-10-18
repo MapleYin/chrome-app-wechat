@@ -83,6 +83,7 @@ class LoginServer extends CoreServer{
 			}).then(function(response:Response){
 				console.log('WX Init Done');
 				return response.json().then((result:IInitInfoResResponse)=>{
+					console.log('Get User Info');
 					self.class.account = result.User;
 					return result;
 				});

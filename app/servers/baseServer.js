@@ -1,9 +1,7 @@
-define(["require", "exports"], function (require, exports) {
+define(["require", "exports", '../baseClass/eventable'], function (require, exports, eventable_1) {
     "use strict";
     let EXEC_COOKIE_REG = /<(\w+)>(?!<)(.+?)</g;
-    class BaseServer {
-        constructor() {
-        }
+    class BaseServer extends eventable_1.Eventable {
         get(originUrl, params, headers, options) {
             let url = new URL(originUrl);
             for (var key in params) {
@@ -15,13 +13,10 @@ define(["require", "exports"], function (require, exports) {
             });
         }
         post(originUrl, params, headers, options) {
-            let url = new URL(originUrl);
-            for (var key in params) {
-                url['searchParams'].append(key, params[key]);
-            }
-            return fetch(url.toString(), {
+            return fetch(originUrl.toString(), {
+                method: "POST",
                 credentials: 'include',
-                body: params,
+                body: JSON.stringify(params),
                 headers: headers
             });
         }

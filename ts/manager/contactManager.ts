@@ -7,7 +7,9 @@ import {IUser,IMessage,TextInfoMap,IBatchgetContactParams,IGroupMember} from '..
 import {fetchRemoteImage} from '../tools/chromeTools'
 
 import {UserModel} from '../models/userModel'
-import {ContactInListIndex} from '../utility/all'
+import {ContactInListIndex} from '../utility/contactListHelper'
+
+import {NotificationCenter} from '../utility/notificationCenter'
 
 // BatchgetContact 函数截流
 
@@ -25,9 +27,10 @@ let delayAddBatchgetContact = (function(delay:number){
 })(200);
 
 class ContactManager extends BaseManager{
+	account:UserModel;
 	contacts:{[key:string]:UserModel} = {};
 	strangerContacts:{[key:string]:UserModel} = {};
-	chatRoomMemberDisplayNames = {};
+	// chatRoomMemberDisplayNames = {};
 
 	private getContactToGetList:IBatchgetContactParams[] = [];
 
@@ -35,16 +38,9 @@ class ContactManager extends BaseManager{
 		super();
 		let self = this;
 	}
-	initContact(seq:number){
-		let self = this;
-		var seq = 1;
-		contactServer.getAllContacts(0).then(result=>{
-			self.addContacts(result.MemberList);
-			if(seq <= 16 && result.Seq != 0) {
-				seq++;
-				self.initContact(result.Seq);
-			}
-		});
+	setAccount(userInfo:IUser){
+		this.account = new UserModel(userInfo,true);
+		this.addContact(userInfo);
 	}
 
 	getContact(username:string,chatRoomId?:string,isSingleUser?:boolean):UserModel{
@@ -131,16 +127,37 @@ class ContactManager extends BaseManager{
 
 			// 需要做一个函数截流～
 			delayAddBatchgetContact(function(){
-				contactServer.batchGetContact(this.getContactToGetList).then(self.batchGetContactSuccess).catch(self.batchGetContactError);
+				contactServer.batchGetContact(self.getContactToGetList).then(result=>{
+					return self.batchGetContactSuccess(result);
+				}).catch(reason=>{
+					return self.batchGetContactError(reason);
+				});
 			});
 		}
 	}
 
 	getUserHeadImage(url:string):Promise<string>{
-		if(url.search(/chrome-extension/) == -1) {
+		if(url && url.search(/chrome-extension/) == -1) {
 			url = contactServer.host + url;
 			return contactServer.getImage(url);
+		}else{
+			return new Promise((resolve,reject)=>{reject();});
 		}
+	}
+
+	initContact(seq:number){
+		let self = this;
+		// var count = 1;
+		contactServer.getAllContacts(seq).then(result=>{
+			self.addContacts(result.MemberList);
+			if(result.Seq && result.Seq != 0) {
+				// count++;
+				self.initContact(result.Seq);
+				NotificationCenter.post('contact.init.fetching');
+			}else{
+				NotificationCenter.post('contact.init.success');
+			}
+		});
 	}
 
 
@@ -163,7 +180,11 @@ class ContactManager extends BaseManager{
 		});
 		self.addContacts(contacts,true);
 		if(self.getContactToGetList.length > 0) {
-			contactServer.batchGetContact(self.getContactToGetList).then(self.batchGetContactSuccess).catch(self.batchGetContactError);
+			contactServer.batchGetContact(self.getContactToGetList).then(result=>{
+					return self.batchGetContactSuccess(result);
+				}).catch(reason=>{
+					return self.batchGetContactError(reason);
+				});
 		}
 
 		return contacts;
@@ -171,7 +192,11 @@ class ContactManager extends BaseManager{
 	private batchGetContactError(error:any){
 		let self = this;
 		if(self.getContactToGetList.length) {
-			contactServer.batchGetContact(self.getContactToGetList).then(self.batchGetContactSuccess).catch(self.batchGetContactError);
+			contactServer.batchGetContact(self.getContactToGetList).then(result=>{
+					return self.batchGetContactSuccess(result);
+				}).catch(reason=>{
+					return self.batchGetContactError(reason);
+				});
 		}
 		return error;
 	}
@@ -194,16 +219,10 @@ class ContactManager extends BaseManager{
 	private addFriendContact(user:UserModel){
 		this.specialContactHandler(user);
 		this.contacts[user.UserName] = user;
-		this.getUserHeadImage(user.HeadImgUrl).then(localUrl=>{
-			user.HeadImgUrl = localUrl;
-		});
 	}
 
 	private addStrangerContact(user:UserModel){
 		this.strangerContacts[user.UserName] = user;
-		this.getUserHeadImage(user.HeadImgUrl).then(localUrl=>{
-			user.HeadImgUrl = localUrl;
-		});
 	}
 
 }

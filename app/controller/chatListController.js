@@ -1,6 +1,6 @@
-define(["require", "exports", '../manager/chatManager', '../template/chatListItem', '../baseClass/eventable'], function (require, exports, chatManager_1, chatListItem_1, eventable_1) {
+define(["require", "exports", '../manager/chatManager', '../template/chatListItem', './baseController'], function (require, exports, chatManager_1, chatListItem_1, baseController_1) {
     "use strict";
-    class ChatList extends eventable_1.Eventable {
+    class ChatListController extends baseController_1.BaseController {
         constructor() {
             super();
             this.$chatListContainer = $('#chat-list-container');
@@ -10,17 +10,16 @@ define(["require", "exports", '../manager/chatManager', '../template/chatListIte
         }
         updateChatList() {
             let self = this;
-            let list;
             this.$chatListContainer.empty();
             this.userListItems = [];
-            chatManager_1.chatManager.chatList.forEach(function (value) {
-                let data = chatManager_1.chatManager.chatListInfo[value];
-                let item = new chatListItem_1.ChatListItem(data);
+            console.time('updateChatListElement');
+            chatManager_1.chatManager.chatListInfo.forEach(function (user, index) {
+                let item = new chatListItem_1.ChatListItem(user);
                 self.userListItems.push(item);
-                self.userListItemsInfo[data.UserName] = item;
+                self.userListItemsInfo[user.UserName] = item;
                 self.$chatListContainer.append(item.$element);
-                self.$chatListContainer.addBack();
             });
+            console.timeEnd('updateChatListElement');
         }
         newMessage(messages) {
             let self = this;
@@ -60,5 +59,5 @@ define(["require", "exports", '../manager/chatManager', '../template/chatListIte
             });
         }
     }
-    exports.ChatList = ChatList;
+    exports.ChatListController = ChatListController;
 });

@@ -11,6 +11,8 @@ define(["require", "exports"], function (require, exports) {
         };
         xhr.send();
     };
+    let throttle = (fn) => {
+    };
     let reEscape = /[&<>'"]/g;
     let reUnescape = /&(?:amp|#38|lt|#60|gt|#62|apos|#39|quot|#34);/g;
     let oEscape = { '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' };

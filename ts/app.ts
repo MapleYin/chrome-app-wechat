@@ -1,15 +1,14 @@
-import {
-	loginServer,
-	messageServer,
-	contactServer
-} from './servers/all'
+import {loginServer} from './servers/loginServer'
+import {NotificationCenter} from './utility/notificationCenter'
 import {IUser,IMessage,StatusNotifyCode} from './models/wxInterface'
 import {contactManager} from './manager/contactManager'
-import {ChatList} from './controller/chatList'
+import {chatManager} from './manager/chatManager'
+import {messageManager} from './manager/messageManager'
+
+import {ChatListController} from './controller/chatListController'
 import {ChatContent} from './controller/chatContent'
-import {test} from './test'
 export class App {
-	private chatList = new ChatList();
+	private chatListController = new ChatListController();
 	private chatContent = new ChatContent();
 
 
@@ -18,46 +17,43 @@ export class App {
 
 		loginServer.getBaseInfo(redirectUrl).then((result)=>{
 			// 保存 SyncKey
-			messageServer.syncKey = result.SyncKey;
-
-			// 初始化完成状态
-			messageServer.setStatusNotify(result.User.UserName,StatusNotifyCode.INITED);
+			messageManager.setSyncKey(result.SyncKey);
 
 			// 添加联系人信息
+			contactManager.setAccount(result.User);
 			contactManager.addContacts(result.ContactList);
 
-			// 获取部分联群系人信息
-			// let userNames = result.ChatSet.split(',');
-			// contactManager.initChatList(userNames);
+			// 聊天列表初始化
+			chatManager.initChatList(result.ChatSet);
+
+			// 初始化完成状态
+			messageManager.initDoneStatusNotify();
 
 			// 开始信息同步检测
-			console.log('Start Sync Check');
-			messageServer.syncCheck();
+			console.log('Start Message Check');
+			messageManager.startMessageCheck();
+
+			// 获取全部联系人列表
+			contactManager.initContact(0);
+		}).catch(reason=>{
+			console.log(reason);
 		});
 
-		// self.init();
-		// chatManager.init(value.data);
+		self.init();
 	}
 
 
 	init(){
 		let self = this;
 
-		chatManager.on('AddChatUsers',function(){
-			console.log('AddChatUsers');
-			
+		NotificationCenter.on('chat.init.success,contact.init.success',(e)=>{
+			if(e.eventName == 'contact.init.success') {
+				chatManager.updateChatList();
+			}
+			self.chatListController.updateChatList();
 		});
 
-		chatManager.on('newMessage',function(messages:IMessage[]){
-			let userMessages:IMessage[] = messages.filter(function(value){
-				return value.MsgType == 1 || value.MsgType == 3;
-			});
-			self.chatContent.newMessage(userMessages);
-			self.chatList.newMessage(userMessages);
-		});
 
-		self.chatList.on('SelectUser',function(userName:string){
-			self.chatContent.selectUser(userName);
-		});
+
 	}
 }

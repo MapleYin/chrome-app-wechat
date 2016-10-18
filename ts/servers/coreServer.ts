@@ -13,7 +13,7 @@ export class CoreServer extends BaseServer{
 
 	static account:IUser;
 
-	protected class = (this.constructor as typeof CoreServer);
+	protected class = CoreServer;
 
 	static baseRequest():IBaseRequest{
 		return {

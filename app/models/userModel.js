@@ -1,40 +1,78 @@
-define(["require", "exports"], function (require, exports) {
+define(["require", "exports", './wxInterface', '../manager/contactManager'], function (require, exports, wxInterface_1, contactManager_1) {
     "use strict";
     let SpicalAccounts = ["weibo", "qqmail", "fmessage", "tmessage", "qmessage", "qqsync", "floatbottle", "lbsapp", "shakeapp", "medianote", "qqfriend", "readerapp", "blogapp", "facebookapp", "masssendapp", "meishiapp", "feedsapp", "voip", "blogappweixin", "weixin", "brandsessionholder", "weixinreminder", "wxid_novlwrv3lqwv11", "gh_22b87fa7cb3c", "officialaccounts", "notification_messages"];
     let ShieldAccounts = ["newsapp", "wxid_novlwrv3lqwv11", "gh_22b87fa7cb3c", "notification_messages"];
-    var CONTACTFLAG;
-    (function (CONTACTFLAG) {
-        CONTACTFLAG[CONTACTFLAG["CONTACT"] = 1] = "CONTACT";
-        CONTACTFLAG[CONTACTFLAG["CHATCONTACT"] = 2] = "CHATCONTACT";
-        CONTACTFLAG[CONTACTFLAG["CHATROOMCONTACT"] = 4] = "CHATROOMCONTACT";
-        CONTACTFLAG[CONTACTFLAG["BLACKLISTCONTACT"] = 8] = "BLACKLISTCONTACT";
-        CONTACTFLAG[CONTACTFLAG["DOMAINCONTACT"] = 16] = "DOMAINCONTACT";
-        CONTACTFLAG[CONTACTFLAG["HIDECONTACT"] = 32] = "HIDECONTACT";
-        CONTACTFLAG[CONTACTFLAG["FAVOURCONTACT"] = 64] = "FAVOURCONTACT";
-        CONTACTFLAG[CONTACTFLAG["RDAPPCONTACT"] = 128] = "RDAPPCONTACT";
-        CONTACTFLAG[CONTACTFLAG["SNSBLACKLISTCONTACT"] = 256] = "SNSBLACKLISTCONTACT";
-        CONTACTFLAG[CONTACTFLAG["NOTIFYCLOSECONTACT"] = 512] = "NOTIFYCLOSECONTACT";
-        CONTACTFLAG[CONTACTFLAG["TOPCONTACT"] = 2048] = "TOPCONTACT";
-    })(CONTACTFLAG || (CONTACTFLAG = {}));
-    var CHATROOM_NOTIFY;
-    (function (CHATROOM_NOTIFY) {
-        CHATROOM_NOTIFY[CHATROOM_NOTIFY["CLOSE"] = 0] = "CLOSE";
-        CHATROOM_NOTIFY[CHATROOM_NOTIFY["OPEN"] = 1] = "OPEN";
-    })(CHATROOM_NOTIFY || (CHATROOM_NOTIFY = {}));
     class UserModel {
-        constructor(userInfo) {
-            this.updateUserInfo(userInfo);
+        constructor(userInfo, isSelf) {
+            this.MMFromBatchget = false;
+            this.MMBatchgetMember = false;
+            this.isSelf = false;
+            this.class = this.constructor;
+            this.updateUserInfo(userInfo, isSelf);
         }
-        updateUserInfo(userInfo) {
-            let contactFlag = userInfo.ContactFlag;
-            this.isContact = !!(contactFlag & CONTACTFLAG.CONTACT);
-            this.isBlackContact = !!(contactFlag & CONTACTFLAG.BLACKLISTCONTACT);
-            this.isRoomContact = UserModel.isRoomContact(userInfo.UserName);
+        set contactFlag(contactFlag) {
+            this._contactFlag = contactFlag;
+            this.isContact = !!(contactFlag & wxInterface_1.ContactFlag.CONTACT);
+            this.isBlackContact = !!(contactFlag & wxInterface_1.ContactFlag.BLACKLISTCONTACT);
             this.isMuted = this.isRoomContact ?
-                userInfo.Statues === CHATROOM_NOTIFY.CLOSE :
-                !!(contactFlag & CONTACTFLAG.NOTIFYCLOSECONTACT);
-            this.isTop = !!(contactFlag & CONTACTFLAG.TOPCONTACT);
+                this.Statues === wxInterface_1.ChatRoomNotify.CLOSE :
+                !!(contactFlag & wxInterface_1.ContactFlag.NOTIFYCLOSECONTACT);
+            this.isTop = !!(contactFlag & wxInterface_1.ContactFlag.TOPCONTACT);
+        }
+        updateUserInfo(userInfo, isSelf) {
+            // property
+            this.UserName = userInfo.UserName;
+            this.NickName = userInfo.NickName;
+            this.Sex = userInfo.Sex;
+            this.RemarkName = userInfo.RemarkName;
+            this.HeadImgUrl = userInfo.HeadImgUrl;
+            this.Signature = userInfo.Signature;
+            this.City = userInfo.City;
+            this.Province = userInfo.Province;
+            this.EncryChatRoomId = userInfo.EncryChatRoomId;
+            this.MemberList = userInfo.MemberList;
+            this.MemberCount = userInfo.MemberCount;
+            // status
+            this.isRoomContact = UserModel.isRoomContact(userInfo.UserName);
+            this.Statues = userInfo.Statues;
+            this.contactFlag = userInfo.ContactFlag;
             this.hasPhotoAlbum = !!(1 & userInfo.SnsFlag);
+            this.isShieldUser = this.class.isShieldUser(this.UserName);
+            this.isBrandContact = !!(userInfo.VerifyFlag & wxInterface_1.UserAttrVerifyFlag.BIZ_BRAND);
+            if (isSelf != undefined) {
+                this.isSelf = isSelf;
+            }
+            else if (contactManager_1.contactManager.account) {
+                this.isSelf = userInfo.UserName == contactManager_1.contactManager.account.UserName;
+            }
+        }
+        getDisplayName() {
+            let self = this;
+            var name = "";
+            if (this.isRoomContact) {
+                name = this.RemarkName || this.NickName;
+                if (!name && !this.MemberCount) {
+                    this.MemberList.slice(0, 10).forEach(membr => {
+                        let contactUser = contactManager_1.contactManager.getContact(membr.UserName);
+                        if (contactUser) {
+                            name += contactUser.RemarkName || contactUser.NickName;
+                        }
+                        else {
+                            name += membr.NickName;
+                        }
+                    });
+                }
+                else if (!name) {
+                    name = this.UserName;
+                }
+            }
+            else {
+                name = this.RemarkName || this.NickName;
+            }
+            return name;
+        }
+        static getDisplayName(username) {
+            return;
         }
         static isSpUser(username) {
             return /@qqim$/.test(username) || SpicalAccounts.indexOf(username) != -1;

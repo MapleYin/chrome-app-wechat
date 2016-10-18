@@ -1,5 +1,5 @@
 import {Template} from './template';
-import {User} from '../models/wxInterface';
+import {UserModel} from '../models/userModel'
 import {escape} from '../tools/chromeTools'
 
 
@@ -40,7 +40,7 @@ export class ChatListItem extends Template implements ChatListData{
 	private _active:boolean;
 
 
-	constructor(itemData:User){
+	constructor(itemData:UserModel){
 		super(templateString);
 
 		let self = this;
@@ -48,7 +48,7 @@ export class ChatListItem extends Template implements ChatListData{
 		this.data = {
 			id : itemData.UserName,
 			avatar : itemData.HeadImgUrl,
-			nickName : itemData.RemarkName || itemData.NickName.replace(/<.+?>.*?<\/.+?>/g,'')
+			nickName : itemData.RemarkName || itemData.NickName
 		};
 
 		this.id = this.data.id;

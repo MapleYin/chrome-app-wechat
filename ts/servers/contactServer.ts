@@ -1,7 +1,7 @@
 import {IUser,IMessage,IBaseResponse,IBatchContactResponse,IContactResponse,IContactHeadImgParams,IBatchgetContactParams} from '../models/wxInterface'
 import {CoreServer} from './coreServer'
 import {UserModel} from '../models/userModel'
-import {ContactInListIndex} from '../utility/all'
+import {ContactInListIndex} from '../utility/contactListHelper'
 
 let GET_CONTACT_URL = 'https://wx.qq.com/cgi-bin/mmwebwx-bin/webwxbatchgetcontact';
 let GET_ALL_CONTACT_URL = 'https://wx.qq.com/cgi-bin/mmwebwx-bin/webwxgetcontact';
