@@ -24,7 +24,7 @@ define(["require", "exports", './baseManager', '../models/wxInterface', '../mode
         }
         sendTextMessage(username, content) {
             let message = messageServer_1.messageServer.createSendingMessage(username, content, wxInterface_1.MessageType.TEXT);
-            this.commonMsgProcess(message);
+            this.messageProcess(message);
             //messageServer.sendMessage(message).then().catch();
             messageServer_1.messageServer.sendMessage(message).then(result => {
                 message.MsgId = result.MsgId;
@@ -56,6 +56,8 @@ define(["require", "exports", './baseManager', '../models/wxInterface', '../mode
                     case wxInterface_1.MessageType.TEXT:
                         self.textMsgProcess(message);
                         break;
+                    case wxInterface_1.MessageType.IMAGE:
+                        break;
                     default:
                         // code...
                         break;
@@ -65,8 +67,6 @@ define(["require", "exports", './baseManager', '../models/wxInterface', '../mode
                 let user = contactManager_1.contactManager.getContact(message.MMPeerUserName);
                 if (!message.MMIsSend && (!user || (!user.isMuted && !user.isBrandContact)) && message.MsgType != wxInterface_1.MessageType.SYS) {
                 }
-                chatManager_1.chatManager.addChatMessage(message);
-                chatManager_1.chatManager.addChatList([message.MMPeerUserName]);
             }
         }
         commonMsgProcess(message) {
@@ -123,7 +123,12 @@ define(["require", "exports", './baseManager', '../models/wxInterface', '../mode
             }
         }
         textMsgProcess(message) {
-            this.dispatchEvent('userMessage', message);
+            message.MMDigest += message.MMActualContent.replace(/<br ?[^><]*\/?>/g, "");
+            notificationCenter_1.NotificationCenter.post('message.receive.text', message);
+        }
+        imageMsgProcess(message) {
+            message.MMDigest += wxInterface_1.TextInfoMap["a5627e8"];
+            notificationCenter_1.NotificationCenter.post('message.receive.image', message);
         }
         appMsgProcess(message) {
         }

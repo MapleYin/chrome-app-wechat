@@ -5,13 +5,9 @@ import {contactManager} from './manager/contactManager'
 import {chatManager} from './manager/chatManager'
 import {messageManager} from './manager/messageManager'
 
-import {ChatListController} from './controller/chatListController'
-import {ChatContentController} from './controller/chatContentController'
+import {chatListController} from './controller/chatListController'
+import {chatContentController} from './controller/chatContentController'
 export class App {
-	private chatListController = new ChatListController();
-	private chatContentController = new ChatContentController();
-
-
 	constructor(redirectUrl) {
 		let self = this;
 
@@ -38,23 +34,5 @@ export class App {
 		}).catch(reason=>{
 			console.log(reason);
 		});
-
-		self.init();
-	}
-
-
-	init(){
-		let self = this;
-
-		NotificationCenter.on('chat.init.success,contact.init.success',(e)=>{
-			self.chatListController.updateChatList();
-		});
-
-		self.chatListController.on<string>('SelectUser',username=>{
-			self.chatContentController.selectUser(username);
-		});
-
-
-
 	}
 }

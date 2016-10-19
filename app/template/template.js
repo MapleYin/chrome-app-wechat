@@ -1,4 +1,4 @@
-define(["require", "exports", '../tools/chromeTools'], function (require, exports, chromeTools_1) {
+define(["require", "exports", '../servers/sourceServer'], function (require, exports, sourceServer_1) {
     "use strict";
     var templateUniqueId = 0;
     class Template {
@@ -23,8 +23,10 @@ define(["require", "exports", '../tools/chromeTools'], function (require, export
             let $image = $element.find('img');
             let url = $image.data('src');
             if (url && url.search(/chrome-extension/) == -1) {
-                chromeTools_1.fetchRemoteImage('https://wx.qq.com' + url, function (localUrl) {
+                sourceServer_1.sourceServer.fetchUserHeadImage('https://wx.qq.com' + url).then((localUrl) => {
                     $image.attr('src', localUrl);
+                }).catch(reason => {
+                    console.log(reason);
                 });
             }
         }

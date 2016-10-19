@@ -1,4 +1,4 @@
-define(["require", "exports", '../template/chatContentItem', './baseController', '../manager/contactManager', '../manager/messageManager'], function (require, exports, chatContentItem_1, baseController_1, contactManager_1, messageManager_1) {
+define(["require", "exports", '../template/chatContentItem', './baseController', '../manager/contactManager', '../utility/notificationCenter'], function (require, exports, chatContentItem_1, baseController_1, contactManager_1, notificationCenter_1) {
     "use strict";
     class ChatContentController extends baseController_1.BaseController {
         constructor() {
@@ -21,9 +21,6 @@ define(["require", "exports", '../template/chatContentItem', './baseController',
                     });
                 }
             });
-            messageManager_1.messageManager.on('userMessage', (message) => {
-                self.newMessage(message);
-            });
         }
         selectUser(username) {
             let selectUserInfo = contactManager_1.contactManager.getContact(username);
@@ -36,21 +33,17 @@ define(["require", "exports", '../template/chatContentItem', './baseController',
         }
         newMessage(message) {
             let self = this;
-            let currentUserMessage = [];
             console.log('Here Comes User Message');
             if (!(message.MMPeerUserName in self.messageList)) {
                 self.messageList[message.MMPeerUserName] = [];
             }
             self.messageList[message.MMPeerUserName].push(message);
-            this.updateMessageContent([message]);
+            if (message.MMPeerUserName == self.currentChatUser) {
+                this.updateMessageContent([message]);
+            }
         }
         sendMessage(content) {
-            let message = messageManager_1.messageManager.sendTextMessage(this.currentChatUser, content);
-            if (!(this.currentChatUser in this.messageList)) {
-                this.messageList[this.currentChatUser] = [];
-            }
-            this.messageList[this.currentChatUser].push(message);
-            this.updateMessageContent([message]);
+            notificationCenter_1.NotificationCenter.post('message.send.text', content);
         }
         displayMessageContent(userName) {
             let self = this;
@@ -71,5 +64,5 @@ define(["require", "exports", '../template/chatContentItem', './baseController',
             self.$chatContentContainer.scrollTop(self.$chatContentContainer.height());
         }
     }
-    exports.ChatContentController = ChatContentController;
+    exports.chatContentController = new ChatContentController();
 });

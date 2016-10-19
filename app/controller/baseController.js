@@ -1,6 +1,6 @@
-define(["require", "exports", '../baseClass/eventable'], function (require, exports, eventable_1) {
+define(["require", "exports"], function (require, exports) {
     "use strict";
-    class BaseController extends eventable_1.Eventable {
+    class BaseController {
     }
     exports.BaseController = BaseController;
 });

@@ -4,9 +4,10 @@ import {ChatContentItem} from '../template/chatContentItem'
 import {BaseController} from './baseController'
 import {chatManager} from '../manager/chatManager'
 import {contactManager} from '../manager/contactManager'
-import {messageManager} from '../manager/messageManager'
 
-export class ChatContentController extends BaseController{
+import {NotificationCenter} from '../utility/notificationCenter'
+
+class ChatContentController extends BaseController{
 	private $chatContentHeader:JQuery = $('#chat-content-header');
 	private $chatContentContainer:JQuery = $('#chat-content-container');
 	private $inputTextarea:JQuery = $('#message-input');
@@ -28,10 +29,6 @@ export class ChatContentController extends BaseController{
 				});
 			}
 		});
-
-		messageManager.on<IMessage>('userMessage',(message)=>{
-			self.newMessage(message);
-		});
 	}
 
 	selectUser(username:string){
@@ -46,25 +43,18 @@ export class ChatContentController extends BaseController{
 
 	newMessage(message:IMessage){
 		let self = this;
-		let currentUserMessage:IMessage[] = [];
 		console.log('Here Comes User Message');
 		if(!(message.MMPeerUserName in self.messageList)) {
 			self.messageList[message.MMPeerUserName] = [];
 		}
 		self.messageList[message.MMPeerUserName].push(message);
-
-
-		this.updateMessageContent([message]);
+		if(message.MMPeerUserName == self.currentChatUser) {
+			this.updateMessageContent([message]);
+		}
 	}
 
-	sendMessage(content:string){
-
-		let message = messageManager.sendTextMessage(this.currentChatUser,content);
-		if(!(this.currentChatUser in this.messageList)) {
-			this.messageList[this.currentChatUser] = [];
-		}
-		this.messageList[this.currentChatUser].push(message);
-		this.updateMessageContent([message]);
+	private sendMessage(content:string){
+		NotificationCenter.post<string>('message.send.text',content);
 	}
 
 	private displayMessageContent(userName){
@@ -76,15 +66,14 @@ export class ChatContentController extends BaseController{
 
 	private updateMessageContent(messages:IMessage[]){
 		let self = this;
-		if(!messages) {
-			return;
-		}
+		if(!messages) {return;}
 		messages.forEach(message=>{
 			let sender = contactManager.getContact(message.MMActualSender);
 			let item = new ChatContentItem(message.MMActualContent,sender);
 			self.$chatContentContainer.append(item.$element);
 		});
-
+		
 		self.$chatContentContainer.scrollTop(self.$chatContentContainer.height());
 	}
 }
+export let chatContentController = new ChatContentController();

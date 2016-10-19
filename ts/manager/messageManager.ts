@@ -1,5 +1,5 @@
 import {BaseManager} from './baseManager'
-import {IMessage,ISyncResponse,StatusNotifyCode,MessageType,ISyncKey} from '../models/wxInterface'
+import {IMessage,ISyncResponse,StatusNotifyCode,MessageType,ISyncKey,TextInfoMap} from '../models/wxInterface'
 import {UserModel} from '../models/userModel'
 import {contactManager} from './contactManager'
 import {emoticonManager} from './emoticonManager'
@@ -36,7 +36,7 @@ class MessageManager extends BaseManager{
 
 	sendTextMessage(username:string,content:string):IMessage{
 		let message:IMessage = messageServer.createSendingMessage(username,content,MessageType.TEXT);
-		this.commonMsgProcess(message);
+		this.messageProcess(message);
 		//messageServer.sendMessage(message).then().catch();
 		messageServer.sendMessage(message).then(result=>{
 			message.MsgId = result.MsgId;
@@ -75,7 +75,9 @@ class MessageManager extends BaseManager{
 				case MessageType.TEXT:
 					self.textMsgProcess(message);
 					break;
-				
+				case MessageType.IMAGE:
+
+					break;
 				default:
 					// code...
 					break;
@@ -88,8 +90,6 @@ class MessageManager extends BaseManager{
 			if(!message.MMIsSend && (!user || (!user.isMuted && !user.isBrandContact)) && message.MsgType != MessageType.SYS) {
 				// TODO notify
 			}
-			chatManager.addChatMessage(message);
-			chatManager.addChatList([message.MMPeerUserName]);
 		}
 	}
 
@@ -155,8 +155,16 @@ class MessageManager extends BaseManager{
 	}
 
 	private textMsgProcess(message:IMessage){
-		this.dispatchEvent<IMessage>('userMessage',message);
+		message.MMDigest += message.MMActualContent.replace(/<br ?[^><]*\/?>/g, "");
+		NotificationCenter.post<IMessage>('message.receive.text',message);
 	}
+
+	private imageMsgProcess(message:IMessage){
+		message.MMDigest += TextInfoMap["a5627e8"];
+		NotificationCenter.post<IMessage>('message.receive.image',message);
+	}
+
+
 
 	private appMsgProcess(message:IMessage){
 

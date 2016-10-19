@@ -1,7 +1,7 @@
-define(["require", "exports", '../baseClass/eventable'], function (require, exports, eventable_1) {
+define(["require", "exports"], function (require, exports) {
     "use strict";
     let EXEC_COOKIE_REG = /<(\w+)>(?!<)(.+?)</g;
-    class BaseServer extends eventable_1.Eventable {
+    class BaseServer {
         get(originUrl, params, headers, options) {
             let url = new URL(originUrl);
             for (var key in params) {

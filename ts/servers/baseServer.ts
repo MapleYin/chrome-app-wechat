@@ -1,8 +1,6 @@
-import {Eventable} from '../baseClass/eventable'
-
 let EXEC_COOKIE_REG = /<(\w+)>(?!<)(.+?)</g
 
-export class BaseServer extends Eventable{
+export class BaseServer{
 
 	get(originUrl:string,params?,headers?,options?):Promise<Response>{
 		let url = new URL(originUrl);

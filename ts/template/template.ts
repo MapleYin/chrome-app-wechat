@@ -1,4 +1,4 @@
-import {fetchRemoteImage} from '../tools/chromeTools'
+import {sourceServer} from '../servers/sourceServer'
 
 var templateUniqueId:number = 0;
 
@@ -34,8 +34,10 @@ export class Template{
 		let $image = $element.find('img');
 		let url:string = $image.data('src');
 		if(url && url.search(/chrome-extension/) == -1) {
-			fetchRemoteImage('https://wx.qq.com'+url,function(localUrl){
+			sourceServer.fetchUserHeadImage('https://wx.qq.com'+url).then((localUrl)=>{
 				$image.attr('src',localUrl);
+			}).catch(reason=>{
+				console.log(reason);
 			});
 		}
 	}

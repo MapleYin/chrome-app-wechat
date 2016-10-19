@@ -1,9 +1,7 @@
-define(["require", "exports", './servers/loginServer', './utility/notificationCenter', './manager/contactManager', './manager/chatManager', './manager/messageManager', './controller/chatListController', './controller/chatContentController'], function (require, exports, loginServer_1, notificationCenter_1, contactManager_1, chatManager_1, messageManager_1, chatListController_1, chatContentController_1) {
+define(["require", "exports", './servers/loginServer', './manager/contactManager', './manager/chatManager', './manager/messageManager'], function (require, exports, loginServer_1, contactManager_1, chatManager_1, messageManager_1) {
     "use strict";
     class App {
         constructor(redirectUrl) {
-            this.chatListController = new chatListController_1.ChatListController();
-            this.chatContentController = new chatContentController_1.ChatContentController();
             let self = this;
             loginServer_1.loginServer.getBaseInfo(redirectUrl).then((result) => {
                 // 保存 SyncKey
@@ -22,16 +20,6 @@ define(["require", "exports", './servers/loginServer', './utility/notificationCe
                 contactManager_1.contactManager.initContact(0);
             }).catch(reason => {
                 console.log(reason);
-            });
-            self.init();
-        }
-        init() {
-            let self = this;
-            notificationCenter_1.NotificationCenter.on('chat.init.success,contact.init.success', (e) => {
-                self.chatListController.updateChatList();
-            });
-            self.chatListController.on('SelectUser', username => {
-                self.chatContentController.selectUser(username);
             });
         }
     }

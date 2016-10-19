@@ -5,10 +5,34 @@ import {messageServer} from '../servers/messageServer'
 import {UserModel} from '../models/userModel'
 import {IUser,IMessage} from '../models/wxInterface'
 import {NotificationCenter} from '../utility/notificationCenter'
+import {chatListController} from '../controller/chatListController'
+import {chatContentController} from '../controller/chatContentController'
 
 class ChatManager extends BaseManager{
+	private currentChatUser:string;
 	private chatList:string[] = [];
 	chatListInfo:UserModel[] = [];
+	private chatListInfoMap:{[key:string]:UserModel} = {};
+
+	constructor(){
+		super();
+		let self = this;
+		NotificationCenter.on('contact.init.success',()=>{
+			self.updateChatList();
+		});
+		NotificationCenter.on<string>('chatList.select.user',event=>{
+			self.currentChatUser = event.userInfo;
+			chatContentController.selectUser(event.userInfo);
+		});
+		NotificationCenter.on<IMessage>('message.receive',event=>{
+			self.addChatMessage(event.userInfo);
+			//self.addChatList([event.userInfo.MMPeerUserName]);
+		});
+
+		NotificationCenter.on<string>('message.send',event=>{
+			self.sendMessage(event.userInfo);
+		});
+	}
 
 	initChatList(chatSetString:string){
 		let self = this;
@@ -23,7 +47,6 @@ class ChatManager extends BaseManager{
 			}
 		});
 		this.updateChatList();
-		NotificationCenter.post('chat.init.success');
 	}
 
 	addChatList(usernames:string[]){
@@ -40,10 +63,9 @@ class ChatManager extends BaseManager{
 			self.chatList.unshift(username);
 		});
 		this.updateChatList();
-		NotificationCenter.post('chat.add.success');
 	}
 
-	updateChatList(){
+	private updateChatList(){
 		let self = this;
 		let topList = [];
 		let normalList = [];
@@ -51,14 +73,24 @@ class ChatManager extends BaseManager{
 			let user = contactManager.getContact(username);
 			if(user && !user.isBrandContact && !user.isShieldUser) {
 				user.isTop ? topList.push(user) : normalList.push(user);
+				self.chatListInfoMap[user.UserName] = user;
 			}
 		});
 		[].unshift.apply(normalList,topList);
 		this.chatListInfo = normalList;
+
+		// 更新列表
+		chatListController.updateChatList(normalList);
 	}
 
 	addChatMessage(message:IMessage){
+		let user = contactManager.getContact(message.MMPeerUserName)
+		chatListController.newMessage(message,user);
+		chatContentController.newMessage(message);	
+	}
 
+	sendMessage(content:string){
+		messageManager.sendTextMessage(this.currentChatUser,content);
 	}
 
 }

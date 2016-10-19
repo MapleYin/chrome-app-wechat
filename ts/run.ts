@@ -18,7 +18,7 @@ let createMainWindow = function(){
 	chrome.app.window.create('index.html', {
 	    'id': 'MainWindow',
 	    'innerBounds': {
-	        'minWidth': 800,
+	        'minWidth': 660,
 	        'minHeight': 600
 	    },
 	    'frame' : 'none',
