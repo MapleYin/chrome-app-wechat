@@ -21,14 +21,16 @@ define(["require", "exports", '../servers/sourceServer'], function (require, exp
         }
         loadImage($element) {
             let $image = $element.find('img');
-            let url = $image.data('src');
-            if (url && url.search(/chrome-extension/) == -1) {
-                sourceServer_1.sourceServer.fetchUserHeadImage('https://wx.qq.com' + url).then((localUrl) => {
-                    $image.attr('src', localUrl);
-                }).catch(reason => {
-                    console.log(reason);
-                });
-            }
+            $image.each((index, elem) => {
+                let url = $(elem).data('src');
+                if (url && url.search(/chrome-extension/) == -1) {
+                    sourceServer_1.sourceServer.fetchUserHeadImage('https://wx.qq.com' + url).then((localUrl) => {
+                        $(elem).attr('src', localUrl);
+                    }).catch(reason => {
+                        console.log(reason);
+                    });
+                }
+            });
         }
     }
     exports.Template = Template;

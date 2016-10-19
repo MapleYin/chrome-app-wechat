@@ -1,6 +1,7 @@
 import {BaseManager} from './baseManager'
 import {IMessage,ISyncResponse,StatusNotifyCode,MessageType,ISyncKey,TextInfoMap} from '../models/wxInterface'
 import {UserModel} from '../models/userModel'
+import {MessageModel} from '../models/messageModel'
 import {contactManager} from './contactManager'
 import {emoticonManager} from './emoticonManager'
 import {chatManager} from './chatManager'
@@ -46,11 +47,11 @@ class MessageManager extends BaseManager{
 		return message;
 	}
 
-	private messageProcess(message:IMessage){
+	private messageProcess(messageInfo:IMessage){
 		let self = this;
-		let user = contactManager.getContact(message.FromUserName,'',true);
+		let user = contactManager.getContact(messageInfo.FromUserName,'',true);
 
-		message.MMPeerUserName = (message.FromUserName == contactManager.account.UserName || message.FromUserName == '') ? message.ToUserName : message.FromUserName;
+		let message = new MessageModel(messageInfo);
 
 		if(user && !user.isMuted && !user.isSelf && !user.isShieldUser && !user.isBrandContact) {
 			// titleRemind.increaseUnreadMsgNum()
@@ -70,13 +71,13 @@ class MessageManager extends BaseManager{
 			 message.MsgType == MessageType.VERIFYMSG &&
 			 message.RecommendInfo && 
 			 message.RecommendInfo.UserName == contactManager.account.UserName)) {
-			self.commonMsgProcess(message);
+			
 			switch (message.MsgType) {
 				case MessageType.TEXT:
-					self.textMsgProcess(message);
+					NotificationCenter.post<MessageModel>('message.receive.text',message);
 					break;
 				case MessageType.IMAGE:
-
+					NotificationCenter.post<MessageModel>('message.receive.image',message);
 					break;
 				default:
 					// code...
@@ -93,53 +94,9 @@ class MessageManager extends BaseManager{
 		}
 	}
 
-	private commonMsgProcess(message:IMessage){
-		var actualContent = '';
-		var username = '';
-		message.Content = message.Content || '';
-		message.MMDigest = '';
-		message.MMIsSend = message.FromUserName == contactManager.account.UserName || message.FromUserName == '';
+	
 
-		if(UserModel.isRoomContact(message.MMPeerUserName)) {
-			message.MMIsChatRoom = true;
-
-			actualContent = message.Content.replace(/^(@[a-zA-Z0-9]+|[a-zA-Z0-9_-]+):<br\/>/,(str,name)=>{
-				username = name;
-				return ''
-			});
-			if(username && username != contactManager.account.UserName) {
-				let user = contactManager.getContact(username,message.MMPeerUserName);
-				if(user) {
-					let displayName = user.getDisplayName();
-					if(displayName) {
-						message.MMDigest = displayName + ':';
-					}
-				}
-			}
-		}else{
-			message.MMIsChatRoom = false;
-			actualContent = message.Content;
-		}
-
-		if(!message.MMIsSend && message.MMUnread == undefined && message.MsgType != MessageType.SYS) {
-			message.MMUnread = true;
-		}
-
-		if(!message.LocalID) {
-			message.ClientMsgId = message.LocalID = message.MsgId;
-		}
-
-		// emoji
-		actualContent = emoticonManager.emoticonFormat(actualContent);
-
-		message.MMActualContent = actualContent;
-		message.MMActualSender = username || message.FromUserName;
-
-		//@TODO
-		//对消息显示时间的标志
-	}
-
-	private statusNotifyProcessor(message:IMessage){
+	private statusNotifyProcessor(message:MessageModel){
 		switch (message.StatusNotifyCode) {
 			case StatusNotifyCode.SYNC_CONV:
 				chatManager.initChatList(message.StatusNotifyUserName);
@@ -153,23 +110,6 @@ class MessageManager extends BaseManager{
 				break;
 		}
 	}
-
-	private textMsgProcess(message:IMessage){
-		message.MMDigest += message.MMActualContent.replace(/<br ?[^><]*\/?>/g, "");
-		NotificationCenter.post<IMessage>('message.receive.text',message);
-	}
-
-	private imageMsgProcess(message:IMessage){
-		message.MMDigest += TextInfoMap["a5627e8"];
-		NotificationCenter.post<IMessage>('message.receive.image',message);
-	}
-
-
-
-	private appMsgProcess(message:IMessage){
-
-	}
-
 }
 
 export let messageManager = new MessageManager();

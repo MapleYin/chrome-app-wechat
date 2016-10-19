@@ -1,5 +1,6 @@
 import {IUser,IMessage} from '../models/wxInterface'
 import {UserModel} from '../models/userModel'
+import {MessageModel} from '../models/messageModel'
 import {ChatContentItem} from '../template/chatContentItem'
 import {BaseController} from './baseController'
 import {chatManager} from '../manager/chatManager'
@@ -11,7 +12,7 @@ class ChatContentController extends BaseController{
 	private $chatContentHeader:JQuery = $('#chat-content-header');
 	private $chatContentContainer:JQuery = $('#chat-content-container');
 	private $inputTextarea:JQuery = $('#message-input');
-	private messageList = {};
+	private messageList:{[key:string]:MessageModel[]} = {};
 	currentChatUser:string;
 
 	constructor(){
@@ -41,7 +42,7 @@ class ChatContentController extends BaseController{
 		}	
 	}
 
-	newMessage(message:IMessage){
+	newMessage(message:MessageModel){
 		let self = this;
 		console.log('Here Comes User Message');
 		if(!(message.MMPeerUserName in self.messageList)) {
@@ -59,17 +60,17 @@ class ChatContentController extends BaseController{
 
 	private displayMessageContent(userName){
 		let self = this;
-		let messages:IMessage[] = this.messageList[userName];
+		let messages:MessageModel[] = this.messageList[userName];
 		self.$chatContentContainer.empty();
 		this.updateMessageContent(messages);
 	}
 
-	private updateMessageContent(messages:IMessage[]){
+	private updateMessageContent(messages:MessageModel[]){
 		let self = this;
 		if(!messages) {return;}
 		messages.forEach(message=>{
 			let sender = contactManager.getContact(message.MMActualSender);
-			let item = new ChatContentItem(message.MMActualContent,sender);
+			let item = new ChatContentItem(message,sender);
 			self.$chatContentContainer.append(item.$element);
 		});
 		

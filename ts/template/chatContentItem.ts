@@ -1,5 +1,7 @@
-import {IUser,IMessage} from '../models/wxInterface';
+import {IUser,IMessage,MessageType} from '../models/wxInterface';
 import {UserModel} from '../models/userModel';
+import {MessageModel} from '../models/messageModel';
+
 import {Template} from './template'
 
 
@@ -28,17 +30,31 @@ export class ChatContentItem extends Template implements ChatContentData{
 	content : string;
 	date? : Date;
 
-	constructor(content:string,sender:UserModel){
+	constructor(message:MessageModel,sender:UserModel){
 		super(templateString);
 		this.avatar = sender.HeadImgUrl;
 		this.nickName = sender.getDisplayName();
-		this.content = content;
-
+		this.processMessage(message);
 		this.render({
 			avatar : this.avatar,
 			nickName : this.nickName,
 			content : this.content,
 			className : sender.isSelf ? 'self' : ''
 		});
+	}
+
+	private processMessage(message:MessageModel){
+		switch (message.MsgType) {
+			case MessageType.TEXT:
+				this.content = message.MMActualContent;
+				break;
+			case MessageType.IMAGE:
+				this.content = `<img data-src="${message.ImageUrl}" class="msg-image" />`;
+				break;
+			default:
+				this.content = '[未知消息]';
+				break;
+		}
+		
 	}
 }

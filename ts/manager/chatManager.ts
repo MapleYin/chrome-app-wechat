@@ -3,6 +3,7 @@ import {contactManager} from './contactManager'
 import {messageManager} from './messageManager'
 import {messageServer} from '../servers/messageServer'
 import {UserModel} from '../models/userModel'
+import {MessageModel} from '../models/messageModel'
 import {IUser,IMessage} from '../models/wxInterface'
 import {NotificationCenter} from '../utility/notificationCenter'
 import {chatListController} from '../controller/chatListController'
@@ -24,7 +25,7 @@ class ChatManager extends BaseManager{
 			self.currentChatUser = event.userInfo;
 			chatContentController.selectUser(event.userInfo);
 		});
-		NotificationCenter.on<IMessage>('message.receive',event=>{
+		NotificationCenter.on<MessageModel>('message.receive',event=>{
 			self.addChatMessage(event.userInfo);
 			//self.addChatList([event.userInfo.MMPeerUserName]);
 		});
@@ -83,7 +84,7 @@ class ChatManager extends BaseManager{
 		chatListController.updateChatList(normalList);
 	}
 
-	addChatMessage(message:IMessage){
+	addChatMessage(message:MessageModel){
 		let user = contactManager.getContact(message.MMPeerUserName)
 		chatListController.newMessage(message,user);
 		chatContentController.newMessage(message);	

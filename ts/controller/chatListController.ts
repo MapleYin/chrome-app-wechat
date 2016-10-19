@@ -1,5 +1,6 @@
 import {IUser,IMessage} from '../models/wxInterface'
 import {UserModel} from '../models/userModel'
+import {MessageModel} from '../models/messageModel'
 import {ChatListItem} from '../template/chatListItem'
 import {BaseController} from './baseController'
 import {NotificationCenter} from '../utility/notificationCenter'
@@ -29,7 +30,7 @@ class ChatListController extends BaseController{
 		console.timeEnd('updateChatListElement');
 	}
 
-	newMessage(message:IMessage,userInfo:UserModel){
+	newMessage(message:MessageModel,userInfo:UserModel){
 		let self = this;
 		
 		if(message.MMPeerUserName in self.userListItemsInfo) {

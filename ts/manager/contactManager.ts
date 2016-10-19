@@ -209,7 +209,7 @@ class ContactManager extends BaseManager{
 			fmessage: TextInfoMap["a82c4c4"]
 		};
 		if(specialContacts[user.UserName]) {
-			user.UserName = specialContacts[user.UserName];
+			user.NickName = specialContacts[user.UserName];
 		}
 		if(user.UserName == 'fmessage') {
 			user.contactFlag = 0;

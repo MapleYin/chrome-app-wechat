@@ -1,4 +1,4 @@
-define(["require", "exports", './baseManager', '../models/wxInterface', '../models/userModel', './contactManager', './emoticonManager', './chatManager', '../servers/messageServer', '../utility/notificationCenter'], function (require, exports, baseManager_1, wxInterface_1, userModel_1, contactManager_1, emoticonManager_1, chatManager_1, messageServer_1, notificationCenter_1) {
+define(["require", "exports", './baseManager', '../models/wxInterface', '../models/userModel', '../models/messageModel', './contactManager', './chatManager', '../servers/messageServer', '../utility/notificationCenter'], function (require, exports, baseManager_1, wxInterface_1, userModel_1, messageModel_1, contactManager_1, chatManager_1, messageServer_1, notificationCenter_1) {
     "use strict";
     class MessageManager extends baseManager_1.BaseManager {
         constructor() {
@@ -32,10 +32,10 @@ define(["require", "exports", './baseManager', '../models/wxInterface', '../mode
             });
             return message;
         }
-        messageProcess(message) {
+        messageProcess(messageInfo) {
             let self = this;
-            let user = contactManager_1.contactManager.getContact(message.FromUserName, '', true);
-            message.MMPeerUserName = (message.FromUserName == contactManager_1.contactManager.account.UserName || message.FromUserName == '') ? message.ToUserName : message.FromUserName;
+            let user = contactManager_1.contactManager.getContact(messageInfo.FromUserName, '', true);
+            let message = new messageModel_1.MessageModel(messageInfo);
             if (user && !user.isMuted && !user.isSelf && !user.isShieldUser && !user.isBrandContact) {
             }
             if (message.MsgType == wxInterface_1.MessageType.STATUSNOTIFY) {
@@ -51,12 +51,12 @@ define(["require", "exports", './baseManager', '../models/wxInterface', '../mode
                 message.MsgType == wxInterface_1.MessageType.VERIFYMSG &&
                     message.RecommendInfo &&
                     message.RecommendInfo.UserName == contactManager_1.contactManager.account.UserName)) {
-                self.commonMsgProcess(message);
                 switch (message.MsgType) {
                     case wxInterface_1.MessageType.TEXT:
-                        self.textMsgProcess(message);
+                        notificationCenter_1.NotificationCenter.post('message.receive.text', message);
                         break;
                     case wxInterface_1.MessageType.IMAGE:
+                        notificationCenter_1.NotificationCenter.post('message.receive.image', message);
                         break;
                     default:
                         // code...
@@ -68,45 +68,6 @@ define(["require", "exports", './baseManager', '../models/wxInterface', '../mode
                 if (!message.MMIsSend && (!user || (!user.isMuted && !user.isBrandContact)) && message.MsgType != wxInterface_1.MessageType.SYS) {
                 }
             }
-        }
-        commonMsgProcess(message) {
-            var actualContent = '';
-            var username = '';
-            message.Content = message.Content || '';
-            message.MMDigest = '';
-            message.MMIsSend = message.FromUserName == contactManager_1.contactManager.account.UserName || message.FromUserName == '';
-            if (userModel_1.UserModel.isRoomContact(message.MMPeerUserName)) {
-                message.MMIsChatRoom = true;
-                actualContent = message.Content.replace(/^(@[a-zA-Z0-9]+|[a-zA-Z0-9_-]+):<br\/>/, (str, name) => {
-                    username = name;
-                    return '';
-                });
-                if (username && username != contactManager_1.contactManager.account.UserName) {
-                    let user = contactManager_1.contactManager.getContact(username, message.MMPeerUserName);
-                    if (user) {
-                        let displayName = user.getDisplayName();
-                        if (displayName) {
-                            message.MMDigest = displayName + ':';
-                        }
-                    }
-                }
-            }
-            else {
-                message.MMIsChatRoom = false;
-                actualContent = message.Content;
-            }
-            if (!message.MMIsSend && message.MMUnread == undefined && message.MsgType != wxInterface_1.MessageType.SYS) {
-                message.MMUnread = true;
-            }
-            if (!message.LocalID) {
-                message.ClientMsgId = message.LocalID = message.MsgId;
-            }
-            // emoji
-            actualContent = emoticonManager_1.emoticonManager.emoticonFormat(actualContent);
-            message.MMActualContent = actualContent;
-            message.MMActualSender = username || message.FromUserName;
-            //@TODO
-            //对消息显示时间的标志
         }
         statusNotifyProcessor(message) {
             switch (message.StatusNotifyCode) {
@@ -121,16 +82,6 @@ define(["require", "exports", './baseManager', '../models/wxInterface', '../mode
                     // code...
                     break;
             }
-        }
-        textMsgProcess(message) {
-            message.MMDigest += message.MMActualContent.replace(/<br ?[^><]*\/?>/g, "");
-            notificationCenter_1.NotificationCenter.post('message.receive.text', message);
-        }
-        imageMsgProcess(message) {
-            message.MMDigest += wxInterface_1.TextInfoMap["a5627e8"];
-            notificationCenter_1.NotificationCenter.post('message.receive.image', message);
-        }
-        appMsgProcess(message) {
         }
     }
     exports.messageManager = new MessageManager();

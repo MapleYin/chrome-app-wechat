@@ -103,14 +103,6 @@ export interface IMessage{
 	VoiceLength?: number;
 
 	RecommendInfo?:IRecommendInfo;
-
-	MMDigest?: string;
-	MMIsSend?: boolean;
-	MMPeerUserName?: string;
-	MMIsChatRoom?: boolean;
-	MMUnread?: boolean;
-	MMActualContent?: string;
-	MMActualSender?: string;
 }
 
 export interface IRecommendInfo{

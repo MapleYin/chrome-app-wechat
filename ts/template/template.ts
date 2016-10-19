@@ -23,22 +23,24 @@ export class Template{
 			let value = data[key.slice(2, -2)]||'';
 			templateString = templateString.replace(reg,value);
 		}
-
 		this.$element = $(templateString);
 
 		this.loadImage(this.$element);
 	}
 
 
-	loadImage($element:JQuery){
+	private loadImage($element:JQuery){
 		let $image = $element.find('img');
-		let url:string = $image.data('src');
-		if(url && url.search(/chrome-extension/) == -1) {
-			sourceServer.fetchUserHeadImage('https://wx.qq.com'+url).then((localUrl)=>{
-				$image.attr('src',localUrl);
-			}).catch(reason=>{
-				console.log(reason);
-			});
-		}
+		$image.each((index,elem)=>{
+			let url:string = $(elem).data('src');
+			if(url && url.search(/chrome-extension/) == -1) {
+				sourceServer.fetchUserHeadImage('https://wx.qq.com'+url).then((localUrl)=>{
+					$(elem).attr('src',localUrl);
+				}).catch(reason=>{
+					console.log(reason);
+				});
+			}
+		})
+			
 	}
 }
