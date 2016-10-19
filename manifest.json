@@ -10,8 +10,5 @@
   "sandbox": { 
     "pages": ["sandbox.html"]
   },
-  "permissions": [ "<all_urls>","notifications","storage"],
-  "sockets" : {
-    "tcp": { "connect" : "*" } 
-  }
+  "permissions": [ "<all_urls>","notifications","storage"]
 }
