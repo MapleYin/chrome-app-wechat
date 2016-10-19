@@ -48,8 +48,10 @@ define(["require", "exports", './baseManager', './contactManager', '../models/us
                     user.isTop ? topList.push(user) : normalList.push(user);
                 }
             });
+            console.log(`chatList count : ${this.chatList.length}`);
             [].unshift.apply(normalList, topList);
             this.chatListInfo = normalList;
+            console.log(`normalList count : ${normalList.length}`);
         }
         addChatMessage(message) {
         }

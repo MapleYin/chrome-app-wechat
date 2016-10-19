@@ -137,8 +137,8 @@ define(["require", "exports", './baseManager', './emoticonManager', './chatManag
                     notificationCenter_1.NotificationCenter.post('contact.init.fetching');
                 }
                 else {
-                    notificationCenter_1.NotificationCenter.post('contact.init.success');
                     chatManager_1.chatManager.updateChatList();
+                    notificationCenter_1.NotificationCenter.post('contact.init.success');
                 }
             });
         }

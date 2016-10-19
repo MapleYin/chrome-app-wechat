@@ -155,8 +155,8 @@ class ContactManager extends BaseManager{
 				self.initContact(result.Seq);
 				NotificationCenter.post('contact.init.fetching');
 			}else{
-				NotificationCenter.post('contact.init.success');
 				chatManager.updateChatList();
+				NotificationCenter.post('contact.init.success');
 			}
 		});
 	}
