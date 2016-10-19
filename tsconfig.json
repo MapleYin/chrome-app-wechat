@@ -5,7 +5,7 @@
         "removeComments": false,
 		"noImplicitAny": false,
     	"target": "es6",
-        "module": "amd",
+        "module": "system",
         // "outFile" : "app/main.js",
         "outDir" : "app/",
         "moduleResolution": "node"

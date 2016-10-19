@@ -1,25 +1,47 @@
+import {fetchParams,fetchResult} from '../background/interface'
 let EXEC_COOKIE_REG = /<(\w+)>(?!<)(.+?)</g
 
 export class BaseServer{
 
-	get(originUrl:string,params?,headers?,options?):Promise<Response>{
-		let url = new URL(originUrl);
-		for (var key in params) {
-			url['searchParams'].append(key,params[key]);
+	get<T>(originUrl:string,params?,headers?,options?):Promise<T>{
+		let message:fetchParams = {
+			url : originUrl,
+			method : 'GET',
+			headers : headers || {
+				'responseType' : 'json'
+			},
+			query : params
 		}
 
-		return fetch(url.toString(),{
-			credentials : 'include',
-			headers : headers
+		return new Promise((resolve,reject)=>{
+			chrome.runtime.sendMessage(message,(response:fetchResult)=>{
+				if(response.status == 0) {
+					resolve(response.data);
+				}else{
+					reject(response.message);
+				}
+			});
 		});
 	}
 
-	post(originUrl:string,params?,headers?,options?):Promise<Response>{
-		return fetch(originUrl.toString(),{
-			method: "POST",
-			credentials : 'include',
-			body : JSON.stringify(params),
-			headers : headers
+	post<T>(originUrl:string,params?,postData?,headers?,options?):Promise<T>{
+		let message:fetchParams = {
+			url : originUrl,
+			method : 'POST',
+			headers : headers || {
+				'responseType' : 'json'
+			},
+			body : postData && JSON.stringify(postData),
+			query : params
+		}
+		return new Promise((resolve,reject)=>{
+			chrome.runtime.sendMessage(message,(response:fetchResult)=>{
+				if(response.status == 0) {
+					resolve(response.data);
+				}else{
+					reject(response.message);
+				}
+			});
 		});
 	}
 	

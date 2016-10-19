@@ -12,4 +12,4 @@ window['System'].config({
 	}
 });
 
-window['System'].import('/app/main').then(null, console.error.bind(console));
+window['System'].import('/app/login-main').then(null, console.error.bind(console));

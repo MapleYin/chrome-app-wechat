@@ -1,6 +1,13 @@
-define(["require", "exports"], function (require, exports) {
+System.register([], function(exports_1, context_1) {
     "use strict";
-    class BaseManager {
+    var __moduleName = context_1 && context_1.id;
+    var BaseManager;
+    return {
+        setters:[],
+        execute: function() {
+            BaseManager = class BaseManager {
+            };
+            exports_1("BaseManager", BaseManager);
+        }
     }
-    exports.BaseManager = BaseManager;
 });

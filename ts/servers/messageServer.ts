@@ -95,7 +95,7 @@ class MessageServer extends CoreServer{
 			lang : 'zh_CN',
 			pass_ticket : this.class.passTicket
 		},postData).then(response=>{
-			return response.json();
+			return response;
 		});
 	}
 

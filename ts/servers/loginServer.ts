@@ -29,17 +29,15 @@ class LoginServer extends CoreServer{
 
 		return this.getUUID().then(function(UUID){
 			self.UUID = UUID;
-			return self.post(GETQRCODE_URL+UUID,{
+			return self.post<string>(GETQRCODE_URL+UUID,{
 				t : 'webwx',
 				_ : self.getTimeStamp()
-			},{
+			},null,{
 				responseType : 'blob'
-			}).then(function(response:Response){
-				return response.blob().then(function(data){
-					let objURL = URL.createObjectURL(data);
-					console.log('Get QRCode Image');
-					return objURL;
-				});
+			}).then((result)=>{
+				console.log(result);
+				console.log('Get QRCode Image');
+				return result;
 			});
 		});
 	}
@@ -76,17 +74,16 @@ class LoginServer extends CoreServer{
 	getBaseInfo(urlString:string):Promise<IInitInfoResResponse>{
 		let self = this;
 		return this.getCookies(urlString).then(()=>{
-			return this.commonJsonPost(INIT_URL,{
+			return this.commonJsonPost<IInitInfoResResponse>(INIT_URL,{
 				r : this.getTimeStamp(),
 				lang : 'zh_CN',
 				pass_ticket : this.class.passTicket
-			}).then(function(response:Response){
+			}).then((result)=>{
 				console.log('WX Init Done');
-				return response.json().then((result:IInitInfoResResponse)=>{
-					console.log('Get User Info');
-					self.class.account = result.User;
-					return result;
-				});
+				console.log('Get User Info');
+				self.class.account = result.User;
+				return result;
+
 			});
 		});
 
@@ -105,26 +102,24 @@ class LoginServer extends CoreServer{
 	private getCookies(urlString:string):Promise<null>{
 		let self = this;
 		let url = new URL(urlString);
-		return this.get(LOGIN_URL,{
+		return this.get<string>(LOGIN_URL,{
 			ticket : url['searchParams'].get('ticket'),
 			uuid : url['searchParams'].get('uuid'),
 			lang : 'zh_CN',
 			scan : url['searchParams'].get('scan'),
 			fun : 'new',
 			version : 'v2'
-		}).then(function(response:Response){
+		}).then(function(result){
 			console.log('Here Comes the Cookie!');
-			return response.text().then(function(result){
-				let responseInfo = self.convertXMLToJSON(result);
-				if(responseInfo.ret === '0') {
-					self.class.passTicket = responseInfo.pass_ticket;
-					self.class.Uin = responseInfo.wxuin;
-					self.class.Sid = responseInfo.wxsid;
-					self.class.Skey = responseInfo.skey;
-				}else{
-					throw responseInfo;
-				}
-			})
+			let responseInfo = self.convertXMLToJSON(result);
+			if(responseInfo.ret === '0') {
+				self.class.passTicket = responseInfo.pass_ticket;
+				self.class.Uin = responseInfo.wxuin;
+				self.class.Sid = responseInfo.wxsid;
+				self.class.Skey = responseInfo.skey;
+			}else{
+				throw responseInfo;
+			}
 		})
 	}
 
@@ -132,21 +127,22 @@ class LoginServer extends CoreServer{
 	private getUUID():Promise<string>{
 		let self = this;
 
-		return this.get(GETUUID_URL,{
+		return this.get<string>(GETUUID_URL,{
 			appid : 'wx782c26e4c19acffb',
 			fun : 'new',
 			lang : 'zh_CN',
 			_ : this.getTimeStamp()
-		}).then(function(value){
-			return value.text().then(function(result){
-				let code = result.match(MATCH_CODE_REG).pop();
-				let UUID = result.match(MATCH_UUID_REG).pop();
-				if(code == '200') {
-					return UUID;
-				}else{
-					throw 'Get UUID Error With Code :'+code;
-				}
-			});
+		},{
+			responseType : 'text'
+		}).then(function(result){
+			console.log(result);
+			let code = result.match(MATCH_CODE_REG).pop();
+			let UUID = result.match(MATCH_UUID_REG).pop();
+			if(code == '200') {
+				return UUID;
+			}else{
+				throw 'Get UUID Error With Code :'+code;
+			}
 		});
 	}
 }

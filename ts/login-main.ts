@@ -1,8 +1,4 @@
-requirejs.config({
-	'baseUrl' : 'app/',
-	'urlArgs' : 'bust='+(new Date()).getTime()
-});
+import {bootstrap} from 'angular2/platform/browser';
 import {Login} from './controller/login'
 
-
-new Login();
+bootstrap(Login);

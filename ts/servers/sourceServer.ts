@@ -10,15 +10,13 @@ class SourceServer extends CoreServer{
 				resolve(UserHeadImageCache[url]);
 			});
 		}else{
-			return this.get(url,null,{
+			return this.get<Blob>(url,null,{
 				responseType : 'blob'
-			}).then(response=>{
-				return response.blob().then(function(data){ 
-					let objURL = URL.createObjectURL(data);
-					console.log('Get UserHead Image');
-					UserHeadImageCache[url] = objURL;
-					return objURL;
-				});
+			}).then(result=>{
+				let objURL = URL.createObjectURL(result);
+				console.log('Get UserHead Image');
+				UserHeadImageCache[url] = objURL;
+				return objURL;
 			});
 		}
 	}

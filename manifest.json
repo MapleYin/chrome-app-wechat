@@ -4,11 +4,12 @@
   "version": "1.0",
   "app": {
     "background": {
-      "scripts": ["app/run.js"]
+      "scripts": ["common/js/system.js","app/run.js","app/background/init.js"]
     }
   },
   "sandbox": { 
-    "pages": ["sandbox.html"]
+    "pages": ["index.html","login.html"],
+    "content_security_policy" : "sandbox allow-scripts; img-src *"
   },
   "permissions": [ "<all_urls>","notifications","storage"]
 }
