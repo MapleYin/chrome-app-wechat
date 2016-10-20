@@ -20,9 +20,10 @@ define(["require", "exports", './coreServer', '../utility/notificationCenter'], 
                 SyncKey: this.syncKey,
                 rr: ~this.getTimeStamp()
             }).then(function (response) {
-                response.json().then(function (result) {
+                return response.json().then(function (result) {
                     if (result.BaseResponse.Ret == 0) {
                         self.syncKey = result.SyncKey;
+                        self.syncCheckKey = result.SyncCheckKey;
                         notificationCenter_1.NotificationCenter.post('sync.get.success', result);
                         return result;
                     }
@@ -44,25 +45,26 @@ define(["require", "exports", './coreServer', '../utility/notificationCenter'], 
                 sid: this.class.Sid,
                 uin: this.class.Uin,
                 deviceid: this.class.getDeviceID(),
-                synckey: this.syncKeyToString(),
+                synckey: this.syncCheckKeyToString(),
                 _: self.syncCheckStartTime++
             }).then(function (response) {
                 response.text().then(function (result) {
                     let retcode = result.match(MATCH_RETCODE_REG).pop();
                     let selector = result.match(MATCH_SELECTOR_REG).pop();
                     if (retcode == '0') {
-                        if (selector == '2') {
+                        if (selector == '0') {
+                            self.syncCheck();
+                        }
+                        else {
                             self.sync().then(function () {
                                 self.syncCheck();
                             }).catch(reason => {
                                 console.error(`[MessageServer sync] error:${reason}`);
+                                console.log(`Restart at 5 seconds`);
+                                setTimeout(() => {
+                                    self.syncCheck();
+                                }, 5000);
                             });
-                        }
-                        else if (selector == '0') {
-                            self.syncCheck();
-                        }
-                        else {
-                            console.error(`[MessageServer syncCheck] selector:${selector}`);
                         }
                     }
                     else {
@@ -125,9 +127,12 @@ define(["require", "exports", './coreServer', '../utility/notificationCenter'], 
                 console.log('Set Status Notify');
             });
         }
-        syncKeyToString() {
+        syncCheckKeyToString() {
             let resultArray = [];
-            this.syncKey.List.forEach(function (value) {
+            if (!this.syncCheckKey) {
+                this.syncCheckKey = this.syncKey;
+            }
+            this.syncCheckKey.List.forEach(function (value) {
                 resultArray.push(value.Key + '_' + value.Val);
             });
             return resultArray.join('|');

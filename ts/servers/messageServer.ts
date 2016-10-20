@@ -16,10 +16,11 @@ let MATCH_SELECTOR_REG = /selector\s*:\s*\"(.*?)\"/;
 
 class MessageServer extends CoreServer{
 	syncKey : ISyncKey;
+	syncCheckKey : ISyncKey;
 	private syncCheckStartTime;
 
 	// SYNC
-	private sync():Promise<Response>{
+	private sync():Promise<ISyncResponse>{
 		let self = this;
 
 		return this.commonJsonPost(SYNC_URL,{
@@ -31,9 +32,10 @@ class MessageServer extends CoreServer{
 			SyncKey : this.syncKey,
 			rr : ~this.getTimeStamp()
 		}).then(function(response:Response){
-			response.json().then(function(result:ISyncResponse){
+			return response.json().then(function(result:ISyncResponse){
 				if(result.BaseResponse.Ret == 0) {
 					self.syncKey = result.SyncKey;
+					self.syncCheckKey = result.SyncCheckKey;
 					NotificationCenter.post<ISyncResponse>('sync.get.success',result);
 					return result;
 				}else{
@@ -55,23 +57,25 @@ class MessageServer extends CoreServer{
 			sid : this.class.Sid,
 			uin : this.class.Uin,
 			deviceid : this.class.getDeviceID(),
-			synckey : this.syncKeyToString(),
+			synckey : this.syncCheckKeyToString(),
 			_ : self.syncCheckStartTime++
 		}).then(function(response:Response){
 			response.text().then(function(result){
 				let retcode = result.match(MATCH_RETCODE_REG).pop();
 				let selector = result.match(MATCH_SELECTOR_REG).pop();
 				if(retcode == '0') {
-					if(selector == '2') {
+					if(selector== '0'){
+						self.syncCheck();
+					}else{
 						self.sync().then(function(){
 							self.syncCheck();
 						}).catch(reason=>{
 							console.error(`[MessageServer sync] error:${reason}`);
+							console.log(`Restart at 5 seconds`);
+							setTimeout(()=>{
+								self.syncCheck();
+							},5000);
 						});
-					}else if(selector== '0'){
-						self.syncCheck();
-					}else{
-						console.error(`[MessageServer syncCheck] selector:${selector}`);
 					}
 				}else{
 					console.log('logout!');
@@ -138,9 +142,12 @@ class MessageServer extends CoreServer{
 		});
 	}
 	
-	private syncKeyToString(){
+	private syncCheckKeyToString(){
 		let resultArray = [];
-		this.syncKey.List.forEach(function(value:any){
+		if(!this.syncCheckKey) {
+			this.syncCheckKey = this.syncKey;
+		}
+		this.syncCheckKey.List.forEach(function(value:any){
 			resultArray.push(value.Key+'_'+value.Val);
 		});
 
