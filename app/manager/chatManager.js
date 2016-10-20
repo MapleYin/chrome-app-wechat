@@ -83,7 +83,12 @@ define(["require", "exports", './baseManager', './contactManager', './messageMan
             chatContentController_1.chatContentController.newMessage(message);
         }
         sendMessage(content) {
-            messageManager_1.messageManager.sendTextMessage(this.currentChatUser, content);
+            if (this.currentChatUser) {
+                messageManager_1.messageManager.sendTextMessage(this.currentChatUser, content);
+            }
+            else {
+                console.error(`[ChatManager sendMessage] error currentChatUser:${this.currentChatUser}`);
+            }
         }
     }
     exports.chatManager = new ChatManager();

@@ -25,7 +25,6 @@ define(["require", "exports", './baseManager', '../models/wxInterface', '../mode
         sendTextMessage(username, content) {
             let message = messageServer_1.messageServer.createSendingMessage(username, content, wxInterface_1.MessageType.TEXT);
             this.messageProcess(message);
-            //messageServer.sendMessage(message).then().catch();
             messageServer_1.messageServer.sendMessage(message).then(result => {
                 message.MsgId = result.MsgId;
             }).catch(reason => {

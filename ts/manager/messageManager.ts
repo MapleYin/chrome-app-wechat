@@ -38,7 +38,6 @@ class MessageManager extends BaseManager{
 	sendTextMessage(username:string,content:string):IMessage{
 		let message:IMessage = messageServer.createSendingMessage(username,content,MessageType.TEXT);
 		this.messageProcess(message);
-		//messageServer.sendMessage(message).then().catch();
 		messageServer.sendMessage(message).then(result=>{
 			message.MsgId = result.MsgId;
 		}).catch(reason=>{

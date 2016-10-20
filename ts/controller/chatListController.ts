@@ -24,6 +24,9 @@ class ChatListController extends BaseController{
 				let index = chatListInfo.indexOf(user);
 				if(index > -1) {
 					self.insertItemIntoIndex(item,index);
+					console.log(`[ChatListController updateChatList] item:${item.nickName} insertInto ${index}`);
+				}else{
+					console.log(`[ChatListController updateChatList] ChatList Nothing Change!`);
 				}
 			});
 		}else{
@@ -37,22 +40,10 @@ class ChatListController extends BaseController{
 		console.timeEnd('updateChatListElement');
 	}
 
-	newMessage(message:MessageModel,userInfo:UserModel){
-		let self = this;
-		
-		if(message.MMPeerUserName in self.userListItemsInfo) {
-			let item = self.userListItemsInfo[message.MMPeerUserName];
-			item.lastMessage = message.MMDigest;
-			item.lastDate = new Date(message.CreateTime*1000);
-		}else{
-			let item = new ChatListItem(userInfo);
-			item.lastMessage = message.MMDigest;
-			item.lastDate = new Date(message.CreateTime*1000);
-			self.userListItemsInfo[message.MMPeerUserName] = item;
-		}
-		// self.userListItems.forEach(function(value){
-		// 	self.$chatListContainer.append(value.$element);
-		// });
+	newMessage(message:MessageModel,user:UserModel){
+		let item = this.getItemByUser(user);
+		item.lastMessage = message.MMDigest;
+		item.lastDate = new Date(message.CreateTime*1000);
 	}
 
 	private selectedItem(username:string){

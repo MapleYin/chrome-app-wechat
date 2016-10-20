@@ -102,7 +102,11 @@ class ChatManager extends BaseManager{
 	}
 
 	sendMessage(content:string){
-		messageManager.sendTextMessage(this.currentChatUser,content);
+		if(this.currentChatUser) {
+			messageManager.sendTextMessage(this.currentChatUser,content);
+		}else{
+			console.error(`[ChatManager sendMessage] error currentChatUser:${this.currentChatUser}`);
+		}
 	}
 
 }
