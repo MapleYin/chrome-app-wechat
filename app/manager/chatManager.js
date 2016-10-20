@@ -16,7 +16,7 @@ define(["require", "exports", './baseManager', './contactManager', './messageMan
             });
             notificationCenter_1.NotificationCenter.on('message.receive', event => {
                 self.addChatMessage(event.userInfo);
-                //self.addChatList([event.userInfo.MMPeerUserName]);
+                self.addChatList([event.userInfo.MMPeerUserName]);
             });
             notificationCenter_1.NotificationCenter.on('message.send', event => {
                 self.sendMessage(event.userInfo);
@@ -50,12 +50,21 @@ define(["require", "exports", './baseManager', './contactManager', './messageMan
                 }
                 self.chatList.unshift(username);
             });
-            this.updateChatList();
+            this.updateChatList(usernames);
         }
-        updateChatList() {
+        updateChatList(usernames) {
             let self = this;
             let topList = [];
             let normalList = [];
+            let changeList = [];
+            if (usernames) {
+                usernames.forEach(username => {
+                    let user = contactManager_1.contactManager.getContact(username);
+                    if (user && !user.isBrandContact && !user.isShieldUser) {
+                        changeList.push(user);
+                    }
+                });
+            }
             this.chatList.forEach(username => {
                 let user = contactManager_1.contactManager.getContact(username);
                 if (user && !user.isBrandContact && !user.isShieldUser) {
@@ -66,7 +75,7 @@ define(["require", "exports", './baseManager', './contactManager', './messageMan
             [].unshift.apply(normalList, topList);
             this.chatListInfo = normalList;
             // 更新列表
-            chatListController_1.chatListController.updateChatList(normalList);
+            chatListController_1.chatListController.updateChatList(normalList, changeList);
         }
         addChatMessage(message) {
             let user = contactManager_1.contactManager.getContact(message.MMPeerUserName);

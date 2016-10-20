@@ -18,8 +18,10 @@ let createMainWindow = function(){
 	chrome.app.window.create('index.html', {
 	    'id': 'MainWindow',
 	    'innerBounds': {
+	    	'height' : 480,
+	    	'width' : 660,
+	        'minHeight': 480,
 	        'minWidth': 660,
-	        'minHeight': 600
 	    },
 	    'frame' : 'none',
 	});

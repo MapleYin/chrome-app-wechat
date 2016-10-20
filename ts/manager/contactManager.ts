@@ -46,6 +46,9 @@ class ContactManager extends BaseManager{
 	getContact(username:string,chatRoomId?:string,isSingleUser?:boolean):UserModel{
 		let self = this;
 		var user = this.contacts[username] || this.strangerContacts[username];
+		if(!user) {
+			// debugger
+		}
 		if(isSingleUser) {
 			return user;
 		}else{
@@ -59,9 +62,9 @@ class ContactManager extends BaseManager{
 		return user;
 	}
 
-	addContacts(usersInfo:IUser[],isFromBatchGet?:boolean){
+	addContacts(usersInfos:IUser[],isFromBatchGet?:boolean){
 		let self = this;
-		usersInfo.forEach(function(userInfo){
+		usersInfos.forEach(function(userInfo){
 			self.addContact(userInfo,isFromBatchGet);
 		});
 	}
@@ -157,6 +160,12 @@ class ContactManager extends BaseManager{
 			}else{
 				NotificationCenter.post('contact.init.success');
 			}
+		}).catch(reason=>{
+			console.error(`[ContactManager] error:${reason}`);
+			console.log(`Retry at 5 seconds`);
+			setTimeout(()=>{
+				self.initContact(0);
+			});
 		});
 	}
 

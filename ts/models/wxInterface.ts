@@ -39,6 +39,7 @@ export interface ISyncResponse{
 	AddMsgCount : number;
 	AddMsgList : Array<IMessage>;
 	SyncKey : ISyncKey;
+    SyncCheckKey : ISyncKey;
 }
 
 export interface IInitInfoResResponse{

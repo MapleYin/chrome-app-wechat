@@ -4,21 +4,29 @@ define(["require", "exports", '../template/chatListItem', './baseController', '.
         constructor() {
             super();
             this.$chatListContainer = $('#chat-list-container');
-            this.userListItems = [];
             this.userListItemsInfo = {};
             this.bindEvent();
         }
-        updateChatList(chatListInfo) {
+        updateChatList(chatListInfo, changeList) {
             let self = this;
-            this.$chatListContainer.empty();
-            this.userListItems = [];
             console.time('updateChatListElement');
-            chatListInfo.forEach(function (user, index) {
-                let item = new chatListItem_1.ChatListItem(user);
-                self.userListItems.push(item);
-                self.userListItemsInfo[user.UserName] = item;
-                self.$chatListContainer.append(item.$element);
-            });
+            if (changeList && changeList.length > 0) {
+                changeList.forEach(user => {
+                    let item = self.getItemByUser(user);
+                    let index = chatListInfo.indexOf(user);
+                    if (index > -1) {
+                        self.insertItemIntoIndex(item, index);
+                    }
+                });
+            }
+            else {
+                chatListInfo.forEach(function (user, index) {
+                    let item = self.getItemByUser(user);
+                    if (index != item.$element.index()) {
+                        self.insertItemIntoIndex(item, index);
+                    }
+                });
+            }
             console.timeEnd('updateChatListElement');
         }
         newMessage(message, userInfo) {
@@ -27,40 +35,56 @@ define(["require", "exports", '../template/chatListItem', './baseController', '.
                 let item = self.userListItemsInfo[message.MMPeerUserName];
                 item.lastMessage = message.MMDigest;
                 item.lastDate = new Date(message.CreateTime * 1000);
-                let index = self.userListItems.indexOf(item);
-                self.userListItems.splice(index, 1);
-                self.userListItems.unshift(item);
             }
             else {
                 let item = new chatListItem_1.ChatListItem(userInfo);
                 item.lastMessage = message.MMDigest;
                 item.lastDate = new Date(message.CreateTime * 1000);
                 self.userListItemsInfo[message.MMPeerUserName] = item;
-                self.userListItems.push(item);
             }
-            self.$chatListContainer.empty();
-            self.userListItems.forEach(function (value) {
-                self.$chatListContainer.append(value.$element);
-            });
+            // self.userListItems.forEach(function(value){
+            // 	self.$chatListContainer.append(value.$element);
+            // });
         }
-        selectedItem(index) {
-            if (typeof this.activeUserIndex == 'number' && index == this.activeUserIndex) {
+        selectedItem(username) {
+            if (this.activeUser && this.activeUser == username) {
                 return;
             }
-            let item = this.userListItems[index];
+            let item = this.userListItemsInfo[username];
             item.active = true;
-            let preItem = this.userListItems[this.activeUserIndex];
+            let preItem = this.userListItemsInfo[this.activeUser];
             if (preItem) {
                 preItem.active = false;
             }
-            this.activeUserIndex = index;
+            this.activeUser = username;
             notificationCenter_1.NotificationCenter.post('chatList.select.user', item.id);
+        }
+        getItemByUser(user) {
+            var item;
+            if (user.UserName in this.userListItemsInfo) {
+                item = this.userListItemsInfo[user.UserName];
+                item.update(user);
+            }
+            else {
+                item = new chatListItem_1.ChatListItem(user);
+                this.userListItemsInfo[user.UserName] = item;
+                item.$element.appendTo(this.$chatListContainer);
+            }
+            return item;
+        }
+        insertItemIntoIndex(item, index) {
+            let preItem = this.$chatListContainer.children().eq(index);
+            if (preItem) {
+                item.$element.insertBefore(preItem);
+            }
+            else {
+                item.$element.appendTo(this.$chatListContainer);
+            }
         }
         bindEvent() {
             let self = this;
             this.$chatListContainer.on('click', '.item', function (event) {
-                let index = $(this).index();
-                self.selectedItem(index);
+                self.selectedItem($(this).data('id'));
             });
         }
     }

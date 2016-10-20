@@ -58,8 +58,10 @@ define(["require", "exports", '../template/chatContentItem', './baseController',
             }
             messages.forEach(message => {
                 let sender = contactManager_1.contactManager.getContact(message.MMActualSender);
-                let item = new chatContentItem_1.ChatContentItem(message, sender);
-                self.$chatContentContainer.append(item.$element);
+                if (sender) {
+                    let item = new chatContentItem_1.ChatContentItem(message, sender);
+                    self.$chatContentContainer.append(item.$element);
+                }
             });
             self.$chatContentContainer.scrollTop(self.$chatContentContainer.height());
         }

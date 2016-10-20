@@ -58,6 +58,12 @@ export class ChatListItem extends Template implements ChatListData{
 		this.render(this.data);
 	}
 
+	update(itemData:UserModel){
+		this.id = this.data.id;
+		this.avatar = this.data.avatar;
+		this.nickName = this.data.nickName;
+	}
+
 	public set active(v : boolean) {
 		this._active = v;
 		if(v) {

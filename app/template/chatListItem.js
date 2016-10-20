@@ -26,6 +26,11 @@ define(["require", "exports", './template'], function (require, exports, templat
             this.nickName = this.data.nickName;
             this.render(this.data);
         }
+        update(itemData) {
+            this.id = this.data.id;
+            this.avatar = this.data.avatar;
+            this.nickName = this.data.nickName;
+        }
         set active(v) {
             this._active = v;
             if (v) {

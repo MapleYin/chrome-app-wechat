@@ -1,4 +1,4 @@
-import {IUser,IMessage,MessageType} from '../models/wxInterface';
+import {IUser,IMessage,MessageType,AppMsgType} from '../models/wxInterface';
 import {UserModel} from '../models/userModel';
 import {MessageModel} from '../models/messageModel';
 
@@ -15,6 +15,10 @@ let templateString =
 		<p>{{content}}</p>
 	</section>
 </div>
+`;
+
+let appMsgString = `
+
 `;
 
 interface ChatContentData{
@@ -34,6 +38,7 @@ export class ChatContentItem extends Template implements ChatContentData{
 
 	constructor(message:MessageModel,sender:UserModel){
 		super(templateString);
+		
 		this.avatar = sender.HeadImgUrl;
 		this.nickName = sender.getDisplayName();
 		this.processMessage(message);
@@ -56,6 +61,13 @@ export class ChatContentItem extends Template implements ChatContentData{
 			case MessageType.IMAGE:
 				this.itemClassName.push('image')
 				this.content = `<img data-src="${message.ImageUrl}" class="msg-image" />`;
+				break;
+			case MessageType.APP:
+				if(message.AppMsgType == AppMsgType.URL) {
+					this.content = `<a href="${message.Url}">[链接消息]${message.FileName}</a>`;
+				}else{
+					this.content = '[未知APP消息]';
+				}
 				break;
 			default:
 				this.content = '[未知消息]';

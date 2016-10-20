@@ -70,8 +70,10 @@ class ChatContentController extends BaseController{
 		if(!messages) {return;}
 		messages.forEach(message=>{
 			let sender = contactManager.getContact(message.MMActualSender);
-			let item = new ChatContentItem(message,sender);
-			self.$chatContentContainer.append(item.$element);
+			if(sender) {
+				let item = new ChatContentItem(message,sender);
+				self.$chatContentContainer.append(item.$element);
+			}
 		});
 		
 		self.$chatContentContainer.scrollTop(self.$chatContentContainer.height());

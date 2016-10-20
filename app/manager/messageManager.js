@@ -52,6 +52,9 @@ define(["require", "exports", './baseManager', '../models/wxInterface', '../mode
                     message.RecommendInfo &&
                     message.RecommendInfo.UserName == contactManager_1.contactManager.account.UserName)) {
                 switch (message.MsgType) {
+                    case wxInterface_1.MessageType.APP:
+                        notificationCenter_1.NotificationCenter.post('message.receive.app', message);
+                        break;
                     case wxInterface_1.MessageType.TEXT:
                         notificationCenter_1.NotificationCenter.post('message.receive.text', message);
                         break;
@@ -59,7 +62,7 @@ define(["require", "exports", './baseManager', '../models/wxInterface', '../mode
                         notificationCenter_1.NotificationCenter.post('message.receive.image', message);
                         break;
                     default:
-                        // code...
+                        notificationCenter_1.NotificationCenter.post('message.receive', message);
                         break;
                 }
                 //@TODO href encode

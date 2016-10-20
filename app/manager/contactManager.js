@@ -30,6 +30,8 @@ define(["require", "exports", './baseManager', './emoticonManager', '../servers/
         getContact(username, chatRoomId, isSingleUser) {
             let self = this;
             var user = this.contacts[username] || this.strangerContacts[username];
+            if (!user) {
+            }
             if (isSingleUser) {
                 return user;
             }
@@ -43,9 +45,9 @@ define(["require", "exports", './baseManager', './emoticonManager', '../servers/
             }
             return user;
         }
-        addContacts(usersInfo, isFromBatchGet) {
+        addContacts(usersInfos, isFromBatchGet) {
             let self = this;
-            usersInfo.forEach(function (userInfo) {
+            usersInfos.forEach(function (userInfo) {
                 self.addContact(userInfo, isFromBatchGet);
             });
         }
@@ -139,6 +141,12 @@ define(["require", "exports", './baseManager', './emoticonManager', '../servers/
                 else {
                     notificationCenter_1.NotificationCenter.post('contact.init.success');
                 }
+            }).catch(reason => {
+                console.error(`[ContactManager] error:${reason}`);
+                console.log(`Retry at 5 seconds`);
+                setTimeout(() => {
+                    self.initContact(0);
+                });
             });
         }
         batchGetContactSuccess(contacts) {

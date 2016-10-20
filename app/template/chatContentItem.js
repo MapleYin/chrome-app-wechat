@@ -10,6 +10,9 @@ define(["require", "exports", '../models/wxInterface', './template'], function (
 	</section>
 </div>
 `;
+    let appMsgString = `
+
+`;
     class ChatContentItem extends template_1.Template {
         constructor(message, sender) {
             super(templateString);
@@ -35,6 +38,14 @@ define(["require", "exports", '../models/wxInterface', './template'], function (
                 case wxInterface_1.MessageType.IMAGE:
                     this.itemClassName.push('image');
                     this.content = `<img data-src="${message.ImageUrl}" class="msg-image" />`;
+                    break;
+                case wxInterface_1.MessageType.APP:
+                    if (message.AppMsgType == wxInterface_1.AppMsgType.URL) {
+                        this.content = `<a href="${message.Url}">[链接消息]${message.FileName}</a>`;
+                    }
+                    else {
+                        this.content = '[未知APP消息]';
+                    }
                     break;
                 default:
                     this.content = '[未知消息]';

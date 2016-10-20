@@ -27,7 +27,7 @@ class ChatManager extends BaseManager{
 		});
 		NotificationCenter.on<MessageModel>('message.receive',event=>{
 			self.addChatMessage(event.userInfo);
-			//self.addChatList([event.userInfo.MMPeerUserName]);
+			self.addChatList([event.userInfo.MMPeerUserName]);
 		});
 
 		NotificationCenter.on<string>('message.send',event=>{
@@ -63,13 +63,24 @@ class ChatManager extends BaseManager{
 			}
 			self.chatList.unshift(username);
 		});
-		this.updateChatList();
+		this.updateChatList(usernames);
 	}
 
-	private updateChatList(){
+	private updateChatList(usernames?:string[]){
 		let self = this;
 		let topList = [];
 		let normalList = [];
+		let changeList = [];
+
+		if(usernames) {
+			usernames.forEach(username=>{
+				let user = contactManager.getContact(username);
+				if(user && !user.isBrandContact && !user.isShieldUser) {
+					changeList.push(user);
+				}
+			});
+		}
+
 		this.chatList.forEach(username=>{
 			let user = contactManager.getContact(username);
 			if(user && !user.isBrandContact && !user.isShieldUser) {
@@ -81,7 +92,7 @@ class ChatManager extends BaseManager{
 		this.chatListInfo = normalList;
 
 		// 更新列表
-		chatListController.updateChatList(normalList);
+		chatListController.updateChatList(normalList,changeList);
 	}
 
 	addChatMessage(message:MessageModel){

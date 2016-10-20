@@ -73,6 +73,9 @@ class MessageManager extends BaseManager{
 			 message.RecommendInfo.UserName == contactManager.account.UserName)) {
 			
 			switch (message.MsgType) {
+				case MessageType.APP:
+					NotificationCenter.post<MessageModel>('message.receive.app',message);
+					break;
 				case MessageType.TEXT:
 					NotificationCenter.post<MessageModel>('message.receive.text',message);
 					break;
@@ -80,7 +83,7 @@ class MessageManager extends BaseManager{
 					NotificationCenter.post<MessageModel>('message.receive.image',message);
 					break;
 				default:
-					// code...
+					NotificationCenter.post<MessageModel>('message.receive',message);
 					break;
 			}
 
