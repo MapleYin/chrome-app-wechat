@@ -54,15 +54,26 @@ define(["require", "exports", './coreServer', '../utility/notificationCenter'], 
                         if (selector == '2') {
                             self.sync().then(function () {
                                 self.syncCheck();
+                            }).catch(reason => {
+                                console.error(`[MessageServer sync] error:${reason}`);
                             });
                         }
                         else if (selector == '0') {
                             self.syncCheck();
                         }
+                        else {
+                            console.error(`[MessageServer syncCheck] selector:${selector}`);
+                        }
                     }
                     else {
                         console.log('logout!');
                     }
+                }).catch(reason => {
+                    console.error(`[MessageServer syncCheck] error:${reason}`);
+                    console.log(`Restart at 10 seconds`);
+                    setTimeout(() => {
+                        self.syncCheck();
+                    }, 10000);
                 });
             });
         }

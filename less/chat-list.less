@@ -1,9 +1,40 @@
 .chat-list{
+	background: rgb(246, 246, 246);
 	.chat-list-header{
 		-webkit-app-region: drag;
-		height: 53px;
+		height: 55px;
     	flex-shrink: 0;
 		border-bottom: solid 1px #ebebeb;
+		.chat-list-control{
+			display: flex;
+			justify-content:space-around;
+			align-items:center;
+			padding: 0 10px;
+			.search{
+				flex-grow:1;
+				margin:0 10px;
+				height: 22px;
+				border: solid 1px rgb(208, 208, 208);
+				border-radius: 3px;
+				outline: none;
+				padding: 3px 5px;
+				background-color: rgb(224, 224, 224);
+			}
+			.chat-list-add{
+				width: 32px;
+				height: 22px;
+				border:solid 1px rgb(198, 198, 198);
+				border-radius: 4px;
+				padding: 0;
+				outline: none;
+				background: white;
+				font-size: 16px;
+				color:rgb(124, 124, 124);
+				&:active{
+					background: rgb(240, 240, 240);
+				}
+			}
+		}
 	}
 	.item{
 		border-bottom: solid 1px rgb(227, 227, 227); 
@@ -17,7 +48,10 @@
 			border-radius: 100%;
 		}
 		&.active{
-			background: rgb(248, 248, 248);
+			background: rgb(52, 142, 251);
+			.item-body,.info .message-date,.message{
+				color: white;
+			}
 		}
 	}
 	.item-header{
@@ -36,6 +70,7 @@
 		overflow: hidden;
 		.info{
 			display: flex;
+			margin-bottom: 2px;
 			.username{
 				font-weight: 100;
 				font-size: 12px;
@@ -45,7 +80,6 @@
 				overflow: hidden;
 				white-space: nowrap;
 				text-overflow:ellipsis;
-				margin-bottom: 2px;
 			}
 			.message-date{
 				color: rgb(155, 155, 155);

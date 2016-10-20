@@ -3,14 +3,24 @@
 <head>
 	<meta charset="UTF-8">
 	<title>We Chat</title>
-
+	
+	<!-- <link rel="stylesheet" type="text/css" href="common/css/bootstrap.min.css"> -->
 	<link rel="stylesheet" type="text/css" href="common/css/font-awesome.min.css">
 	<link rel="stylesheet" type="text/css" href="css/main.css">
 </head>
 <body>
 	<section class="chat-container">
 		<aside class="chat-list">
-			<header class="chat-list-header"></header>
+			<header class="chat-list-header">
+				<section class="frame-control">
+					<button class="close"></button>
+					<button class="minimal"></button>
+				</section>
+				<section class="chat-list-control">
+					<input type="search" placeholder="🔍搜索" class="search">
+					<button class="chat-list-add"><i class="fa fa-pencil-square-o"></i></button>
+				</section>
+			</header>
 			<section class="chat-list-body">
 				<div class="list-container">
 					<ul class="list" id="chat-list-container"></ul>

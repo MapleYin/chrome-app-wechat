@@ -13,14 +13,18 @@ define(["require", "exports", '../models/wxInterface', './template'], function (
     class ChatContentItem extends template_1.Template {
         constructor(message, sender) {
             super(templateString);
+            this.itemClassName = [];
             this.avatar = sender.HeadImgUrl;
             this.nickName = sender.getDisplayName();
             this.processMessage(message);
+            if (sender.isSelf) {
+                this.itemClassName.push('self');
+            }
             this.render({
                 avatar: this.avatar,
                 nickName: this.nickName,
                 content: this.content,
-                className: sender.isSelf ? 'self' : ''
+                className: this.itemClassName.join(' ')
             });
         }
         processMessage(message) {
@@ -29,6 +33,7 @@ define(["require", "exports", '../models/wxInterface', './template'], function (
                     this.content = message.MMActualContent;
                     break;
                 case wxInterface_1.MessageType.IMAGE:
+                    this.itemClassName.push('image');
                     this.content = `<img data-src="${message.ImageUrl}" class="msg-image" />`;
                     break;
                 default:

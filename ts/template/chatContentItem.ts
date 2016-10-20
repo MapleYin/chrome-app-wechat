@@ -30,16 +30,21 @@ export class ChatContentItem extends Template implements ChatContentData{
 	content : string;
 	date? : Date;
 
+	itemClassName:string[] = [];
+
 	constructor(message:MessageModel,sender:UserModel){
 		super(templateString);
 		this.avatar = sender.HeadImgUrl;
 		this.nickName = sender.getDisplayName();
 		this.processMessage(message);
+		if(sender.isSelf) {
+			this.itemClassName.push('self');	
+		}
 		this.render({
 			avatar : this.avatar,
 			nickName : this.nickName,
 			content : this.content,
-			className : sender.isSelf ? 'self' : ''
+			className : this.itemClassName.join(' ')
 		});
 	}
 
@@ -49,6 +54,7 @@ export class ChatContentItem extends Template implements ChatContentData{
 				this.content = message.MMActualContent;
 				break;
 			case MessageType.IMAGE:
+				this.itemClassName.push('image')
 				this.content = `<img data-src="${message.ImageUrl}" class="msg-image" />`;
 				break;
 			default:

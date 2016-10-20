@@ -1,3 +1,69 @@
+.frame-control{
+	display: inline-flex;
+	padding: 5px 0 7px 4px;
+	&:hover{
+		button:before,button:after{
+			content: "";
+		}
+	}
+	button{
+		display: flex;
+		width: 12px;
+		height: 12px;
+		border-radius: 100%;
+		border: solid 1px;
+		padding: 0;
+		position: relative;
+		margin: 0 4px;
+		outline: none;
+		&.close{
+			background: rgb(255, 96, 89);
+			border-color: rgb(222, 66, 60);
+			&:active{
+				background: rgb(179, 61, 53);
+				&:before,&:after{
+					background: rgb(0, 0, 0);
+				}
+			}
+			&:before,&:after{
+				position: absolute;
+				width:1px;
+				height: 7px;
+				background: rgb(40, 0, 0);
+				left: 50%;
+				top: 50%;
+			}
+			&:before{
+				transform:translate(-50%,-50%) rotate(45deg);
+			}
+			&:after{
+				transform:translate(-50%,-50%) rotate(-45deg);
+			}
+		}
+		&.minimal{
+			background: rgb(255, 190, 47);
+			border-color: rgb(215, 169, 77);
+			&:active{
+				background: rgb(152, 103, 0);
+				border-color: rgb(170, 122, 27);
+				&:before{
+					background:rgb(46, 8, 0);
+				}
+			}
+			&:before{
+				position: absolute;
+				width:1px;
+				height: 6px;
+				background: rgb(117, 54, 0);
+				left: 50%;
+				top: 50%;
+				transform:translate(-50%,-50%) rotate(90deg);
+			}
+		}
+	}
+}
+
+
 .chat-container{
 	display: flex;
 	width: 100%;
@@ -38,7 +104,7 @@
 		flex-direction:column;
 		.chat-detail-header{
 			display: flex;
-			height: 53px;
+			height: 55px;
 			border-bottom: solid 1px rgb(235, 235, 235);
 		}
 		.chat-detail-body{
