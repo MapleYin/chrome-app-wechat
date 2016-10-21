@@ -36,7 +36,6 @@ chrome.app.runtime.onLaunched.addListener(function() {
 	}else{
 		createLoginWindow();
 	}
-    // createMainWindow();
 });
 
 chrome.runtime.onMessage.addListener(function(message:any, sender:chrome.runtime.MessageSender,sendResponse:(response:any)=>void){

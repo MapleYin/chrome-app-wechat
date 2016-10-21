@@ -66,7 +66,7 @@ class ContactManager extends BaseManager{
 		});
 	}
 
-	addContact(userInfo:IUser,isFromBatchGet?:boolean){
+	addContact(userInfo:IUser|IGroupMember,isFromBatchGet?:boolean){
 		if(userInfo) {
 			let user = new UserModel(userInfo);
 			if(user.EncryChatRoomId && user.UserName || isFromBatchGet) {
@@ -178,7 +178,12 @@ class ContactManager extends BaseManager{
 			if(UserModel.isRoomContact(user.UserName) && user.MemberList) {
 				user.MemberList.forEach(memberInfo=>{
 					let member = self.getContact(memberInfo.UserName,"",true);
-					if(member) {
+					if(!member || !member.isContact) {
+						memberInfo.HeadImgUrl = contactServer.getContactHeadImgUrl({
+							EncryChatRoomId: user.EncryChatRoomId,
+							UserName: memberInfo.UserName
+						});
+						self.addContact(memberInfo);
 						let memberIndex = ContactInListIndex(self.getContactToGetList,member);
 						if(memberIndex > -1) {
 							self.getContactToGetList.splice(memberIndex,1);

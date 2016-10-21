@@ -4,11 +4,17 @@ define(["require", "exports", './wxInterface', '../manager/contactManager'], fun
     let ShieldAccounts = ["newsapp", "wxid_novlwrv3lqwv11", "gh_22b87fa7cb3c", "notification_messages"];
     class UserModel {
         constructor(userInfo, isSelf) {
+            this.isRoomContact = false;
             this.MMFromBatchget = false;
             this.MMBatchgetMember = false;
             this.isSelf = false;
             this.class = this.constructor;
-            this.updateUserInfo(userInfo, isSelf);
+            if ('ContactFlag' in userInfo) {
+                this.updateUserInfo(userInfo, isSelf);
+            }
+            else {
+                this.updateMemberInfo(userInfo);
+            }
         }
         set contactFlag(contactFlag) {
             this._contactFlag = contactFlag;
@@ -18,6 +24,12 @@ define(["require", "exports", './wxInterface', '../manager/contactManager'], fun
                 this.Statues === wxInterface_1.ChatRoomNotify.CLOSE :
                 !!(contactFlag & wxInterface_1.ContactFlag.NOTIFYCLOSECONTACT);
             this.isTop = !!(contactFlag & wxInterface_1.ContactFlag.TOPCONTACT);
+        }
+        updateMemberInfo(memberInfo) {
+            this.UserName = memberInfo.UserName;
+            this.NickName = memberInfo.NickName;
+            this.RemarkName = memberInfo.DisplayName;
+            this.HeadImgUrl = memberInfo.HeadImgUrl;
         }
         updateUserInfo(userInfo, isSelf) {
             // property
@@ -33,7 +45,7 @@ define(["require", "exports", './wxInterface', '../manager/contactManager'], fun
             this.MemberList = userInfo.MemberList;
             this.MemberCount = userInfo.MemberCount;
             // status
-            this.isRoomContact = UserModel.isRoomContact(userInfo.UserName);
+            this.isRoomContact = this.class.isRoomContact(userInfo.UserName);
             this.Statues = userInfo.Statues;
             this.contactFlag = userInfo.ContactFlag;
             this.hasPhotoAlbum = !!(1 & userInfo.SnsFlag);
@@ -70,9 +82,6 @@ define(["require", "exports", './wxInterface', '../manager/contactManager'], fun
                 name = this.RemarkName || this.NickName;
             }
             return name;
-        }
-        static getDisplayName(username) {
-            return;
         }
         static isSpUser(username) {
             return /@qqim$/.test(username) || SpicalAccounts.indexOf(username) != -1;

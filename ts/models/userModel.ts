@@ -1,6 +1,6 @@
-import {IUser,IGroupMember,ContactFlag,ChatRoomNotify,UserAttrVerifyFlag} from './wxInterface'
+import {IUser,IGroupMember,ContactFlag,ChatRoomNotify,UserAttrVerifyFlag,IContactHeadImgParams} from './wxInterface'
+import {CoreServer} from '../servers/coreServer'
 import {contactManager} from '../manager/contactManager'
-
 
 
 let SpicalAccounts = ["weibo", "qqmail", "fmessage", "tmessage", "qmessage", "qqsync", "floatbottle", "lbsapp", "shakeapp", "medianote", "qqfriend", "readerapp", "blogapp", "facebookapp", "masssendapp", "meishiapp", "feedsapp", "voip", "blogappweixin", "weixin", "brandsessionholder", "weixinreminder", "wxid_novlwrv3lqwv11", "gh_22b87fa7cb3c", "officialaccounts", "notification_messages"];
@@ -35,7 +35,7 @@ export class UserModel{
 	isBlackContact : boolean;
 	isBrandContact : boolean;
 	isConversationContact : boolean;
-	isRoomContact : boolean;
+	isRoomContact : boolean = false;
 	isMuted : boolean;
 	isTop : boolean;
 	isShieldUser : boolean;
@@ -47,8 +47,13 @@ export class UserModel{
 
 	protected class = (this.constructor as typeof UserModel);
 
-	constructor(userInfo:IUser,isSelf?:boolean){
-		this.updateUserInfo(userInfo,isSelf);
+	constructor(userInfo:IUser|IGroupMember,isSelf?:boolean){
+
+		if('ContactFlag' in userInfo) {
+			this.updateUserInfo(userInfo as IUser,isSelf);
+		}else{
+			this.updateMemberInfo(userInfo as IGroupMember);
+		}
 	}
 
 	set contactFlag(contactFlag : number) {
@@ -62,6 +67,12 @@ export class UserModel{
 		this.isTop = !!(contactFlag & ContactFlag.TOPCONTACT);
 	}
 
+	updateMemberInfo(memberInfo:IGroupMember){
+		this.UserName = memberInfo.UserName;
+		this.NickName = memberInfo.NickName;
+		this.RemarkName = memberInfo.DisplayName;
+		this.HeadImgUrl = memberInfo.HeadImgUrl;
+	}
 
 	updateUserInfo(userInfo:IUser,isSelf?:boolean){
 		// property
@@ -78,7 +89,7 @@ export class UserModel{
 		this.MemberCount = userInfo.MemberCount;
 
 		// status
-		this.isRoomContact =  UserModel.isRoomContact(userInfo.UserName);
+		this.isRoomContact =  this.class.isRoomContact(userInfo.UserName);
 		this.Statues = userInfo.Statues;
 		this.contactFlag = userInfo.ContactFlag;
 		
@@ -119,10 +130,6 @@ export class UserModel{
 		}
 
 		return name;
-	}
-
-	static getDisplayName(username:string){
-		return 
 	}
 
 	static isSpUser(username:string){

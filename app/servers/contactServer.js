@@ -12,12 +12,6 @@ define(["require", "exports", './coreServer', '../models/userModel', '../utility
             this.getContactErrorList = [];
             this.getContactGettingList = [];
         }
-        getContactHeadImgUrl(params) {
-            let url = userModel_1.UserModel.isRoomContact(params.UserName) ? GET_HEAD_IMG : GET_ICON;
-            let msgIdQuery = params.MsgId ? `&msgid=${params.MsgId}` : '';
-            let chatroomIdQuery = params.EncryChatRoomId ? `&chatroomid=${params.EncryChatRoomId}` : '';
-            return `${url}?seq=0&username=${params.UserName}&skey=${this.class.Skey}${msgIdQuery}${chatroomIdQuery}`;
-        }
         batchGetContact(getContactList) {
             let self = this;
             let errorCount = this.getContactErrorList.length;
@@ -101,6 +95,12 @@ define(["require", "exports", './coreServer', '../models/userModel', '../utility
                     }
                 });
             });
+        }
+        getContactHeadImgUrl(params) {
+            let url = userModel_1.UserModel.isRoomContact(params.UserName) ? GET_HEAD_IMG : GET_ICON;
+            let msgIdQuery = params.MsgId ? `&msgid=${params.MsgId}` : '';
+            let chatroomIdQuery = params.EncryChatRoomId ? `&chatroomid=${params.EncryChatRoomId}` : '';
+            return `${url}?seq=0&username=${params.UserName}&skey=${this.class.Skey}${msgIdQuery}${chatroomIdQuery}`;
         }
     }
     exports.contactServer = new ContactServer();

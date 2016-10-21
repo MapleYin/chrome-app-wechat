@@ -34,7 +34,6 @@ chrome.app.runtime.onLaunched.addListener(function () {
     else {
         createLoginWindow();
     }
-    // createMainWindow();
 });
 chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
     if (message.command == 'OPEN_MAIN') {

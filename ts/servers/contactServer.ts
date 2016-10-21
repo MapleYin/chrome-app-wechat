@@ -5,6 +5,7 @@ import {ContactInListIndex} from '../utility/contactListHelper'
 
 let GET_CONTACT_URL = 'https://wx.qq.com/cgi-bin/mmwebwx-bin/webwxbatchgetcontact';
 let GET_ALL_CONTACT_URL = 'https://wx.qq.com/cgi-bin/mmwebwx-bin/webwxgetcontact';
+
 let GET_HEAD_IMG = '/cgi-bin/mmwebwx-bin/webwxgetheadimg';
 let GET_ICON = '/cgi-bin/mmwebwx-bin/webwxgeticon';
 
@@ -17,13 +18,6 @@ class ContactServer extends CoreServer{
 
 	constructor(){
 		super();
-	}
-
-	getContactHeadImgUrl(params:IContactHeadImgParams){
-		let url = UserModel.isRoomContact(params.UserName) ? GET_HEAD_IMG : GET_ICON;
-		let msgIdQuery = params.MsgId ? `&msgid=${params.MsgId}` : '';
-		let chatroomIdQuery = params.EncryChatRoomId ? `&chatroomid=${params.EncryChatRoomId}`:'';
-		return `${url}?seq=0&username=${params.UserName}&skey=${this.class.Skey}${msgIdQuery}${chatroomIdQuery}`;
 	}
 
 	batchGetContact(getContactList:IBatchgetContactParams[]):Promise<IUser[]>{
@@ -111,6 +105,12 @@ class ContactServer extends CoreServer{
 				}
 			})
 		});
+	}
+	getContactHeadImgUrl(params:IContactHeadImgParams){
+		let url = UserModel.isRoomContact(params.UserName) ? GET_HEAD_IMG : GET_ICON;
+		let msgIdQuery = params.MsgId ? `&msgid=${params.MsgId}` : '';
+		let chatroomIdQuery = params.EncryChatRoomId ? `&chatroomid=${params.EncryChatRoomId}`:'';
+		return `${url}?seq=0&username=${params.UserName}&skey=${this.class.Skey}${msgIdQuery}${chatroomIdQuery}`;
 	}
 }
 

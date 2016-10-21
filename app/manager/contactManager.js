@@ -158,7 +158,12 @@ define(["require", "exports", './baseManager', './emoticonManager', '../servers/
                 if (userModel_1.UserModel.isRoomContact(user.UserName) && user.MemberList) {
                     user.MemberList.forEach(memberInfo => {
                         let member = self.getContact(memberInfo.UserName, "", true);
-                        if (member) {
+                        if (!member || !member.isContact) {
+                            memberInfo.HeadImgUrl = contactServer_1.contactServer.getContactHeadImgUrl({
+                                EncryChatRoomId: user.EncryChatRoomId,
+                                UserName: memberInfo.UserName
+                            });
+                            self.addContact(memberInfo);
                             let memberIndex = contactListHelper_1.ContactInListIndex(self.getContactToGetList, member);
                             if (memberIndex > -1) {
                                 self.getContactToGetList.splice(memberIndex, 1);
