@@ -116,7 +116,7 @@ define(["require", "exports", './coreServer', '../utility/notificationCenter'], 
                 FromUserName: self.class.account.UserName,
                 ToUserName: toUserName,
                 MsgType: msgType,
-                CreateTime: self.getTimeStamp()
+                CreateTime: self.getTimeStamp() / 1000
             };
         }
         // webwxstatusnotify

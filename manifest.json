@@ -10,5 +10,9 @@
     "sandbox": {
         "pages": ["sandbox.html"]
     },
-    "permissions": ["<all_urls>", "notifications", "storage"]
+    "permissions": [
+        "<all_urls>", 
+        "notifications", 
+        "unlimitedStorage"
+    ]
 }

@@ -12,7 +12,7 @@ let createLoginWindow = function () {
         loginWindow = createdWindow;
     });
 };
-let createMainWindow = function () {
+let createMainWindow = function (redirectUrl) {
     chrome.app.window.create('index.html', {
         'id': 'MainWindow',
         'innerBounds': {
@@ -22,6 +22,8 @@ let createMainWindow = function () {
             'minWidth': 660,
         },
         'frame': 'none',
+    }, createdWindow => {
+        createdWindow.contentWindow['redirectUrl'] = redirectUrl;
     });
 };
 chrome.app.runtime.onLaunched.addListener(function () {
@@ -34,14 +36,9 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
         if (!message.data) {
             return;
         }
-        chrome.storage.sync.set({
-            redirectUrl: message.data
-        }, function () {
-            console.log(chrome.runtime.lastError);
-            if (loginWindow) {
-                loginWindow.close();
-            }
-            createMainWindow();
-        });
+        if (loginWindow) {
+            loginWindow.close();
+        }
+        createMainWindow(message.data);
     }
 });

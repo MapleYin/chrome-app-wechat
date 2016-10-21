@@ -14,7 +14,7 @@ let createLoginWindow = function(){
 	});
 };
 
-let createMainWindow = function(){
+let createMainWindow = function(redirectUrl:string){
 	chrome.app.window.create('index.html', {
 	    'id': 'MainWindow',
 	    'innerBounds': {
@@ -24,6 +24,8 @@ let createMainWindow = function(){
 	        'minWidth': 660,
 	    },
 	    'frame' : 'none',
+	},createdWindow=>{
+		createdWindow.contentWindow['redirectUrl'] = redirectUrl;
 	});
 };
 
@@ -39,14 +41,9 @@ chrome.runtime.onMessage.addListener(function(message:any, sender:chrome.runtime
 		if(!message.data) {
 			return ;
 		}
-		chrome.storage.sync.set({
-			redirectUrl : message.data
-		},function(){
-			console.log(chrome.runtime.lastError);
-			if(loginWindow) {
-				loginWindow.close();
-			}
-			createMainWindow();
-		});
+		if(loginWindow) {
+			loginWindow.close();
+		}
+		createMainWindow(message.data);
 	}
 });
