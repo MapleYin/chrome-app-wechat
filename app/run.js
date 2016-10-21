@@ -27,7 +27,13 @@ let createMainWindow = function (redirectUrl) {
     });
 };
 chrome.app.runtime.onLaunched.addListener(function () {
-    createLoginWindow();
+    let currentWindow = chrome.app.window.get('MainWindow');
+    if (currentWindow) {
+        currentWindow.show();
+    }
+    else {
+        createLoginWindow();
+    }
     // createMainWindow();
 });
 chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {

@@ -30,7 +30,12 @@ let createMainWindow = function(redirectUrl:string){
 };
 
 chrome.app.runtime.onLaunched.addListener(function() {
-    createLoginWindow();
+	let currentWindow = chrome.app.window.get('MainWindow');
+	if(currentWindow) {
+		currentWindow.show();
+	}else{
+		createLoginWindow();
+	}
     // createMainWindow();
 });
 

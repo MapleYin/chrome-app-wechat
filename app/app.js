@@ -21,6 +21,12 @@ define(["require", "exports", './servers/loginServer', './manager/contactManager
             }).catch(reason => {
                 console.log(reason);
             });
+            document.addEventListener('keydown', event => {
+                if (event.metaKey && event.keyCode == 87) {
+                    event.preventDefault();
+                    chrome.app.window.current().hide();
+                }
+            });
         }
     }
     exports.App = App;
