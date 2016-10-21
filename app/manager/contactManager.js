@@ -30,8 +30,6 @@ define(["require", "exports", './baseManager', './emoticonManager', '../servers/
         getContact(username, chatRoomId, isSingleUser) {
             let self = this;
             var user = this.contacts[username] || this.strangerContacts[username];
-            if (!user) {
-            }
             if (isSingleUser) {
                 return user;
             }
@@ -85,6 +83,7 @@ define(["require", "exports", './baseManager', './emoticonManager', '../servers/
             let self = this;
             let user = this.getContact(username);
             if (user && user.isRoomContact && !user.MMBatchgetMember && user.MemberCount > 0) {
+                console.log(`Get Room Members Info`);
                 user.MMBatchgetMember = true;
                 user.MemberList.forEach(member => {
                     let memberUser = self.getContact(member.UserName);
@@ -157,11 +156,13 @@ define(["require", "exports", './baseManager', './emoticonManager', '../servers/
                     this.getContactToGetList.splice(index, 1);
                 }
                 if (userModel_1.UserModel.isRoomContact(user.UserName) && user.MemberList) {
-                    user.MemberList.forEach(member => {
-                        self.getContact(member.UserName, "", true);
-                        let memberIndex = contactListHelper_1.ContactInListIndex(self.getContactToGetList, member);
-                        if (memberIndex > -1) {
-                            self.getContactToGetList.splice(memberIndex, 1);
+                    user.MemberList.forEach(memberInfo => {
+                        let member = self.getContact(memberInfo.UserName, "", true);
+                        if (member) {
+                            let memberIndex = contactListHelper_1.ContactInListIndex(self.getContactToGetList, member);
+                            if (memberIndex > -1) {
+                                self.getContactToGetList.splice(memberIndex, 1);
+                            }
                         }
                     });
                 }

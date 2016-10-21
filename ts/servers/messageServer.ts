@@ -87,6 +87,12 @@ class MessageServer extends CoreServer{
 					self.syncCheck();
 				},10000);
 			});
+		}).catch(reason=>{
+			console.error(`[MessageServer syncCheck] error:${reason}`);
+			console.log(`Restart at 10 seconds`);
+			setTimeout(()=>{
+				self.syncCheck();
+			},10000);
 		});
 	}
 

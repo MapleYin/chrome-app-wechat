@@ -94,21 +94,18 @@ class ChatManager extends BaseManager{
 		// 更新列表
 		chatListController.updateChatList(normalList,changeList);
 	}
-
-	addChatMessage(message:MessageModel){
+	private addChatMessage(message:MessageModel){
 		let user = contactManager.getContact(message.MMPeerUserName)
 		chatListController.newMessage(message,user);
 		chatContentController.newMessage(message);	
 	}
-
-	sendMessage(content:string){
+	private sendMessage(content:string){
 		if(this.currentChatUser) {
 			messageManager.sendTextMessage(this.currentChatUser,content);
 		}else{
 			console.error(`[ChatManager sendMessage] error currentChatUser:${this.currentChatUser}`);
 		}
 	}
-
 }
 
 

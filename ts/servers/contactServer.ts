@@ -19,17 +19,6 @@ class ContactServer extends CoreServer{
 		super();
 	}
 
-	private checkForSystemMessageOnceForLatestContact(messages:IMessage[]){
-		// let sysMessage:Message = messages.find(function(value){
-		// 	return value.MsgType == 51;
-		// });
-
-		// if(sysMessage) {
-		// 	this.getContacts(sysMessage.StatusNotifyUserName.split(','));
-		// 	this.didCheckSystemMessage = true;
-		// }
-	}
-
 	getContactHeadImgUrl(params:IContactHeadImgParams){
 		let url = UserModel.isRoomContact(params.UserName) ? GET_HEAD_IMG : GET_ICON;
 		let msgIdQuery = params.MsgId ? `&msgid=${params.MsgId}` : '';

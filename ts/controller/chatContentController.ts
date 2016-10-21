@@ -73,10 +73,12 @@ class ChatContentController extends BaseController{
 			if(sender) {
 				let item = new ChatContentItem(message,sender);
 				self.$chatContentContainer.append(item.$element);
+			}else{
+				console.error(`Miss Sender:${message.MMActualSender}`);
 			}
 		});
 		
-		self.$chatContentContainer.scrollTop(self.$chatContentContainer.height());
+		self.$chatContentContainer.scrollTop(999999);
 	}
 }
 export let chatContentController = new ChatContentController();

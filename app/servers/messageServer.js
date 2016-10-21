@@ -77,6 +77,12 @@ define(["require", "exports", './coreServer', '../utility/notificationCenter'], 
                         self.syncCheck();
                     }, 10000);
                 });
+            }).catch(reason => {
+                console.error(`[MessageServer syncCheck] error:${reason}`);
+                console.log(`Restart at 10 seconds`);
+                setTimeout(() => {
+                    self.syncCheck();
+                }, 10000);
             });
         }
         sendMessage(message) {

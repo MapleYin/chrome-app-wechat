@@ -1,14 +1,14 @@
 {
-  "manifest_version": 2,
-  "name": "WeChat",
-  "version": "1.0",
-  "app": {
-    "background": {
-      "scripts": ["app/run.js"]
-    }
-  },
-  "sandbox": { 
-    "pages": ["sandbox.html"]
-  },
-  "permissions": [ "<all_urls>","notifications","storage"]
+    "manifest_version": 2,
+    "name": "WeChat",
+    "version": "1.0",
+    "app": {
+        "background": {
+            "scripts": ["app/run.js"]
+        }
+    },
+    "sandbox": {
+        "pages": ["sandbox.html"]
+    },
+    "permissions": ["<all_urls>", "notifications", "storage"]
 }

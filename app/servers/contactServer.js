@@ -12,15 +12,6 @@ define(["require", "exports", './coreServer', '../models/userModel', '../utility
             this.getContactErrorList = [];
             this.getContactGettingList = [];
         }
-        checkForSystemMessageOnceForLatestContact(messages) {
-            // let sysMessage:Message = messages.find(function(value){
-            // 	return value.MsgType == 51;
-            // });
-            // if(sysMessage) {
-            // 	this.getContacts(sysMessage.StatusNotifyUserName.split(','));
-            // 	this.didCheckSystemMessage = true;
-            // }
-        }
         getContactHeadImgUrl(params) {
             let url = userModel_1.UserModel.isRoomContact(params.UserName) ? GET_HEAD_IMG : GET_ICON;
             let msgIdQuery = params.MsgId ? `&msgid=${params.MsgId}` : '';

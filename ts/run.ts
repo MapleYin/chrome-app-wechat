@@ -50,4 +50,3 @@ chrome.runtime.onMessage.addListener(function(message:any, sender:chrome.runtime
 		});
 	}
 });
-

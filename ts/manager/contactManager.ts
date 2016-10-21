@@ -46,9 +46,6 @@ class ContactManager extends BaseManager{
 	getContact(username:string,chatRoomId?:string,isSingleUser?:boolean):UserModel{
 		let self = this;
 		var user = this.contacts[username] || this.strangerContacts[username];
-		if(!user) {
-			// debugger
-		}
 		if(isSingleUser) {
 			return user;
 		}else{
@@ -103,6 +100,7 @@ class ContactManager extends BaseManager{
 		let self = this;
 		let user = this.getContact(username);
 		if(user && user.isRoomContact && !user.MMBatchgetMember && user.MemberCount > 0) {
+			console.log(`Get Room Members Info`);
 			user.MMBatchgetMember = true;
 			user.MemberList.forEach(member=>{
 				let memberUser = self.getContact(member.UserName);
@@ -178,22 +176,25 @@ class ContactManager extends BaseManager{
 				this.getContactToGetList.splice(index,1);
 			}
 			if(UserModel.isRoomContact(user.UserName) && user.MemberList) {
-				user.MemberList.forEach(member=>{
-					self.getContact(member.UserName,"",true);
-					let memberIndex = ContactInListIndex(self.getContactToGetList,member);
-					if(memberIndex > -1) {
-						self.getContactToGetList.splice(memberIndex,1);
+				user.MemberList.forEach(memberInfo=>{
+					let member = self.getContact(memberInfo.UserName,"",true);
+					if(member) {
+						let memberIndex = ContactInListIndex(self.getContactToGetList,member);
+						if(memberIndex > -1) {
+							self.getContactToGetList.splice(memberIndex,1);
+						}
 					}
+						
 				});
 			}
 		});
 		self.addContacts(contacts,true);
 		if(self.getContactToGetList.length > 0) {
 			contactServer.batchGetContact(self.getContactToGetList).then(result=>{
-					return self.batchGetContactSuccess(result);
-				}).catch(reason=>{
-					return self.batchGetContactError(reason);
-				});
+				return self.batchGetContactSuccess(result);
+			}).catch(reason=>{
+				return self.batchGetContactError(reason);
+			});
 		}
 
 		return contacts;
