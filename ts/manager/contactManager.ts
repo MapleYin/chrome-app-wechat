@@ -189,7 +189,6 @@ class ContactManager extends BaseManager{
 							self.getContactToGetList.splice(memberIndex,1);
 						}
 					}
-						
 				});
 			}
 		});

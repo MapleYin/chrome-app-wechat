@@ -78,7 +78,7 @@ class MessageServer extends CoreServer{
 						});
 					}
 				}else{
-					console.log('logout!');
+					NotificationCenter.post('user.status.logout');
 				}
 			}).catch(reason=>{
 				console.error(`[MessageServer syncCheck] error:${reason}`);

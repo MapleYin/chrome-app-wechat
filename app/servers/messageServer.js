@@ -68,7 +68,7 @@ define(["require", "exports", './coreServer', '../utility/notificationCenter'], 
                         }
                     }
                     else {
-                        console.log('logout!');
+                        notificationCenter_1.NotificationCenter.post('user.status.logout');
                     }
                 }).catch(reason => {
                     console.error(`[MessageServer syncCheck] error:${reason}`);

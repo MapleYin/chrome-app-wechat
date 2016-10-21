@@ -12,6 +12,11 @@ define(["require", "exports", './baseManager', '../models/wxInterface', '../mode
                     });
                 }
             });
+            notificationCenter_1.NotificationCenter.on('user.status.logout', () => {
+                chrome.runtime.sendMessage({
+                    command: 'OPEN_LOGIN'
+                });
+            });
         }
         setSyncKey(SyncKey) {
             messageServer_1.messageServer.syncKey = SyncKey;

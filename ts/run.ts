@@ -1,4 +1,5 @@
 var loginWindow:chrome.app.window.AppWindow;
+var mainWindow:chrome.app.window.AppWindow;
 
 let createLoginWindow = function(){
 	return chrome.app.window.create('login.html', {
@@ -25,6 +26,7 @@ let createMainWindow = function(redirectUrl:string){
 	    },
 	    'frame' : 'none',
 	},createdWindow=>{
+		mainWindow = createdWindow;
 		createdWindow.contentWindow['redirectUrl'] = redirectUrl;
 	});
 };
@@ -39,15 +41,24 @@ chrome.app.runtime.onLaunched.addListener(function() {
 });
 
 chrome.runtime.onMessage.addListener(function(message:any, sender:chrome.runtime.MessageSender,sendResponse:(response:any)=>void){
-
-	if(message.command == 'OPEN_MAIN') {
-		console.log(message.data);
-		if(!message.data) {
-			return ;
-		}
-		if(loginWindow) {
-			loginWindow.close();
-		}
-		createMainWindow(message.data);
+	switch (message.command) {
+		case 'OPEN_MAIN':
+			if(!message.data) {
+				return ;
+			}
+			if(loginWindow) {
+				loginWindow.close();
+			}
+			createMainWindow(message.data);
+			break;
+		case 'OPEN_LOGIN':
+			if(mainWindow) {
+				mainWindow.close();
+			}
+			createLoginWindow();
+			break;
+		default:
+			// code...
+			break;
 	}
 });
