@@ -87,6 +87,9 @@ define(["require", "exports", './baseManager', './contactManager', './messageMan
         }
         addChatMessage(message) {
             let user = contactManager_1.contactManager.getContact(message.MMPeerUserName);
+            if (user.UserName == this.currentChatUser) {
+                user.MMUnreadMsgCount = 0;
+            }
             chatListController_1.chatListController.newMessage(message, user);
             chatContentController_1.chatContentController.newMessage(message);
         }
