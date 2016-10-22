@@ -3,9 +3,10 @@ import {contactManager} from '../manager/contactManager'
 import {emoticonManager} from '../manager/emoticonManager'
 import {CoreServer} from '../servers/coreServer'
 import {UserModel} from './userModel'
-import {htmlDecode,htmlEncode} from '../utility/htmlHelper'
+import {htmlDecode,htmlEncode,xml2Json,encodeEmoji,decodeEmoji,formatNum} from '../utility/stringHelper'
 
 let GET_MSG_IMG_URL = '/cgi-bin/mmwebwx-bin/webwxgetmsgimg';
+let GET_MSG_VOICE_URL = '/cgi-bin/mmwebwx-bin/webwxgetvoice';
 
 export class MessageModel{
 
@@ -13,6 +14,7 @@ export class MessageModel{
 	ClientMsgId:number;
 	MsgId:number;
 	CreateTime:number;
+	HasProductId:number;
 
 	FromUserName:string
 	ToUserName:string;
@@ -29,6 +31,7 @@ export class MessageModel{
 	FileName:string;
 	FileSize:string;
 	Url:string;
+	VoiceLength:number;
 
 	MMDigest?: string;
 	MMIsSend?: boolean;
@@ -37,6 +40,11 @@ export class MessageModel{
 	MMUnread?: boolean;
 	MMActualContent?: string;
 	MMActualSender?: string;
+	MMAppMsgDesc?:string;
+	MMCategory?:any[];
+	MMAppName?:string;
+	MMVoiceUnRead?:boolean;
+	md5?:string;
 
 	ImageUrl?:string;
 	OriginImageUrl?:string;
@@ -57,7 +65,9 @@ export class MessageModel{
 		this.MsgId = message.MsgId;
 		this.FileName = message.FileName || '';
 		this.FileSize = message.FileSize || '';
-		this.Url = message.Url || '';
+		this.Url = htmlDecode(message.Url) || '';
+		this.HasProductId = message.HasProductId || 0;
+		this.VoiceLength = message.VoiceLength || 0;
 
 		var actualContent = '';
 		var username = '';
@@ -104,13 +114,17 @@ export class MessageModel{
 			case MessageType.APP:
 				this.appMsgProcess();
 				break;
+			case MessageType.EMOTICON:
+				this.emojiMsgProcess();
+				break;
 			case MessageType.TEXT:
-				this.MMDigest += this.MMActualContent.replace(/<br ?[^><]*\/?>/g, "");
+				this.textMsgProcess();
 				break;
 			case MessageType.IMAGE:
-				this.MMDigest += TextInfoMap["a5627e8"];
-				this.ImageUrl = this.getMsgImg(this.MsgId,'slave');
-				this.OriginImageUrl = this.getMsgImg(this.MsgId);
+				this.imageMsgProcess();
+				break;
+			case MessageType.VOICE:
+				this.voiceMsgProcess();
 				break;
 			default:
 				// code...
@@ -119,6 +133,35 @@ export class MessageModel{
 
 		//@TODO
 		//对消息显示时间的标志
+	}
+
+	private textMsgProcess(){
+		this.MMDigest += this.MMActualContent.replace(/<br ?[^><]*\/?>/g, "");
+	}
+	private imageMsgProcess(){
+		this.MMDigest += TextInfoMap["a5627e8"];
+		this.ImageUrl = this.getMsgImg(this.MsgId,'slave');
+		this.OriginImageUrl = this.getMsgImg(this.MsgId);
+	}
+	private emojiMsgProcess(){
+		if(this.HasProductId) {
+			this.MMActualContent = this.MMIsSend ? TextInfoMap['80f56fb'] : TextInfoMap['2242ac7'];
+			this.textMsgProcess();
+		}else{
+			this.MsgType = MessageType.EMOTICON;
+			this.MMDigest += TextInfoMap['e230fc1'];
+			this.ImageUrl = this.getMsgImg(this.MsgId,'big');
+			var actualContent = xml2Json(htmlDecode(this.MMActualContent));
+			if(actualContent && actualContent.emoji && actualContent.emoji.md5) {
+				this.md5 = actualContent.emoji.md5;
+			}
+		}
+	}
+
+	private voiceMsgProcess(){
+		this.MsgType = MessageType.VOICE;
+		this.MMDigest += TextInfoMap['b28dac0'];
+		this.MMVoiceUnRead = !this.MMIsSend && this.MMUnread;
 	}
 
 	private appMsgProcess(){
@@ -136,7 +179,7 @@ export class MessageModel{
 				
 				break;
 			case AppMsgType.EMOJI:
-				
+				this.emojiMsgProcess();
 				break;
 			case AppMsgType.URL:
 				this.appUrlMsgProcess();
@@ -176,8 +219,39 @@ export class MessageModel{
 		this.AppMsgType = AppMsgType.URL;
 		digest = digest || TextInfoMap['e5b228c']+this.FileName;
 		this.MMDigest += digest;
-		//var actualContent = htmlDecode(this.MMActualContent).replace(/<br\/>/g, '');
-		
+		this.ImageUrl = this.getMsgImg(this.MsgId,'slave');
+
+		var actualContent:any = htmlDecode(this.MMActualContent);
+		actualContent = encodeEmoji(actualContent);
+		actualContent = xml2Json(actualContent).msg;
+
+		this.MMAppMsgDesc = decodeEmoji(actualContent.appmsg.des);
+		this.MMAppName = actualContent.appinfo.appname || actualContent.appmsg.sourcedisplayname || '';
+		if(actualContent.appmsg.mmreader) {
+			this.appReaderMsgProcess(actualContent.appmsg.mmreader);	
+		}
+	}
+
+	private appReaderMsgProcess(mmreader:any){
+		this.MsgType = MessageType.APP;
+		this.AppMsgType = AppMsgType.READER_TYPE;
+		if(mmreader.category.count == 1) {
+			this.MMCategory = [mmreader.category.item];
+		}else{
+			this.MMCategory = mmreader.category.item;
+		}
+		this.MMCategory.forEach(item=>{
+			let pub_time = new Date(1e3 * item.pub_time);
+			item.pub_time = formatNum(pub_time.getMonth() + 1 , 2) + '-' + formatNum(pub_time.getDate(),2);
+			let coverArray:any[] = item.cover.split('|');
+			if(coverArray.length == 3) {
+				item.cover = coverArray[0];
+				item.width = coverArray[1];
+				item.height = coverArray[2];
+			}
+
+		});
+		this.MMDigest += this.MMCategory.length && this.MMCategory[0].title;
 	}
 
 	private getMsgImg(MsgId:number|string,quality?:string):string{
@@ -185,6 +259,10 @@ export class MessageModel{
 		if(quality) {
 			type = `&type=${quality}`
 		}
-		return `${GET_MSG_IMG_URL}?&MsgID=${MsgId}&skey=${encodeURIComponent(CoreServer.Skey)}${type}`;
+		return `${GET_MSG_IMG_URL}?MsgID=${MsgId}&skey=${encodeURIComponent(CoreServer.Skey)}${type}`;
+	}
+
+	private getMsgVoice(MsgId:number|string):string{
+		return `${GET_MSG_VOICE_URL}?MsgID=${MsgId}&skey=${encodeURIComponent(CoreServer.Skey)}`;
 	}
 }

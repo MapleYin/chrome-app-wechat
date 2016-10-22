@@ -13,6 +13,7 @@ class ChatContentController extends BaseController{
 	private $chatContentContainer:JQuery = $('#chat-content-container');
 	private $inputTextarea:JQuery = $('#message-input');
 	private messageList:{[key:string]:MessageModel[]} = {};
+	private allMessages:{[key:number]:MessageModel} = {};
 	currentChatUser:string;
 
 	constructor(){
@@ -28,6 +29,14 @@ class ChatContentController extends BaseController{
 				$(this).val(function(index,value){
 					return value+'\n';
 				});
+			}
+		});
+
+		this.$chatContentContainer.on('click','.item',(event)=>{
+			let msgId = $(event.currentTarget).data('id');
+			let message = self.allMessages[msgId];
+			if(message && message.Url) {
+				window.open(message.Url);
 			}
 		});
 	}
@@ -49,6 +58,7 @@ class ChatContentController extends BaseController{
 			self.messageList[message.MMPeerUserName] = [];
 		}
 		self.messageList[message.MMPeerUserName].push(message);
+		self.allMessages[message.MsgId] = message;
 		if(message.MMPeerUserName == self.currentChatUser) {
 			this.updateMessageContent([message]);
 		}

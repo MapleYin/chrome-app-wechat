@@ -66,7 +66,7 @@ class LoginServer extends CoreServer{
 					console.log('Waitting Times Out');
 					return self.waitForScan(didScan);
 				}else{
-					throw "refreash";
+					throw result;
 				}
 			});
 		});

@@ -36,11 +36,16 @@ define(["require", "exports", './baseManager', '../models/wxInterface', '../mode
             });
             return message;
         }
+        // 
+        statusNotifyMarkRead(toUserName) {
+            messageServer_1.messageServer.setStatusNotify(toUserName, wxInterface_1.StatusNotifyCode.READED);
+        }
         messageProcess(messageInfo) {
             let self = this;
             let user = contactManager_1.contactManager.getContact(messageInfo.FromUserName, '', true);
             let message = new messageModel_1.MessageModel(messageInfo);
             if (user && !user.isMuted && !user.isSelf && !user.isShieldUser && !user.isBrandContact) {
+                user.increaseUnreadMsgNum();
             }
             if (message.MsgType == wxInterface_1.MessageType.STATUSNOTIFY) {
                 self.statusNotifyProcessor(message);
@@ -55,25 +60,12 @@ define(["require", "exports", './baseManager', '../models/wxInterface', '../mode
                 message.MsgType == wxInterface_1.MessageType.VERIFYMSG &&
                     message.RecommendInfo &&
                     message.RecommendInfo.UserName == contactManager_1.contactManager.account.UserName)) {
-                switch (message.MsgType) {
-                    case wxInterface_1.MessageType.APP:
-                        notificationCenter_1.NotificationCenter.post('message.receive.app', message);
-                        break;
-                    case wxInterface_1.MessageType.TEXT:
-                        notificationCenter_1.NotificationCenter.post('message.receive.text', message);
-                        break;
-                    case wxInterface_1.MessageType.IMAGE:
-                        notificationCenter_1.NotificationCenter.post('message.receive.image', message);
-                        break;
-                    default:
-                        notificationCenter_1.NotificationCenter.post('message.receive', message);
-                        break;
-                }
                 //@TODO href encode
                 // message.MMActualContent
                 let user = contactManager_1.contactManager.getContact(message.MMPeerUserName);
                 if (!message.MMIsSend && (!user || (!user.isMuted && !user.isBrandContact)) && message.MsgType != wxInterface_1.MessageType.SYS) {
                 }
+                notificationCenter_1.NotificationCenter.post('message.receive', message);
             }
         }
         statusNotifyProcessor(message) {

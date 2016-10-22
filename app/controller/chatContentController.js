@@ -7,6 +7,7 @@ define(["require", "exports", '../template/chatContentItem', './baseController',
             this.$chatContentContainer = $('#chat-content-container');
             this.$inputTextarea = $('#message-input');
             this.messageList = {};
+            this.allMessages = {};
             let self = this;
             this.$inputTextarea.on('keydown', function (e) {
                 let message = $(this).val();
@@ -19,6 +20,13 @@ define(["require", "exports", '../template/chatContentItem', './baseController',
                     $(this).val(function (index, value) {
                         return value + '\n';
                     });
+                }
+            });
+            this.$chatContentContainer.on('click', '.item', (event) => {
+                let msgId = $(event.currentTarget).data('id');
+                let message = self.allMessages[msgId];
+                if (message && message.Url) {
+                    window.open(message.Url);
                 }
             });
         }
@@ -38,6 +46,7 @@ define(["require", "exports", '../template/chatContentItem', './baseController',
                 self.messageList[message.MMPeerUserName] = [];
             }
             self.messageList[message.MMPeerUserName].push(message);
+            self.allMessages[message.MsgId] = message;
             if (message.MMPeerUserName == self.currentChatUser) {
                 this.updateMessageContent([message]);
             }

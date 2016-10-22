@@ -3,22 +3,29 @@ import {loginServer} from '../servers/loginServer'
 
 
 export class Login{
+
+	private $QRCode = $('#QRCode');
+
 	constructor(){
 		let self = this;
 
-		let $QRCode = $('#QRCode');
-
-		self.start($QRCode);
+		self.start();
 		
 	}
 
-	start($QRCode){
+	start(){
 		let self = this;
 		loginServer.getQRImageUrl().then(function(value){
-			$QRCode.attr('src',value);
+			self.$QRCode.attr('src',value);
 			return loginServer.waitForScan(false);
 		}).then(function(redirectUrl){
 			self.jumpToMain(redirectUrl);
+		}).catch(reason=>{
+			console.error(reason);
+			console.log(`refreash in 5 seconds`);
+			setTimeout(()=>{
+				self.start();
+			},5);
 		});
 	}
 

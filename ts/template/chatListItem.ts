@@ -42,8 +42,7 @@ export class ChatListItem extends Template implements ChatListData{
 
 
 	constructor(itemData:UserModel){
-		super(templateString);
-
+		super();
 		let self = this;
 
 		this.data = {

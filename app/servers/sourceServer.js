@@ -1,12 +1,12 @@
 define(["require", "exports", './coreServer'], function (require, exports, coreServer_1) {
     "use strict";
-    let UserHeadImageCache = {};
+    let sourceCache = {};
     class SourceServer extends coreServer_1.CoreServer {
-        fetchUserHeadImage(url) {
-            if (url in UserHeadImageCache) {
+        fetchSource(url) {
+            if (url in sourceCache) {
                 return new Promise((resolve, reject) => {
-                    console.log('Get UserHead Image From Cache!');
-                    resolve(UserHeadImageCache[url]);
+                    console.log('Get Source From Cache!');
+                    resolve(sourceCache[url]);
                 });
             }
             else {
@@ -15,8 +15,8 @@ define(["require", "exports", './coreServer'], function (require, exports, coreS
                 }).then(response => {
                     return response.blob().then(function (data) {
                         let objURL = URL.createObjectURL(data);
-                        console.log('Get UserHead Image');
-                        UserHeadImageCache[url] = objURL;
+                        console.log('Get Source Done');
+                        sourceCache[url] = objURL;
                         return objURL;
                     });
                 });

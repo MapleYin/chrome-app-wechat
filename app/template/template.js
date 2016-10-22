@@ -2,13 +2,11 @@ define(["require", "exports", '../servers/sourceServer'], function (require, exp
     "use strict";
     var templateUniqueId = 0;
     class Template {
-        constructor(templateString) {
+        constructor() {
             this.templateId = 0;
-            this.templateString = templateString;
         }
-        render(data) {
+        render(templateString, data) {
             this.templateId = templateUniqueId++;
-            var templateString = this.templateString;
             let replaceKeyArray = templateString.match(/{{.*?}}/g);
             for (var i = 0, count = replaceKeyArray.length; i < count; i++) {
                 let key = replaceKeyArray[i];
@@ -17,14 +15,13 @@ define(["require", "exports", '../servers/sourceServer'], function (require, exp
                 templateString = templateString.replace(reg, value);
             }
             this.$element = $(templateString);
-            this.loadImage(this.$element);
+            this.loadSource(this.$element.find('img'));
         }
-        loadImage($element) {
-            let $image = $element.find('img');
-            $image.each((index, elem) => {
+        loadSource($elements) {
+            $elements.each((index, elem) => {
                 let url = $(elem).data('src');
                 if (url && url.search(/chrome-extension/) == -1) {
-                    sourceServer_1.sourceServer.fetchUserHeadImage('https://wx.qq.com' + url).then((localUrl) => {
+                    sourceServer_1.sourceServer.fetchSource('https://wx.qq.com' + url).then((localUrl) => {
                         $(elem).attr('src', localUrl);
                     }).catch(reason => {
                         console.log(reason);

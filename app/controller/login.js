@@ -2,17 +2,23 @@ define(["require", "exports", '../servers/loginServer'], function (require, expo
     "use strict";
     class Login {
         constructor() {
+            this.$QRCode = $('#QRCode');
             let self = this;
-            let $QRCode = $('#QRCode');
-            self.start($QRCode);
+            self.start();
         }
-        start($QRCode) {
+        start() {
             let self = this;
             loginServer_1.loginServer.getQRImageUrl().then(function (value) {
-                $QRCode.attr('src', value);
+                self.$QRCode.attr('src', value);
                 return loginServer_1.loginServer.waitForScan(false);
             }).then(function (redirectUrl) {
                 self.jumpToMain(redirectUrl);
+            }).catch(reason => {
+                console.error(reason);
+                console.log(`refreash in 5 seconds`);
+                setTimeout(() => {
+                    self.start();
+                }, 5);
             });
         }
         jumpToMain(info) {

@@ -3,76 +3,98 @@ import {UserModel} from '../models/userModel';
 import {MessageModel} from '../models/messageModel';
 
 import {Template} from './template'
+import {chatContentTemplateCreater,
+	commonRenderData,
+	textMsgRenderData,
+	imageMsgRenderData,
+	emoticonMsgRenderData,
+	appMsgRenderData,
+	voiceMsgRenderData
+	} from './templateCreater'
 
-
-let templateString = 
-`
-<div class="item {{className}}">
-	<figure class="avatar">
-		<img src="/images/wechat_avatar_default.png" data-src="{{avatar}}" alt="{{nickName}}">
-	</figure>
-	<section class="content">
-		<p>{{content}}</p>
-	</section>
-</div>
-`;
-
-let appMsgString = `
-
-`;
-
-interface ChatContentData{
-	avatar:string;
-	content : string;
-	nickName:string;
-	date?:Date;
-}
-
-export class ChatContentItem extends Template implements ChatContentData{
+export class ChatContentItem extends Template{
+	messageId:number;
 	avatar : string;
 	nickName : string;
 	content : string;
 	date? : Date;
+	renderData:any;
 
 	itemClassName:string[] = [];
 
 	constructor(message:MessageModel,sender:UserModel){
-		super(templateString);
-		
-		this.avatar = sender.HeadImgUrl;
-		this.nickName = sender.getDisplayName();
-		this.processMessage(message);
+		super();
+
 		if(sender.isSelf) {
 			this.itemClassName.push('self');	
 		}
-		this.render({
-			avatar : this.avatar,
-			nickName : this.nickName,
-			content : this.content,
-			className : this.itemClassName.join(' ')
-		});
+		this.messageId = message.MsgId;
+		this.avatar = sender.HeadImgUrl;
+		this.nickName = sender.getDisplayName();
+
+		let templateString = chatContentTemplateCreater.create(message.MsgType);
+		this.processMessage(message);
+
+		this.render(templateString,this.renderData);
 	}
 
 	private processMessage(message:MessageModel){
+		this.renderData = {
+			msgId : this.messageId,
+			avatar : this.avatar,
+			nickName : this.nickName,
+			className : this.itemClassName.join('')
+		};
 		switch (message.MsgType) {
 			case MessageType.TEXT:
-				this.content = message.MMActualContent;
+				this.fillInData<textMsgRenderData>({
+					content : message.MMActualContent
+				});
 				break;
 			case MessageType.IMAGE:
-				this.itemClassName.push('image')
-				this.content = `<img data-src="${message.ImageUrl}" class="msg-image" />`;
+				this.fillInData<imageMsgRenderData>({
+					originImage : message.OriginImageUrl,
+					image : message.ImageUrl
+				});
+				break;
+			case MessageType.EMOTICON:
+				this.fillInData<emoticonMsgRenderData>({
+					image : message.ImageUrl
+				});
+				break;
+			case MessageType.VOICE:
+				this.fillInData<voiceMsgRenderData>({
+					time : message.VoiceLength/1e3
+				});
 				break;
 			case MessageType.APP:
-				if(message.AppMsgType == AppMsgType.URL) {
-					this.content = `<a href="${message.Url}">[链接消息]${message.FileName}</a>`;
-				}else{
-					this.content = '[未知APP消息]';
+				switch (message.AppMsgType) {
+					case AppMsgType.URL:
+						this.fillInData<appMsgRenderData>({
+							title : message.FileName,
+							desc : message.MMAppMsgDesc,
+							image : message.ImageUrl,
+							source : message.MMAppName
+						});
+						break;
+					default:
+						this.fillInData<textMsgRenderData>({
+							content : `[未知APP消息]:${message.AppMsgType}`
+						});
+						break;
 				}
 				break;
 			default:
-				this.content = '[未知消息]';
+				this.fillInData<textMsgRenderData>({
+					content : `[未知消息]:${message.MsgType}`
+				});
 				break;
 		}
-		
+	}
+
+	private fillInData<T>(data:T){
+		for (var key in data) {
+			this.renderData[key] = data[key];
+		}
 	}
 }

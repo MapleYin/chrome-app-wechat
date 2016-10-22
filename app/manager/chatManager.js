@@ -11,8 +11,7 @@ define(["require", "exports", './baseManager', './contactManager', './messageMan
                 self.updateChatList();
             });
             notificationCenter_1.NotificationCenter.on('chatList.select.user', event => {
-                self.currentChatUser = event.userInfo;
-                chatContentController_1.chatContentController.selectUser(event.userInfo);
+                this.onSelectUser(event.userInfo);
             });
             notificationCenter_1.NotificationCenter.on('message.receive', event => {
                 self.addChatMessage(event.userInfo);
@@ -51,6 +50,15 @@ define(["require", "exports", './baseManager', './contactManager', './messageMan
                 self.chatList.unshift(username);
             });
             this.updateChatList(usernames);
+        }
+        onSelectUser(username) {
+            this.currentChatUser = username;
+            chatContentController_1.chatContentController.selectUser(username);
+            let user = contactManager_1.contactManager.getContact(username);
+            if (user && user.MMUnreadMsgCount > 0) {
+                user.MMUnreadMsgCount = 0;
+                messageManager_1.messageManager.statusNotifyMarkRead(user.UserName);
+            }
         }
         updateChatList(usernames) {
             let self = this;

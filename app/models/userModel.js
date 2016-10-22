@@ -8,6 +8,7 @@ define(["require", "exports", './wxInterface', '../manager/contactManager'], fun
             this.MMFromBatchget = false;
             this.MMBatchgetMember = false;
             this.isSelf = false;
+            this.MMUnreadMsgCount = 0;
             this.class = this.constructor;
             if ('ContactFlag' in userInfo) {
                 this.updateUserInfo(userInfo, isSelf);
@@ -57,6 +58,9 @@ define(["require", "exports", './wxInterface', '../manager/contactManager'], fun
             else if (contactManager_1.contactManager.account) {
                 this.isSelf = userInfo.UserName == contactManager_1.contactManager.account.UserName;
             }
+        }
+        increaseUnreadMsgNum() {
+            this.MMUnreadMsgCount += 1;
         }
         getDisplayName() {
             let self = this;

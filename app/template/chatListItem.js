@@ -14,7 +14,7 @@ define(["require", "exports", './template'], function (require, exports, templat
 </li>`;
     class ChatListItem extends template_1.Template {
         constructor(itemData) {
-            super(templateString);
+            super();
             let self = this;
             this.data = {
                 id: itemData.UserName,
@@ -24,12 +24,16 @@ define(["require", "exports", './template'], function (require, exports, templat
             this.id = this.data.id;
             this.avatar = this.data.avatar;
             this.nickName = this.data.nickName;
-            this.render(this.data);
+            this.render(templateString, this.data);
         }
         update(itemData) {
             this.id = this.data.id;
             this.avatar = this.data.avatar;
             this.nickName = this.data.nickName;
+            this.unreadMsgCount = itemData.MMUnreadMsgCount;
+        }
+        set unreadMsgCount(value) {
+            this._unreadMsgCount == value;
         }
         set active(v) {
             this._active = v;

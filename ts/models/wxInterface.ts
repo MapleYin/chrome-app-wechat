@@ -92,6 +92,7 @@ export interface IMessage{
 	FromUserName : string;
 	ToUserName : string;
 	MsgType : MessageType;
+    HasProductId?: number;
 	SubMsgType?: MessageType;
 	AppMsgType?: AppMsgType;
 	FileName?: string;

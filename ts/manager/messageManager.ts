@@ -81,21 +81,6 @@ class MessageManager extends BaseManager{
 			 message.MsgType == MessageType.VERIFYMSG &&
 			 message.RecommendInfo && 
 			 message.RecommendInfo.UserName == contactManager.account.UserName)) {
-			
-			switch (message.MsgType) {
-				case MessageType.APP:
-					NotificationCenter.post<MessageModel>('message.receive.app',message);
-					break;
-				case MessageType.TEXT:
-					NotificationCenter.post<MessageModel>('message.receive.text',message);
-					break;
-				case MessageType.IMAGE:
-					NotificationCenter.post<MessageModel>('message.receive.image',message);
-					break;
-				default:
-					NotificationCenter.post<MessageModel>('message.receive',message);
-					break;
-			}
 
 			//@TODO href encode
 			// message.MMActualContent

@@ -56,7 +56,7 @@ define(["require", "exports", './coreServer'], function (require, exports, coreS
                         return self.waitForScan(didScan);
                     }
                     else {
-                        throw "refreash";
+                        throw result;
                     }
                 });
             });

@@ -1,13 +1,13 @@
 import {CoreServer} from './coreServer'
 
-let UserHeadImageCache:{[key:string]:string} = {};
+let sourceCache:{[key:string]:string} = {};
 
 class SourceServer extends CoreServer{
-	fetchUserHeadImage(url:string):Promise<string>{
-		if(url in UserHeadImageCache) {
+	fetchSource(url:string):Promise<string>{
+		if(url in sourceCache) {
 			return new Promise((resolve,reject)=>{
-				console.log('Get UserHead Image From Cache!');
-				resolve(UserHeadImageCache[url]);
+				console.log('Get Source From Cache!');
+				resolve(sourceCache[url]);
 			});
 		}else{
 			return this.get(url,null,{
@@ -15,8 +15,8 @@ class SourceServer extends CoreServer{
 			}).then(response=>{
 				return response.blob().then(function(data){ 
 					let objURL = URL.createObjectURL(data);
-					console.log('Get UserHead Image');
-					UserHeadImageCache[url] = objURL;
+					console.log('Get Source Done');
+					sourceCache[url] = objURL;
 					return objURL;
 				});
 			});

@@ -1,55 +1,75 @@
-define(["require", "exports", '../models/wxInterface', './template'], function (require, exports, wxInterface_1, template_1) {
+define(["require", "exports", '../models/wxInterface', './template', './templateCreater'], function (require, exports, wxInterface_1, template_1, templateCreater_1) {
     "use strict";
-    let templateString = `
-<div class="item {{className}}">
-	<figure class="avatar">
-		<img src="/images/wechat_avatar_default.png" data-src="{{avatar}}" alt="{{nickName}}">
-	</figure>
-	<section class="content">
-		<p>{{content}}</p>
-	</section>
-</div>
-`;
-    let appMsgString = `
-
-`;
     class ChatContentItem extends template_1.Template {
         constructor(message, sender) {
-            super(templateString);
+            super();
             this.itemClassName = [];
-            this.avatar = sender.HeadImgUrl;
-            this.nickName = sender.getDisplayName();
-            this.processMessage(message);
             if (sender.isSelf) {
                 this.itemClassName.push('self');
             }
-            this.render({
-                avatar: this.avatar,
-                nickName: this.nickName,
-                content: this.content,
-                className: this.itemClassName.join(' ')
-            });
+            this.messageId = message.MsgId;
+            this.avatar = sender.HeadImgUrl;
+            this.nickName = sender.getDisplayName();
+            let templateString = templateCreater_1.chatContentTemplateCreater.create(message.MsgType);
+            this.processMessage(message);
+            this.render(templateString, this.renderData);
         }
         processMessage(message) {
+            this.renderData = {
+                msgId: this.messageId,
+                avatar: this.avatar,
+                nickName: this.nickName,
+                className: this.itemClassName.join('')
+            };
             switch (message.MsgType) {
                 case wxInterface_1.MessageType.TEXT:
-                    this.content = message.MMActualContent;
+                    this.fillInData({
+                        content: message.MMActualContent
+                    });
                     break;
                 case wxInterface_1.MessageType.IMAGE:
-                    this.itemClassName.push('image');
-                    this.content = `<img data-src="${message.ImageUrl}" class="msg-image" />`;
+                    this.fillInData({
+                        originImage: message.OriginImageUrl,
+                        image: message.ImageUrl
+                    });
+                    break;
+                case wxInterface_1.MessageType.EMOTICON:
+                    this.fillInData({
+                        image: message.ImageUrl
+                    });
+                    break;
+                case wxInterface_1.MessageType.VOICE:
+                    this.fillInData({
+                        time: message.VoiceLength / 1e3
+                    });
                     break;
                 case wxInterface_1.MessageType.APP:
-                    if (message.AppMsgType == wxInterface_1.AppMsgType.URL) {
-                        this.content = `<a href="${message.Url}">[链接消息]${message.FileName}</a>`;
-                    }
-                    else {
-                        this.content = '[未知APP消息]';
+                    switch (message.AppMsgType) {
+                        case wxInterface_1.AppMsgType.URL:
+                            this.fillInData({
+                                title: message.FileName,
+                                desc: message.MMAppMsgDesc,
+                                image: message.ImageUrl,
+                                source: message.MMAppName
+                            });
+                            break;
+                        default:
+                            this.fillInData({
+                                content: `[未知APP消息]:${message.AppMsgType}`
+                            });
+                            break;
                     }
                     break;
                 default:
-                    this.content = '[未知消息]';
+                    this.fillInData({
+                        content: `[未知消息]:${message.MsgType}`
+                    });
                     break;
+            }
+        }
+        fillInData(data) {
+            for (var key in data) {
+                this.renderData[key] = data[key];
             }
         }
     }
