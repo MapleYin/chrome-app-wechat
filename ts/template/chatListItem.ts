@@ -34,6 +34,7 @@ export class ChatListItem extends Template implements ChatListData{
 	nickName:string;
 	_lastDate?:Date;
 	_lastMessage?:string;
+	_unreadMsgCount:number;
 
 	private data:ChatListData;
 
@@ -55,13 +56,18 @@ export class ChatListItem extends Template implements ChatListData{
 		this.avatar = this.data.avatar;
 		this.nickName = this.data.nickName;
 
-		this.render(this.data);
+		this.render(templateString,this.data);
 	}
 
 	update(itemData:UserModel){
 		this.id = this.data.id;
 		this.avatar = this.data.avatar;
 		this.nickName = this.data.nickName;
+		this.unreadMsgCount = itemData.MMUnreadMsgCount;
+	}
+
+	public set unreadMsgCount(value:number){
+		this._unreadMsgCount == value;
 	}
 
 	public set active(v : boolean) {

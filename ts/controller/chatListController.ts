@@ -44,6 +44,7 @@ class ChatListController extends BaseController{
 		let item = this.getItemByUser(user);
 		item.lastMessage = message.MMDigest;
 		item.lastDate = new Date(message.CreateTime*1000);
+		item.unreadMsgCount = user.MMUnreadMsgCount;
 	}
 
 	private selectedItem(username:string){

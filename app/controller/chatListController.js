@@ -37,6 +37,7 @@ define(["require", "exports", '../template/chatListItem', './baseController', '.
             let item = this.getItemByUser(user);
             item.lastMessage = message.MMDigest;
             item.lastDate = new Date(message.CreateTime * 1000);
+            item.unreadMsgCount = user.MMUnreadMsgCount;
         }
         selectedItem(username) {
             if (this.activeUser && this.activeUser == username) {

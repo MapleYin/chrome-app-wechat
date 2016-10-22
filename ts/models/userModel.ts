@@ -44,6 +44,8 @@ export class UserModel{
 	MMBatchgetMember:boolean = false;
 	isSelf : boolean = false;
 
+	MMUnreadMsgCount:number = 0;
+
 
 	protected class = (this.constructor as typeof UserModel);
 
@@ -105,7 +107,9 @@ export class UserModel{
 		}
 	}
 
-	
+	increaseUnreadMsgNum(){
+		this.MMUnreadMsgCount += 1;
+	}
 
 	getDisplayName(){
 		let self = this;

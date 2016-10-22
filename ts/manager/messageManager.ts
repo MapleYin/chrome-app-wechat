@@ -52,6 +52,11 @@ class MessageManager extends BaseManager{
 		return message;
 	}
 
+	// 
+	statusNotifyMarkRead(toUserName:string){
+		messageServer.setStatusNotify(toUserName,StatusNotifyCode.READED);
+	}
+
 	private messageProcess(messageInfo:IMessage){
 		let self = this;
 		let user = contactManager.getContact(messageInfo.FromUserName,'',true);
@@ -59,7 +64,7 @@ class MessageManager extends BaseManager{
 		let message = new MessageModel(messageInfo);
 
 		if(user && !user.isMuted && !user.isSelf && !user.isShieldUser && !user.isBrandContact) {
-			// titleRemind.increaseUnreadMsgNum()
+			user.increaseUnreadMsgNum();
 		}
 		if(message.MsgType == MessageType.STATUSNOTIFY) {
 			self.statusNotifyProcessor(message);
@@ -99,6 +104,8 @@ class MessageManager extends BaseManager{
 			if(!message.MMIsSend && (!user || (!user.isMuted && !user.isBrandContact)) && message.MsgType != MessageType.SYS) {
 				// TODO notify
 			}
+
+			NotificationCenter.post<MessageModel>('message.receive',message);
 		}
 	}
 

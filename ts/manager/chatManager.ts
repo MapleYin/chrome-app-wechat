@@ -22,8 +22,7 @@ class ChatManager extends BaseManager{
 			self.updateChatList();
 		});
 		NotificationCenter.on<string>('chatList.select.user',event=>{
-			self.currentChatUser = event.userInfo;
-			chatContentController.selectUser(event.userInfo);
+			this.onSelectUser(event.userInfo);
 		});
 		NotificationCenter.on<MessageModel>('message.receive',event=>{
 			self.addChatMessage(event.userInfo);
@@ -66,6 +65,16 @@ class ChatManager extends BaseManager{
 		this.updateChatList(usernames);
 	}
 
+	private onSelectUser(username:string){
+		this.currentChatUser = username;
+		chatContentController.selectUser(username);
+		let user = contactManager.getContact(username);
+		if(user && user.MMUnreadMsgCount > 0) {
+			user.MMUnreadMsgCount = 0;
+			messageManager.statusNotifyMarkRead(user.UserName);
+		}
+	}
+
 	private updateChatList(usernames?:string[]){
 		let self = this;
 		let topList = [];
@@ -95,7 +104,10 @@ class ChatManager extends BaseManager{
 		chatListController.updateChatList(normalList,changeList);
 	}
 	private addChatMessage(message:MessageModel){
-		let user = contactManager.getContact(message.MMPeerUserName)
+		let user = contactManager.getContact(message.MMPeerUserName);
+		if(user.UserName == this.currentChatUser) {
+			user.MMUnreadMsgCount = 0;
+		}
 		chatListController.newMessage(message,user);
 		chatContentController.newMessage(message);	
 	}
