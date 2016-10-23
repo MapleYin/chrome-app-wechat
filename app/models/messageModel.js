@@ -106,6 +106,7 @@ define(["require", "exports", './wxInterface', '../manager/contactManager', '../
             this.MsgType = wxInterface_1.MessageType.VOICE;
             this.MMDigest += wxInterface_1.TextInfoMap['b28dac0'];
             this.MMVoiceUnRead = !this.MMIsSend && this.MMUnread;
+            this.Url = this.getMsgVoice(this.MsgId);
         }
         appMsgProcess() {
             switch (this.AppMsgType) {

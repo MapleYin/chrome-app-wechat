@@ -1,10 +1,11 @@
-import {IUser,IMessage} from '../models/wxInterface'
+import {IUser,IMessage,MessageType,AppMsgType} from '../models/wxInterface'
 import {UserModel} from '../models/userModel'
 import {MessageModel} from '../models/messageModel'
 import {ChatContentItem} from '../template/chatContentItem'
 import {BaseController} from './baseController'
 import {chatManager} from '../manager/chatManager'
 import {contactManager} from '../manager/contactManager'
+import {sourceServer} from '../servers/sourceServer'
 
 import {NotificationCenter} from '../utility/notificationCenter'
 
@@ -35,9 +36,7 @@ class ChatContentController extends BaseController{
 		this.$chatContentContainer.on('click','.item',(event)=>{
 			let msgId = $(event.currentTarget).data('id');
 			let message = self.allMessages[msgId];
-			if(message && message.Url) {
-				window.open(message.Url);
-			}
+			this.onMessageClick(message);
 		});
 	}
 
@@ -68,6 +67,28 @@ class ChatContentController extends BaseController{
 		NotificationCenter.post<string>('message.send.text',content);
 	}
 
+	private onMessageClick(message:MessageModel){
+		switch (message.MsgType) {
+			case MessageType.APP:
+				switch (message.AppMsgType) {
+					case AppMsgType.URL:
+						window.open(message.Url);
+						break;
+					
+					default:
+						// code...
+						break;
+				}
+				break;
+			case MessageType.VOICE:
+				this.playVoiceMessage(message);
+				break;
+			default:
+				// code...
+				break;
+		}
+	}
+
 	private displayMessageContent(userName){
 		let self = this;
 		let messages:MessageModel[] = this.messageList[userName];
@@ -89,6 +110,18 @@ class ChatContentController extends BaseController{
 		});
 		
 		self.$chatContentContainer.scrollTop(999999);
+	}
+
+	private playVoiceMessage(message:MessageModel){
+		let audio:HTMLAudioElement = document.createElement('audio');
+		sourceServer.fetchSource('https://wx.qq.com'+message.Url).then(localUrl=>{
+			audio.src = localUrl;
+			audio.autoplay = true;
+			console.log({
+				a : audio
+			});
+		});
+		
 	}
 }
 export let chatContentController = new ChatContentController();

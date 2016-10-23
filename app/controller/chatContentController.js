@@ -1,4 +1,4 @@
-define(["require", "exports", '../template/chatContentItem', './baseController', '../manager/contactManager', '../utility/notificationCenter'], function (require, exports, chatContentItem_1, baseController_1, contactManager_1, notificationCenter_1) {
+define(["require", "exports", '../models/wxInterface', '../template/chatContentItem', './baseController', '../manager/contactManager', '../servers/sourceServer', '../utility/notificationCenter'], function (require, exports, wxInterface_1, chatContentItem_1, baseController_1, contactManager_1, sourceServer_1, notificationCenter_1) {
     "use strict";
     class ChatContentController extends baseController_1.BaseController {
         constructor() {
@@ -25,9 +25,7 @@ define(["require", "exports", '../template/chatContentItem', './baseController',
             this.$chatContentContainer.on('click', '.item', (event) => {
                 let msgId = $(event.currentTarget).data('id');
                 let message = self.allMessages[msgId];
-                if (message && message.Url) {
-                    window.open(message.Url);
-                }
+                this.onMessageClick(message);
             });
         }
         selectUser(username) {
@@ -54,6 +52,26 @@ define(["require", "exports", '../template/chatContentItem', './baseController',
         sendMessage(content) {
             notificationCenter_1.NotificationCenter.post('message.send.text', content);
         }
+        onMessageClick(message) {
+            switch (message.MsgType) {
+                case wxInterface_1.MessageType.APP:
+                    switch (message.AppMsgType) {
+                        case wxInterface_1.AppMsgType.URL:
+                            window.open(message.Url);
+                            break;
+                        default:
+                            // code...
+                            break;
+                    }
+                    break;
+                case wxInterface_1.MessageType.VOICE:
+                    this.playVoiceMessage(message);
+                    break;
+                default:
+                    // code...
+                    break;
+            }
+        }
         displayMessageContent(userName) {
             let self = this;
             let messages = this.messageList[userName];
@@ -76,6 +94,16 @@ define(["require", "exports", '../template/chatContentItem', './baseController',
                 }
             });
             self.$chatContentContainer.scrollTop(999999);
+        }
+        playVoiceMessage(message) {
+            let audio = document.createElement('audio');
+            sourceServer_1.sourceServer.fetchSource('https://wx.qq.com' + message.Url).then(localUrl => {
+                audio.src = localUrl;
+                audio.autoplay = true;
+                console.log({
+                    a: audio
+                });
+            });
         }
     }
     exports.chatContentController = new ChatContentController();

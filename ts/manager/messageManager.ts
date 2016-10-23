@@ -26,7 +26,7 @@ class MessageManager extends BaseManager{
 		NotificationCenter.on('user.status.logout',()=>{
 			chrome.runtime.sendMessage({
 				command:'OPEN_LOGIN'
-			})
+			});
 		});
 	}
 

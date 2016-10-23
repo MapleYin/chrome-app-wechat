@@ -162,6 +162,7 @@ export class MessageModel{
 		this.MsgType = MessageType.VOICE;
 		this.MMDigest += TextInfoMap['b28dac0'];
 		this.MMVoiceUnRead = !this.MMIsSend && this.MMUnread;
+		this.Url = this.getMsgVoice(this.MsgId);
 	}
 
 	private appMsgProcess(){
