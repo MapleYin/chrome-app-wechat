@@ -4,6 +4,7 @@ import {MessageModel} from '../models/messageModel'
 import {ChatContentItem} from '../template/chatContentItem'
 import {BaseController} from './baseController'
 import {chatManager} from '../manager/chatManager'
+import {messageManager} from '../manager/messageManager'
 import {contactManager} from '../manager/contactManager'
 import {sourceServer} from '../servers/sourceServer'
 
@@ -14,7 +15,6 @@ class ChatContentController extends BaseController{
 	private $chatContentContainer:JQuery = $('#chat-content-container');
 	private $inputTextarea:JQuery = $('#message-input');
 	private messageList:{[key:string]:MessageModel[]} = {};
-	private allMessages:{[key:number]:MessageModel} = {};
 	currentChatUser:string;
 
 	constructor(){
@@ -35,7 +35,7 @@ class ChatContentController extends BaseController{
 
 		this.$chatContentContainer.on('click','.item',(event)=>{
 			let msgId = $(event.currentTarget).data('id');
-			let message = self.allMessages[msgId];
+			let message = messageManager.getMessage(msgId);
 			this.onMessageClick(message);
 		});
 	}
@@ -57,7 +57,6 @@ class ChatContentController extends BaseController{
 			self.messageList[message.MMPeerUserName] = [];
 		}
 		self.messageList[message.MMPeerUserName].push(message);
-		self.allMessages[message.MsgId] = message;
 		if(message.MMPeerUserName == self.currentChatUser) {
 			this.updateMessageContent([message]);
 		}
@@ -74,11 +73,13 @@ class ChatContentController extends BaseController{
 					case AppMsgType.URL:
 						window.open(message.Url);
 						break;
-					
 					default:
 						// code...
 						break;
 				}
+				break;
+			case MessageType.MICROVIDEO:
+				this.playVideoMessage(message);
 				break;
 			case MessageType.VOICE:
 				this.playVoiceMessage(message);
@@ -108,20 +109,18 @@ class ChatContentController extends BaseController{
 				console.error(`Miss Sender:${message.MMActualSender}`);
 			}
 		});
-		
 		self.$chatContentContainer.scrollTop(999999);
 	}
 
 	private playVoiceMessage(message:MessageModel){
 		let audio:HTMLAudioElement = document.createElement('audio');
-		sourceServer.fetchSource('https://wx.qq.com'+message.Url).then(localUrl=>{
+		sourceServer.fetchSource(message.Url).then(localUrl=>{
 			audio.src = localUrl;
 			audio.autoplay = true;
-			console.log({
-				a : audio
-			});
 		});
-		
+	}
+	private playVideoMessage(message:MessageModel){
+
 	}
 }
 export let chatContentController = new ChatContentController();

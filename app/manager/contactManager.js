@@ -1,5 +1,7 @@
-define(["require", "exports", './baseManager', './emoticonManager', '../servers/contactServer', '../models/wxInterface', '../models/userModel', '../utility/contactListHelper', '../utility/notificationCenter'], function (require, exports, baseManager_1, emoticonManager_1, contactServer_1, wxInterface_1, userModel_1, contactListHelper_1, notificationCenter_1) {
+define(["require", "exports", './baseManager', './emoticonManager', '../servers/contactServer', '../servers/coreServer', '../models/wxInterface', '../models/userModel', '../utility/contactListHelper', '../utility/notificationCenter'], function (require, exports, baseManager_1, emoticonManager_1, contactServer_1, coreServer_1, wxInterface_1, userModel_1, contactListHelper_1, notificationCenter_1) {
     "use strict";
+    let GET_HEAD_IMG = '/cgi-bin/mmwebwx-bin/webwxgetheadimg';
+    let GET_ICON = '/cgi-bin/mmwebwx-bin/webwxgeticon';
     // BatchgetContact 函数截流
     let delayAddBatchgetContact = (function (delay) {
         var timer;
@@ -118,15 +120,6 @@ define(["require", "exports", './baseManager', './emoticonManager', '../servers/
                 });
             }
         }
-        getUserHeadImage(url) {
-            if (url && url.search(/chrome-extension/) == -1) {
-                url = contactServer_1.contactServer.host + url;
-                return contactServer_1.contactServer.getImage(url);
-            }
-            else {
-                return new Promise((resolve, reject) => { reject(); });
-            }
-        }
         initContact(seq) {
             let self = this;
             // var count = 1;
@@ -159,7 +152,7 @@ define(["require", "exports", './baseManager', './emoticonManager', '../servers/
                     user.MemberList.forEach(memberInfo => {
                         let member = self.getContact(memberInfo.UserName, "", true);
                         if (!member || !member.isContact) {
-                            memberInfo.HeadImgUrl = contactServer_1.contactServer.getContactHeadImgUrl({
+                            memberInfo.HeadImgUrl = self.getContactHeadImgUrl({
                                 EncryChatRoomId: user.EncryChatRoomId,
                                 UserName: memberInfo.UserName
                             });
@@ -213,6 +206,12 @@ define(["require", "exports", './baseManager', './emoticonManager', '../servers/
         }
         addStrangerContact(user) {
             this.strangerContacts[user.UserName] = user;
+        }
+        getContactHeadImgUrl(params) {
+            let url = userModel_1.UserModel.isRoomContact(params.UserName) ? GET_HEAD_IMG : GET_ICON;
+            let msgIdQuery = params.MsgId ? `&msgid=${params.MsgId}` : '';
+            let chatroomIdQuery = params.EncryChatRoomId ? `&chatroomid=${params.EncryChatRoomId}` : '';
+            return `${url}?seq=0&username=${params.UserName}&skey=${coreServer_1.CoreServer.Skey}${msgIdQuery}${chatroomIdQuery}`;
         }
     }
     exports.contactManager = new ContactManager();

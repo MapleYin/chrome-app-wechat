@@ -84,6 +84,11 @@ export class ChatContentItem extends Template{
 						break;
 				}
 				break;
+			case MessageType.MICROVIDEO:
+				this.fillInData<textMsgRenderData>({
+					content : `[小视频]`
+				});
+				break;
 			default:
 				this.fillInData<textMsgRenderData>({
 					content : `[未知消息]:${message.MsgType}`

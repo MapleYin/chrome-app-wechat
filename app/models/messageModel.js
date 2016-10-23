@@ -1,7 +1,8 @@
 define(["require", "exports", './wxInterface', '../manager/contactManager', '../manager/emoticonManager', '../servers/coreServer', './userModel', '../utility/stringHelper'], function (require, exports, wxInterface_1, contactManager_1, emoticonManager_1, coreServer_1, userModel_1, stringHelper_1) {
     "use strict";
-    let GET_MSG_IMG_URL = '/cgi-bin/mmwebwx-bin/webwxgetmsgimg';
-    let GET_MSG_VOICE_URL = '/cgi-bin/mmwebwx-bin/webwxgetvoice';
+    let GET_MSG_IMG_URL = 'https://wx.qq.com/cgi-bin/mmwebwx-bin/webwxgetmsgimg';
+    let GET_MSG_VOICE_URL = 'https://wx.qq.com/cgi-bin/mmwebwx-bin/webwxgetvoice';
+    let GET_MSG_VIDEO_URL = 'https://wx.qq.com/cgi-bin/mmwebwx-bin/webwxgetvideo';
     class MessageModel {
         constructor(message) {
             this.commonMsgProcess(message);
@@ -63,14 +64,23 @@ define(["require", "exports", './wxInterface', '../manager/contactManager', '../
                 case wxInterface_1.MessageType.EMOTICON:
                     this.emojiMsgProcess();
                     break;
-                case wxInterface_1.MessageType.TEXT:
-                    this.textMsgProcess();
-                    break;
                 case wxInterface_1.MessageType.IMAGE:
                     this.imageMsgProcess();
                     break;
                 case wxInterface_1.MessageType.VOICE:
                     this.voiceMsgProcess();
+                    break;
+                case wxInterface_1.MessageType.VIDEO:
+                    this.videoMsgProcess();
+                    break;
+                case wxInterface_1.MessageType.MICROVIDEO:
+                    this.mircoVideoMsgProcess();
+                    break;
+                case wxInterface_1.MessageType.TEXT:
+                    this.textMsgProcess();
+                    break;
+                case wxInterface_1.MessageType.RECALLED:
+                    this.recalledMsgProcess();
                     break;
                 default:
                     // code...
@@ -80,12 +90,24 @@ define(["require", "exports", './wxInterface', '../manager/contactManager', '../
             //对消息显示时间的标志
         }
         textMsgProcess() {
+            this.MsgType = wxInterface_1.MessageType.TEXT;
             this.MMDigest += this.MMActualContent.replace(/<br ?[^><]*\/?>/g, "");
         }
         imageMsgProcess() {
+            this.MsgType = wxInterface_1.MessageType.IMAGE;
             this.MMDigest += wxInterface_1.TextInfoMap["a5627e8"];
             this.ImageUrl = this.getMsgImg(this.MsgId, 'slave');
             this.OriginImageUrl = this.getMsgImg(this.MsgId);
+        }
+        mircoVideoMsgProcess() {
+            this.MsgType = wxInterface_1.MessageType.MICROVIDEO;
+            this.ImageUrl = this.getMsgImg(this.MsgId, 'slave');
+            this.Url = this.getMsgVideo(this.MsgId);
+            this.MMDigest += wxInterface_1.TextInfoMap['1f94b1b'];
+        }
+        videoMsgProcess() {
+            this.MsgType = wxInterface_1.MessageType.VIDEO;
+            this.MMDigest += wxInterface_1.TextInfoMap['4078104'];
         }
         emojiMsgProcess() {
             if (this.HasProductId) {
@@ -108,15 +130,24 @@ define(["require", "exports", './wxInterface', '../manager/contactManager', '../
             this.MMVoiceUnRead = !this.MMIsSend && this.MMUnread;
             this.Url = this.getMsgVoice(this.MsgId);
         }
+        recalledMsgProcess() {
+            var actualContent = stringHelper_1.htmlDecode(this.MMActualContent);
+            let digest = wxInterface_1.TextInfoMap['ded861c'];
+            // TODO
+        }
         appMsgProcess() {
             switch (this.AppMsgType) {
                 case wxInterface_1.AppMsgType.TEXT:
+                    this.appTextMsgProcess();
                     break;
                 case wxInterface_1.AppMsgType.IMG:
+                    this.imageMsgProcess();
                     break;
                 case wxInterface_1.AppMsgType.AUDIO:
+                    this.appAudioMsgProcess();
                     break;
                 case wxInterface_1.AppMsgType.VIDEO:
+                    this.appVideoMsgProcess();
                     break;
                 case wxInterface_1.AppMsgType.EMOJI:
                     this.emojiMsgProcess();
@@ -160,6 +191,25 @@ define(["require", "exports", './wxInterface', '../manager/contactManager', '../
                 this.appReaderMsgProcess(actualContent.appmsg.mmreader);
             }
         }
+        appTextMsgProcess() {
+            let actualContent = stringHelper_1.htmlDecode(this.MMActualContent).replace(/<br\/>/g, '');
+            actualContent = stringHelper_1.encodeEmoji(actualContent);
+            actualContent = stringHelper_1.xml2Json(actualContent).msg;
+            this.appAsTextMsgProcess(stringHelper_1.decodeEmoji(stringHelper_1.htmlEncode(actualContent.appmsg.title)));
+        }
+        appAudioMsgProcess() {
+            let digest = wxInterface_1.TextInfoMap['0e23719'] + this.FileName;
+            this.appUrlMsgProcess(digest);
+        }
+        appVideoMsgProcess() {
+            let digest = wxInterface_1.TextInfoMap['4078104'] + this.FileName;
+            this.appUrlMsgProcess(digest);
+        }
+        appOpenMsgProcess() {
+            let digest = wxInterface_1.TextInfoMap['4f20785'] + this.FileName;
+            this.appUrlMsgProcess(digest);
+            this.MMAlert = wxInterface_1.TextInfoMap['c4e04ee'];
+        }
         appReaderMsgProcess(mmreader) {
             this.MsgType = wxInterface_1.MessageType.APP;
             this.AppMsgType = wxInterface_1.AppMsgType.READER_TYPE;
@@ -180,6 +230,13 @@ define(["require", "exports", './wxInterface', '../manager/contactManager', '../
                 }
             });
             this.MMDigest += this.MMCategory.length && this.MMCategory[0].title;
+        }
+        appAsTextMsgProcess(actualContent) {
+            this.MMActualContent = actualContent;
+            this.textMsgProcess();
+        }
+        getMsgVideo(MsgId) {
+            return `${GET_MSG_VIDEO_URL}?MsgID=${MsgId}&skey=${encodeURIComponent(coreServer_1.CoreServer.Skey)}`;
         }
         getMsgImg(MsgId, quality) {
             var type = '';

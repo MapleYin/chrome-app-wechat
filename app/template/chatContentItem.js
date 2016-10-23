@@ -60,6 +60,11 @@ define(["require", "exports", '../models/wxInterface', './template', './template
                             break;
                     }
                     break;
+                case wxInterface_1.MessageType.MICROVIDEO:
+                    this.fillInData({
+                        content: `[小视频]`
+                    });
+                    break;
                 default:
                     this.fillInData({
                         content: `[未知消息]:${message.MsgType}`

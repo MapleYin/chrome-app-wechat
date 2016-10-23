@@ -9,14 +9,13 @@ import {messageServer} from '../servers/messageServer'
 import {NotificationCenter} from '../utility/notificationCenter'
 
 class MessageManager extends BaseManager{
-	private messages;
+	private messages:{[key:number]:MessageModel} = {};
 
 	constructor(){
 		super();
 		let self = this;
 		NotificationCenter.on<ISyncResponse>('sync.get.success',event=>{
 			if(event.userInfo.AddMsgCount) {
-				console.log(`${event.userInfo.AddMsgCount} New Message`);
 				event.userInfo.AddMsgList.forEach(message=>{
 					self.messageProcess(message);
 				});
@@ -40,6 +39,9 @@ class MessageManager extends BaseManager{
 		messageServer.syncCheck();
 	}
 
+	getMessage(msgID:number){
+		return this.messages[msgID];
+	}
 
 	sendTextMessage(username:string,content:string):IMessage{
 		let message:IMessage = messageServer.createSendingMessage(username,content,MessageType.TEXT);
@@ -52,7 +54,6 @@ class MessageManager extends BaseManager{
 		return message;
 	}
 
-	// 
 	statusNotifyMarkRead(toUserName:string){
 		messageServer.setStatusNotify(toUserName,StatusNotifyCode.READED);
 	}
@@ -62,6 +63,8 @@ class MessageManager extends BaseManager{
 		let user = contactManager.getContact(messageInfo.FromUserName,'',true);
 
 		let message = new MessageModel(messageInfo);
+
+		this.messages[message.MsgId] = message;
 
 		if(user && !user.isMuted && !user.isSelf && !user.isShieldUser && !user.isBrandContact) {
 			user.increaseUnreadMsgNum();

@@ -74,10 +74,10 @@ class ChatContentTemplateCreater{
 		return `<p>{{content}}</p>`;
 	}
 	private emoticonMessageTemplate():string{
-		return `<img src="" class="emoticon-image" data-src="{{image}}" alt="" />`
+		return `<img src="/images/wechat_bg.png" class="emoticon-image" data-src="{{image}}" alt="" />`
 	}
 	private imageMessageTemplate(){
-		return `<img src="{{image}}" data-src="{{image}}" data-origin="{{originImage}}" class="msg-image" alt="" />`;
+		return `<img src="/images/wechat_bg.png" data-src="{{image}}" data-origin="{{originImage}}" class="msg-image" alt="" />`;
 	}
 	private voiceMessageTemplate(){
 		return `<span class="control"></span><time class="length">{{time}}</time>`;

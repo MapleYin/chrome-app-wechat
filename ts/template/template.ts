@@ -29,7 +29,7 @@ export class Template{
 		$elements.each((index,elem)=>{
 			let url:string = $(elem).data('src');
 			if(url && url.search(/chrome-extension/) == -1) {
-				sourceServer.fetchSource('https://wx.qq.com'+url).then((localUrl)=>{
+				sourceServer.fetchSource(url).then((localUrl)=>{
 					$(elem).attr('src',localUrl);
 				}).catch(reason=>{
 					console.log(reason);

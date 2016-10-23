@@ -47,6 +47,10 @@ class ChatListController extends BaseController{
 		item.unreadMsgCount = user.MMUnreadMsgCount;
 	}
 
+	select(username:string){
+		this.selectedItem(username);
+	}
+
 	private selectedItem(username:string){
 		if( this.activeUser && this.activeUser == username){
 			return ;

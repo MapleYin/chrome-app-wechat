@@ -3,7 +3,6 @@ define(["require", "exports", './coreServer', '../utility/notificationCenter'], 
     let SYNC_CHECK_URL = 'https://webpush.wx.qq.com/cgi-bin/mmwebwx-bin/synccheck';
     let SYNC_URL = 'https://wx.qq.com/cgi-bin/mmwebwx-bin/webwxsync';
     let MESSAGE_SENDING_URL = 'https://wx.qq.com/cgi-bin/mmwebwx-bin/webwxsendmsg';
-    let MESSAGE_IMAGE_URL = 'https://wx.qq.com/cgi-bin/mmwebwx-bin/webwxgetmsgimg';
     let STATUS_NOTIFY_URL = 'https://wx.qq.com/cgi-bin/mmwebwx-bin/webwxstatusnotify';
     let MATCH_RETCODE_REG = /retcode\s*:\s*\"(.*?)\"/;
     let MATCH_SELECTOR_REG = /selector\s*:\s*\"(.*?)\"/;

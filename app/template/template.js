@@ -21,7 +21,7 @@ define(["require", "exports", '../servers/sourceServer'], function (require, exp
             $elements.each((index, elem) => {
                 let url = $(elem).data('src');
                 if (url && url.search(/chrome-extension/) == -1) {
-                    sourceServer_1.sourceServer.fetchSource('https://wx.qq.com' + url).then((localUrl) => {
+                    sourceServer_1.sourceServer.fetchSource(url).then((localUrl) => {
                         $(elem).attr('src', localUrl);
                     }).catch(reason => {
                         console.log(reason);

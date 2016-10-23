@@ -45,10 +45,10 @@ define(["require", "exports", '../models/wxInterface'], function (require, expor
             return `<p>{{content}}</p>`;
         }
         emoticonMessageTemplate() {
-            return `<img src="" class="emoticon-image" data-src="{{image}}" alt="" />`;
+            return `<img src="/images/wechat_bg.png" class="emoticon-image" data-src="{{image}}" alt="" />`;
         }
         imageMessageTemplate() {
-            return `<img src="{{image}}" data-src="{{image}}" data-origin="{{originImage}}" class="msg-image" alt="" />`;
+            return `<img src="/images/wechat_bg.png" data-src="{{image}}" data-origin="{{originImage}}" class="msg-image" alt="" />`;
         }
         voiceMessageTemplate() {
             return `<span class="control"></span><time class="length">{{time}}</time>`;

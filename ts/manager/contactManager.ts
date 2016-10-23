@@ -3,13 +3,16 @@ import {emoticonManager} from './emoticonManager'
 import {chatManager} from './chatManager'
 
 import {contactServer} from '../servers/contactServer'
-import {IUser,IMessage,TextInfoMap,IBatchgetContactParams,IGroupMember} from '../models/wxInterface'
+import {CoreServer} from '../servers/coreServer'
+import {IUser,IMessage,TextInfoMap,IBatchgetContactParams,IGroupMember,IContactHeadImgParams} from '../models/wxInterface'
 import {fetchRemoteImage} from '../tools/chromeTools'
 
 import {UserModel} from '../models/userModel'
 import {ContactInListIndex} from '../utility/contactListHelper'
-
 import {NotificationCenter} from '../utility/notificationCenter'
+
+let GET_HEAD_IMG = '/cgi-bin/mmwebwx-bin/webwxgetheadimg';
+let GET_ICON = '/cgi-bin/mmwebwx-bin/webwxgeticon';
 
 // BatchgetContact 函数截流
 
@@ -137,15 +140,6 @@ class ContactManager extends BaseManager{
 		}
 	}
 
-	getUserHeadImage(url:string):Promise<string>{
-		if(url && url.search(/chrome-extension/) == -1) {
-			url = contactServer.host + url;
-			return contactServer.getImage(url);
-		}else{
-			return new Promise((resolve,reject)=>{reject();});
-		}
-	}
-
 	initContact(seq:number){
 		let self = this;
 		// var count = 1;
@@ -179,7 +173,7 @@ class ContactManager extends BaseManager{
 				user.MemberList.forEach(memberInfo=>{
 					let member = self.getContact(memberInfo.UserName,"",true);
 					if(!member || !member.isContact) {
-						memberInfo.HeadImgUrl = contactServer.getContactHeadImgUrl({
+						memberInfo.HeadImgUrl = self.getContactHeadImgUrl({
 							EncryChatRoomId: user.EncryChatRoomId,
 							UserName: memberInfo.UserName
 						});
@@ -237,6 +231,13 @@ class ContactManager extends BaseManager{
 
 	private addStrangerContact(user:UserModel){
 		this.strangerContacts[user.UserName] = user;
+	}
+
+	private getContactHeadImgUrl(params:IContactHeadImgParams){
+		let url = UserModel.isRoomContact(params.UserName) ? GET_HEAD_IMG : GET_ICON;
+		let msgIdQuery = params.MsgId ? `&msgid=${params.MsgId}` : '';
+		let chatroomIdQuery = params.EncryChatRoomId ? `&chatroomid=${params.EncryChatRoomId}`:'';
+		return `${url}?seq=0&username=${params.UserName}&skey=${CoreServer.Skey}${msgIdQuery}${chatroomIdQuery}`;
 	}
 
 }

@@ -3,10 +3,10 @@ define(["require", "exports", './baseManager', '../models/wxInterface', '../mode
     class MessageManager extends baseManager_1.BaseManager {
         constructor() {
             super();
+            this.messages = {};
             let self = this;
             notificationCenter_1.NotificationCenter.on('sync.get.success', event => {
                 if (event.userInfo.AddMsgCount) {
-                    console.log(`${event.userInfo.AddMsgCount} New Message`);
                     event.userInfo.AddMsgList.forEach(message => {
                         self.messageProcess(message);
                     });
@@ -27,6 +27,9 @@ define(["require", "exports", './baseManager', '../models/wxInterface', '../mode
         startMessageCheck() {
             messageServer_1.messageServer.syncCheck();
         }
+        getMessage(msgID) {
+            return this.messages[msgID];
+        }
         sendTextMessage(username, content) {
             let message = messageServer_1.messageServer.createSendingMessage(username, content, wxInterface_1.MessageType.TEXT);
             this.messageProcess(message);
@@ -36,7 +39,6 @@ define(["require", "exports", './baseManager', '../models/wxInterface', '../mode
             });
             return message;
         }
-        // 
         statusNotifyMarkRead(toUserName) {
             messageServer_1.messageServer.setStatusNotify(toUserName, wxInterface_1.StatusNotifyCode.READED);
         }
@@ -44,6 +46,7 @@ define(["require", "exports", './baseManager', '../models/wxInterface', '../mode
             let self = this;
             let user = contactManager_1.contactManager.getContact(messageInfo.FromUserName, '', true);
             let message = new messageModel_1.MessageModel(messageInfo);
+            this.messages[message.MsgId] = message;
             if (user && !user.isMuted && !user.isSelf && !user.isShieldUser && !user.isBrandContact) {
                 user.increaseUnreadMsgNum();
             }

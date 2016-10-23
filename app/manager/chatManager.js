@@ -1,4 +1,4 @@
-define(["require", "exports", './baseManager', './contactManager', './messageManager', '../models/userModel', '../utility/notificationCenter', '../controller/chatListController', '../controller/chatContentController'], function (require, exports, baseManager_1, contactManager_1, messageManager_1, userModel_1, notificationCenter_1, chatListController_1, chatContentController_1) {
+define(["require", "exports", './baseManager', './contactManager', './messageManager', '../models/userModel', '../utility/notificationCenter', '../controller/chatListController', '../controller/chatContentController', '../manager/notificationManager'], function (require, exports, baseManager_1, contactManager_1, messageManager_1, userModel_1, notificationCenter_1, chatListController_1, chatContentController_1, notificationManager_1) {
     "use strict";
     class ChatManager extends baseManager_1.BaseManager {
         constructor() {
@@ -16,6 +16,17 @@ define(["require", "exports", './baseManager', './contactManager', './messageMan
             notificationCenter_1.NotificationCenter.on('message.receive', event => {
                 self.addChatMessage(event.userInfo);
                 self.addChatList([event.userInfo.MMPeerUserName]);
+                if (document['webkitHidden']) {
+                    notificationManager_1.notificationManager.post(event.userInfo);
+                }
+            });
+            notificationCenter_1.NotificationCenter.on('notification.click', event => {
+                let message = messageManager_1.messageManager.getMessage(event.userInfo);
+                let currentWindow = chrome.app.window.get('MainWindow');
+                if (currentWindow) {
+                    currentWindow.show();
+                    chatListController_1.chatListController.select(message.MMPeerUserName);
+                }
             });
             notificationCenter_1.NotificationCenter.on('message.send', event => {
                 self.sendMessage(event.userInfo);

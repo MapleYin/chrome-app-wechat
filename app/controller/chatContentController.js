@@ -1,4 +1,4 @@
-define(["require", "exports", '../models/wxInterface', '../template/chatContentItem', './baseController', '../manager/contactManager', '../servers/sourceServer', '../utility/notificationCenter'], function (require, exports, wxInterface_1, chatContentItem_1, baseController_1, contactManager_1, sourceServer_1, notificationCenter_1) {
+define(["require", "exports", '../models/wxInterface', '../template/chatContentItem', './baseController', '../manager/messageManager', '../manager/contactManager', '../servers/sourceServer', '../utility/notificationCenter'], function (require, exports, wxInterface_1, chatContentItem_1, baseController_1, messageManager_1, contactManager_1, sourceServer_1, notificationCenter_1) {
     "use strict";
     class ChatContentController extends baseController_1.BaseController {
         constructor() {
@@ -7,7 +7,6 @@ define(["require", "exports", '../models/wxInterface', '../template/chatContentI
             this.$chatContentContainer = $('#chat-content-container');
             this.$inputTextarea = $('#message-input');
             this.messageList = {};
-            this.allMessages = {};
             let self = this;
             this.$inputTextarea.on('keydown', function (e) {
                 let message = $(this).val();
@@ -24,7 +23,7 @@ define(["require", "exports", '../models/wxInterface', '../template/chatContentI
             });
             this.$chatContentContainer.on('click', '.item', (event) => {
                 let msgId = $(event.currentTarget).data('id');
-                let message = self.allMessages[msgId];
+                let message = messageManager_1.messageManager.getMessage(msgId);
                 this.onMessageClick(message);
             });
         }
@@ -44,7 +43,6 @@ define(["require", "exports", '../models/wxInterface', '../template/chatContentI
                 self.messageList[message.MMPeerUserName] = [];
             }
             self.messageList[message.MMPeerUserName].push(message);
-            self.allMessages[message.MsgId] = message;
             if (message.MMPeerUserName == self.currentChatUser) {
                 this.updateMessageContent([message]);
             }
@@ -63,6 +61,9 @@ define(["require", "exports", '../models/wxInterface', '../template/chatContentI
                             // code...
                             break;
                     }
+                    break;
+                case wxInterface_1.MessageType.MICROVIDEO:
+                    this.playVideoMessage(message);
                     break;
                 case wxInterface_1.MessageType.VOICE:
                     this.playVoiceMessage(message);
@@ -97,13 +98,12 @@ define(["require", "exports", '../models/wxInterface', '../template/chatContentI
         }
         playVoiceMessage(message) {
             let audio = document.createElement('audio');
-            sourceServer_1.sourceServer.fetchSource('https://wx.qq.com' + message.Url).then(localUrl => {
+            sourceServer_1.sourceServer.fetchSource(message.Url).then(localUrl => {
                 audio.src = localUrl;
                 audio.autoplay = true;
-                console.log({
-                    a: audio
-                });
             });
+        }
+        playVideoMessage(message) {
         }
     }
     exports.chatContentController = new ChatContentController();

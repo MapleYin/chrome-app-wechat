@@ -5,8 +5,9 @@ import {CoreServer} from '../servers/coreServer'
 import {UserModel} from './userModel'
 import {htmlDecode,htmlEncode,xml2Json,encodeEmoji,decodeEmoji,formatNum} from '../utility/stringHelper'
 
-let GET_MSG_IMG_URL = '/cgi-bin/mmwebwx-bin/webwxgetmsgimg';
-let GET_MSG_VOICE_URL = '/cgi-bin/mmwebwx-bin/webwxgetvoice';
+let GET_MSG_IMG_URL = 'https://wx.qq.com/cgi-bin/mmwebwx-bin/webwxgetmsgimg';
+let GET_MSG_VOICE_URL = 'https://wx.qq.com/cgi-bin/mmwebwx-bin/webwxgetvoice';
+let GET_MSG_VIDEO_URL = 'https://wx.qq.com/cgi-bin/mmwebwx-bin/webwxgetvideo';
 
 export class MessageModel{
 
@@ -44,6 +45,7 @@ export class MessageModel{
 	MMCategory?:any[];
 	MMAppName?:string;
 	MMVoiceUnRead?:boolean;
+	MMAlert?:string;
 	md5?:string;
 
 	ImageUrl?:string;
@@ -117,14 +119,23 @@ export class MessageModel{
 			case MessageType.EMOTICON:
 				this.emojiMsgProcess();
 				break;
-			case MessageType.TEXT:
-				this.textMsgProcess();
-				break;
 			case MessageType.IMAGE:
 				this.imageMsgProcess();
 				break;
 			case MessageType.VOICE:
 				this.voiceMsgProcess();
+				break;
+			case MessageType.VIDEO:
+				this.videoMsgProcess();
+				break;
+			case MessageType.MICROVIDEO:
+				this.mircoVideoMsgProcess();
+				break;
+			case MessageType.TEXT:
+				this.textMsgProcess();
+				break;
+			case MessageType.RECALLED:
+				this.recalledMsgProcess();
 				break;
 			default:
 				// code...
@@ -136,12 +147,24 @@ export class MessageModel{
 	}
 
 	private textMsgProcess(){
+		this.MsgType = MessageType.TEXT;
 		this.MMDigest += this.MMActualContent.replace(/<br ?[^><]*\/?>/g, "");
 	}
 	private imageMsgProcess(){
+		this.MsgType = MessageType.IMAGE;
 		this.MMDigest += TextInfoMap["a5627e8"];
 		this.ImageUrl = this.getMsgImg(this.MsgId,'slave');
 		this.OriginImageUrl = this.getMsgImg(this.MsgId);
+	}
+	private mircoVideoMsgProcess(){
+		this.MsgType = MessageType.MICROVIDEO;
+		this.ImageUrl = this.getMsgImg(this.MsgId,'slave');
+		this.Url = this.getMsgVideo(this.MsgId);
+		this.MMDigest += TextInfoMap['1f94b1b'];
+	}
+	private videoMsgProcess(){
+		this.MsgType = MessageType.VIDEO;
+		this.MMDigest += TextInfoMap['4078104'];
 	}
 	private emojiMsgProcess(){
 		if(this.HasProductId) {
@@ -164,20 +187,25 @@ export class MessageModel{
 		this.MMVoiceUnRead = !this.MMIsSend && this.MMUnread;
 		this.Url = this.getMsgVoice(this.MsgId);
 	}
+	private recalledMsgProcess(){
+		var actualContent = htmlDecode(this.MMActualContent);
+		let digest = TextInfoMap['ded861c'];
+		// TODO
+	}
 
 	private appMsgProcess(){
 		switch (this.AppMsgType) {
 			case AppMsgType.TEXT:
-				
+				this.appTextMsgProcess();
 				break;
 			case AppMsgType.IMG:
-				
+				this.imageMsgProcess();
 				break;
 			case AppMsgType.AUDIO:
-				
+				this.appAudioMsgProcess();
 				break;
 			case AppMsgType.VIDEO:
-				
+				this.appVideoMsgProcess();
 				break;
 			case AppMsgType.EMOJI:
 				this.emojiMsgProcess();
@@ -233,6 +261,29 @@ export class MessageModel{
 		}
 	}
 
+	private appTextMsgProcess(){
+		let actualContent:any = htmlDecode(this.MMActualContent).replace(/<br\/>/g, '');
+		actualContent = encodeEmoji(actualContent);
+		actualContent = xml2Json(actualContent).msg;
+		this.appAsTextMsgProcess(decodeEmoji(htmlEncode(actualContent.appmsg.title)));
+	}
+
+	private appAudioMsgProcess(){
+		let digest = TextInfoMap['0e23719'] + this.FileName;
+		this.appUrlMsgProcess(digest);
+	}
+
+	private appVideoMsgProcess(){
+		let digest = TextInfoMap['4078104'] + this.FileName;
+		this.appUrlMsgProcess(digest);
+	}
+
+	private appOpenMsgProcess(){
+		let digest = TextInfoMap['4f20785'] + this.FileName;
+		this.appUrlMsgProcess(digest);
+		this.MMAlert = TextInfoMap['c4e04ee'];
+	}
+
 	private appReaderMsgProcess(mmreader:any){
 		this.MsgType = MessageType.APP;
 		this.AppMsgType = AppMsgType.READER_TYPE;
@@ -253,6 +304,15 @@ export class MessageModel{
 
 		});
 		this.MMDigest += this.MMCategory.length && this.MMCategory[0].title;
+	}
+
+	private appAsTextMsgProcess(actualContent:string){
+		this.MMActualContent = actualContent;
+		this.textMsgProcess();
+	}
+
+	private getMsgVideo(MsgId:number|string):string{
+		return `${GET_MSG_VIDEO_URL}?MsgID=${MsgId}&skey=${encodeURIComponent(CoreServer.Skey)}`
 	}
 
 	private getMsgImg(MsgId:number|string,quality?:string):string{

@@ -1,13 +1,10 @@
-define(["require", "exports", './coreServer', '../models/userModel', '../utility/contactListHelper'], function (require, exports, coreServer_1, userModel_1, contactListHelper_1) {
+define(["require", "exports", './coreServer', '../utility/contactListHelper'], function (require, exports, coreServer_1, contactListHelper_1) {
     "use strict";
     let GET_CONTACT_URL = 'https://wx.qq.com/cgi-bin/mmwebwx-bin/webwxbatchgetcontact';
     let GET_ALL_CONTACT_URL = 'https://wx.qq.com/cgi-bin/mmwebwx-bin/webwxgetcontact';
-    let GET_HEAD_IMG = '/cgi-bin/mmwebwx-bin/webwxgetheadimg';
-    let GET_ICON = '/cgi-bin/mmwebwx-bin/webwxgeticon';
     class ContactServer extends coreServer_1.CoreServer {
         constructor() {
             super();
-            this.host = 'https://wx.qq.com';
             this.getContactErrorCount = 0;
             this.getContactErrorList = [];
             this.getContactGettingList = [];
@@ -66,16 +63,6 @@ define(["require", "exports", './coreServer', '../models/userModel', '../utility
                 return reson;
             });
         }
-        getImage(urlString) {
-            return this.get(urlString, null, {
-                responseType: 'blob'
-            }).then((response) => {
-                response.blob().then((data) => {
-                    let objURL = URL.createObjectURL(data);
-                    return objURL;
-                });
-            });
-        }
         getAllContacts(seq) {
             let self = this;
             return this.get(GET_ALL_CONTACT_URL, {
@@ -95,12 +82,6 @@ define(["require", "exports", './coreServer', '../models/userModel', '../utility
                     }
                 });
             });
-        }
-        getContactHeadImgUrl(params) {
-            let url = userModel_1.UserModel.isRoomContact(params.UserName) ? GET_HEAD_IMG : GET_ICON;
-            let msgIdQuery = params.MsgId ? `&msgid=${params.MsgId}` : '';
-            let chatroomIdQuery = params.EncryChatRoomId ? `&chatroomid=${params.EncryChatRoomId}` : '';
-            return `${url}?seq=0&username=${params.UserName}&skey=${this.class.Skey}${msgIdQuery}${chatroomIdQuery}`;
         }
     }
     exports.contactServer = new ContactServer();

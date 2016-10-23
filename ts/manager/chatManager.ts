@@ -1,13 +1,13 @@
 import {BaseManager} from './baseManager'
 import {contactManager} from './contactManager'
 import {messageManager} from './messageManager'
-import {messageServer} from '../servers/messageServer'
 import {UserModel} from '../models/userModel'
 import {MessageModel} from '../models/messageModel'
 import {IUser,IMessage} from '../models/wxInterface'
 import {NotificationCenter} from '../utility/notificationCenter'
 import {chatListController} from '../controller/chatListController'
 import {chatContentController} from '../controller/chatContentController'
+import {notificationManager} from '../manager/notificationManager'
 
 class ChatManager extends BaseManager{
 	private currentChatUser:string;
@@ -27,6 +27,17 @@ class ChatManager extends BaseManager{
 		NotificationCenter.on<MessageModel>('message.receive',event=>{
 			self.addChatMessage(event.userInfo);
 			self.addChatList([event.userInfo.MMPeerUserName]);
+			if(document['webkitHidden']) {
+				notificationManager.post(event.userInfo);
+			}
+		});
+		NotificationCenter.on<number>('notification.click',event=>{
+			let message = messageManager.getMessage(event.userInfo);
+			let currentWindow = chrome.app.window.get('MainWindow');
+			if(currentWindow) {
+				currentWindow.show();
+				chatListController.select(message.MMPeerUserName);
+			}
 		});
 
 		NotificationCenter.on<string>('message.send',event=>{

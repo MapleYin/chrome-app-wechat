@@ -73,7 +73,7 @@ export class UserModel{
 		this.UserName = memberInfo.UserName;
 		this.NickName = memberInfo.NickName;
 		this.RemarkName = memberInfo.DisplayName;
-		this.HeadImgUrl = memberInfo.HeadImgUrl;
+		this.HeadImgUrl = 'https://wx.qq.com'+memberInfo.HeadImgUrl;
 	}
 
 	updateUserInfo(userInfo:IUser,isSelf?:boolean){
@@ -82,7 +82,7 @@ export class UserModel{
 		this.NickName = userInfo.NickName;
 		this.Sex = userInfo.Sex;
 		this.RemarkName = userInfo.RemarkName;
-		this.HeadImgUrl = userInfo.HeadImgUrl;
+		this.HeadImgUrl = 'https://wx.qq.com'+userInfo.HeadImgUrl;
 		this.Signature = userInfo.Signature;
 		this.City = userInfo.City;
 		this.Province = userInfo.Province;
