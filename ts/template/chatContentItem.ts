@@ -13,7 +13,7 @@ import {chatContentTemplateCreater,
 	} from './templateCreater'
 
 export class ChatContentItem extends Template{
-	messageId:number;
+	messageId:string;
 	avatar : string;
 	nickName : string;
 	content : string;

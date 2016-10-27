@@ -16,7 +16,7 @@ class NotificationManager extends BaseManager{
 	post(message:MessageModel,disappear?:number){
 		let noticeID = message.MsgId.toString();
 		let noticeOptions = this.createOption(message);
-		disappear = disappear || 3000;
+		disappear = disappear || 5000;
 		sourceServer.fetchSource(noticeOptions.iconUrl).then(localUrl=>{
 			noticeOptions.iconUrl = localUrl;
 			chrome.notifications.create(noticeID,noticeOptions,noticeID=>{
@@ -49,7 +49,7 @@ class NotificationManager extends BaseManager{
 	}
 
 	private notificationClicked(msgID:string){
-		NotificationCenter.post<number>('notification.click',+msgID);
+		NotificationCenter.post<string>('notification.click',msgID);
 	}
 }
 export let notificationManager = new NotificationManager();

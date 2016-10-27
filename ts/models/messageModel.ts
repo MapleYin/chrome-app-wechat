@@ -11,9 +11,9 @@ let GET_MSG_VIDEO_URL = 'https://wx.qq.com/cgi-bin/mmwebwx-bin/webwxgetvideo';
 
 export class MessageModel{
 
-	LocalID:number;
-	ClientMsgId:number;
-	MsgId:number;
+	LocalID:string;
+	ClientMsgId:string;
+	MsgId:string;
 	CreateTime:number;
 	HasProductId:number;
 

@@ -10,7 +10,7 @@ define(["require", "exports", './baseManager', './contactManager', '../utility/n
         post(message, disappear) {
             let noticeID = message.MsgId.toString();
             let noticeOptions = this.createOption(message);
-            disappear = disappear || 3000;
+            disappear = disappear || 5000;
             sourceServer_1.sourceServer.fetchSource(noticeOptions.iconUrl).then(localUrl => {
                 noticeOptions.iconUrl = localUrl;
                 chrome.notifications.create(noticeID, noticeOptions, noticeID => {
@@ -41,7 +41,7 @@ define(["require", "exports", './baseManager', './contactManager', '../utility/n
             return option;
         }
         notificationClicked(msgID) {
-            notificationCenter_1.NotificationCenter.post('notification.click', +msgID);
+            notificationCenter_1.NotificationCenter.post('notification.click', msgID);
         }
     }
     exports.notificationManager = new NotificationManager();

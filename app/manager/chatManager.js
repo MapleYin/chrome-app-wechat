@@ -16,7 +16,7 @@ define(["require", "exports", './baseManager', './contactManager', './messageMan
             notificationCenter_1.NotificationCenter.on('message.receive', event => {
                 self.addChatMessage(event.userInfo);
                 self.addChatList([event.userInfo.MMPeerUserName]);
-                if (document['webkitHidden']) {
+                if (document['webkitHidden'] && (event.userInfo.FromUserName != contactManager_1.contactManager.account.UserName)) {
                     notificationManager_1.notificationManager.post(event.userInfo);
                 }
             });

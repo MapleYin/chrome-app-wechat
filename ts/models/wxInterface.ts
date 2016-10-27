@@ -84,9 +84,9 @@ export interface IUser{
 };
 
 export interface IMessage{
-	MsgId?: number;
-	LocalID?: string|number;
-	ClientMsgId?:string|number;
+	MsgId?: string;
+	LocalID?: string;
+	ClientMsgId?:string;
 	CreateTime : number;
 	Content : string;
 	FromUserName : string;

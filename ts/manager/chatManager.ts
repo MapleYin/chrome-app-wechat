@@ -27,7 +27,7 @@ class ChatManager extends BaseManager{
 		NotificationCenter.on<MessageModel>('message.receive',event=>{
 			self.addChatMessage(event.userInfo);
 			self.addChatList([event.userInfo.MMPeerUserName]);
-			if(document['webkitHidden']) {
+			if(document['webkitHidden'] && (event.userInfo.FromUserName != contactManager.account.UserName) ) {
 				notificationManager.post(event.userInfo);
 			}
 		});
