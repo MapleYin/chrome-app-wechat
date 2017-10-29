@@ -1,212 +1,21 @@
-export interface IBaseRequest{
-	Uin:string;
-	Sid:string;
-	Skey:string;
-	DeviceID:string;
-}
 
-export interface IBaseResponse{
-	ErrMsg : string;
-	Ret : 0;
-}
 
-export interface IBatchgetContactParams{
-	UserName : string;
-	ChatRoomId? : string;
-	EncryChatRoomId? : string;
-}
 
-export interface IBatchContactResponse{
-	BaseResponse : IBaseResponse;
-	ContactList : Array<IUser>;
-	Count : number;
-}
 
-export interface IContactResponse{
-	BaseResponse : IBaseResponse;
-	MemberCount : number;
-	MemberList : IUser[];
-	Seq : number
-}
 
-export interface ISyncKey{
-	Count:number;
-	List:Array<Object>;
-}
 
-export interface ISyncResponse{
-	BaseResponse : IBaseResponse;
-	AddMsgCount : number;
-	AddMsgList : Array<IMessage>;
-	SyncKey : ISyncKey;
-    SyncCheckKey : ISyncKey;
-}
 
-export interface IInitInfoResResponse{
-	BaseResponse : IBaseResponse;
-	ContactList : Array<IUser>;
-	Count : number;
-	SKey : string;
-	SyncKey : ISyncKey;
-	User : IUser;
-	ChatSet : string;
-}
 
-export interface IContactHeadImgParams{
-	UserName : string;
-	MsgId?: string;
-	EncryChatRoomId?:string;
-}
 
-export interface IUser{
-	UserName : string;
 
-	NickName : string;
-	Sex : number;
-	RemarkName : string;
-	HeadImgUrl : string;
-	Signature : string;
-	SnsFlag : number;
 
-	City : string;
-	Province : string;
 
-	ContactFlag : number;
-	VerifyFlag : number;
 
-	AppAccountFlag : number;
 
-	// group
-	EncryChatRoomId : string;
-	MemberList : Array<IGroupMember>;
-	MemberCount : number;
-	Statues : number;
-};
 
-export interface IMessage{
-	MsgId?: string;
-	LocalID?: string;
-	ClientMsgId?:string;
-	CreateTime : number;
-	Content : string;
-	FromUserName : string;
-	ToUserName : string;
-	MsgType : MessageType;
-    HasProductId?: number;
-	SubMsgType?: MessageType;
-	AppMsgType?: AppMsgType;
-	FileName?: string;
-	FileSize?: string;
-	ForwardFlag?: number;
-	Status?: number;
-	StatusNotifyCode?: number;
-	StatusNotifyUserName?: string;
-	Url?: string;
-	VoiceLength?: number;
 
-	RecommendInfo?:IRecommendInfo;
-}
 
-export interface IRecommendInfo{
-	Alias : string;
-	AttrStatus : number;
-	City : string;
-	Content : string;
-	NickName : string;
-	OpCode : number;
-	Province : string;
-	QQNum : number;
-	Scene : number;
-	Sex : number;
-	Signature : string;
-	Ticket : string;
-	UserName : string;
-	VerifyFlag : number;
-}
 
-export interface IGroupMember{
-	NickName : string;
-	UserName : string;
-	DisplayName : string;
-	MemberStatus : number;
-	AttrStatus : number;
-	HeadImgUrl : string;
-}
-
-export enum MessageType{
-	TEXT                 = 1,      // 文本消息
-	IMAGE                = 3,      // 图片消息
-	VOICE                = 34,     // 语音消息
-	VIDEO                = 43,     // 视频消息
-	MICROVIDEO           = 62,     // 小视频消息
-	EMOTICON             = 47,     // 表情消息
-	APP                  = 49,     // 模版消息
-	VOIPMSG              = 50,     // 
-	VOIPNOTIFY           = 52,
-	VOIPINVITE           = 53,
-	LOCATION             = 48,     // 地理位置消息
-	STATUSNOTIFY         = 51,
-	SYSNOTICE            = 9999,
-	POSSIBLEFRIEND_MSG   = 40,     // 
-	VERIFYMSG            = 37,     // 朋友验证消息
-	SHARECARD            = 42,     // 名片分享
-	SYS                  = 1e4,    // 系统消息
-	RECALLED             = 10002   // 撤回消息
-}
-
-export enum AppMsgType{
-	TEXT = 1,
-	IMG = 2,
-	AUDIO = 3,
-	VIDEO = 4,
-	URL = 5,
-	ATTACH = 6,
-	OPEN = 7,
-	EMOJI = 8,
-	VOICE_REMIND = 9,
-	SCAN_GOOD = 10,
-	GOOD = 13,
-	EMOTION = 15,
-	CARD_TICKET = 16,
-	REALTIME_SHARE_LOCATION = 17,
-	TRANSFERS = 2e3,
-	RED_ENVELOPES = 2001,
-	READER_TYPE = 100001,
-}
-
-export enum StatusNotifyCode{
-	READED = 1,
-	ENTER_SESSION = 2,
-	INITED = 3,
-	SYNC_CONV = 4,
-	QUIT_SESSION = 5
-}
-export enum ContactFlag{
-	CONTACT = 1,
-	CHATCONTACT = 2,
-	CHATROOMCONTACT = 4,
-	BLACKLISTCONTACT = 8,
-	DOMAINCONTACT = 16,
-	HIDECONTACT = 32,
-	FAVOURCONTACT = 64,
-	RDAPPCONTACT = 128,
-	SNSBLACKLISTCONTACT = 256,
-	NOTIFYCLOSECONTACT = 512,
-	TOPCONTACT = 2048,
-}
-
-export enum UserAttrVerifyFlag{
-	BIZ = 1,
-	FAMOUS = 2,
-	BIZ_BIG = 4,
-	BIZ_BRAND = 8,
-	BIZ_VERIFIED = 16,
-}
-
-export enum ChatRoomNotify{
-	CLOSE = 0,
-	OPEN = 1
-}
 export let TextInfoMap = {
 	"2457513":"周六",
     "4078104":"[视频]",
