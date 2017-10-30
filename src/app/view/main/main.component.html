@@ -1,0 +1,14 @@
+
+
+<section class="login" *ngIf="!isLogin">
+	<figure class="login-area">
+		<img src="" id="QRCode">
+		<h1>扫码登录微信</h1>
+		<p>ChromeApp微信需要配合你的手机登录使用</p>
+	</figure>
+</section>
+
+<section class="chat-container" *ngIf="isLogin">
+	<chat-list></chat-list>
+	<chat-detail></chat-detail>
+</section>

@@ -1,4 +1,4 @@
-let EXEC_COOKIE_REG = /<(\w+)>(?!<)(.+?)</g
+const EXEC_COOKIE_REG = /<(\w+)>(?!<)(.+?)</g
 
 export class BaseServer{
 

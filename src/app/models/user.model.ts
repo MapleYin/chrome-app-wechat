@@ -1,4 +1,9 @@
-import {IUser,IGroupMember,ContactFlag,ChatRoomNotify,UserAttrVerifyFlag,IContactHeadImgParams} from './wxInterface'
+// import {IUser,IGroupMember,ContactFlag,ChatRoomNotify,UserAttrVerifyFlag,IContactHeadImgParams} from './wxInterface'
+
+import {IUser} from '../interface/user.interface'
+import {IGroupMember} from '../interface/group.interface'
+import {EContactFlag,EUserAttrVerifyFlag,EChatRoomNotify} from '../interface/user.interface'
+
 
 
 let SpicalAccounts = ["weibo", "qqmail", "fmessage", "tmessage", "qmessage", "qqsync", "floatbottle", "lbsapp", "shakeapp", "medianote", "qqfriend", "readerapp", "blogapp", "facebookapp", "masssendapp", "meishiapp", "feedsapp", "voip", "blogappweixin", "weixin", "brandsessionholder", "weixinreminder", "wxid_novlwrv3lqwv11", "gh_22b87fa7cb3c", "officialaccounts", "notification_messages"];
@@ -58,13 +63,13 @@ export class UserModel {
 
 	set contactFlag(contactFlag : number) {
 		this._contactFlag = contactFlag;
-		this.isContact = !!(contactFlag & ContactFlag.CONTACT);
-		this.isBlackContact = !!(contactFlag & ContactFlag.BLACKLISTCONTACT);
+		this.isContact = !!(contactFlag & EContactFlag.CONTACT);
+		this.isBlackContact = !!(contactFlag & EContactFlag.BLACKLISTCONTACT);
 		this.isMuted = this.isRoomContact ? 
-			this.Statues === ChatRoomNotify.CLOSE : 
-			!!(contactFlag & ContactFlag.NOTIFYCLOSECONTACT);
+			this.Statues === EChatRoomNotify.CLOSE : 
+			!!(contactFlag & EContactFlag.NOTIFYCLOSECONTACT);
 
-		this.isTop = !!(contactFlag & ContactFlag.TOPCONTACT);
+		this.isTop = !!(contactFlag & EContactFlag.TOPCONTACT);
 	}
 
 	updateMemberInfo(memberInfo:IGroupMember){
@@ -97,7 +102,7 @@ export class UserModel {
 
 		this.isShieldUser = this.class.isShieldUser(this.UserName);
 
-		this.isBrandContact = !!(userInfo.VerifyFlag & UserAttrVerifyFlag.BIZ_BRAND);
+		this.isBrandContact = !!(userInfo.VerifyFlag & EUserAttrVerifyFlag.BIZ_BRAND);
 		if(isSelf != undefined) {
 			this.isSelf = isSelf;
 		}else if(contactManager.account){

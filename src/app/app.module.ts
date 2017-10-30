@@ -1,9 +1,9 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 
-import {MainComponent} from './main/main.component'
-import {ChatListComponent} from './chat-list/chat-list.component'
-import {ChatDetailComponent} from './chat-detail/chat-detail.component'
+import {MainComponent} from './view/main/main.component'
+import {ChatListComponent} from './view/chat-list/chat-list.component'
+import {ChatDetailComponent} from './view/chat-detail/chat-detail.component'
 
 @NgModule({
 	declarations: [

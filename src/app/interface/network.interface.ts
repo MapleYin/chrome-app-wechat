@@ -63,37 +63,3 @@ export enum EStatusNotifyCode {
 	SYNC_CONV = 4,
 	QUIT_SESSION = 5
 }
-
-export enum EContactFlag{
-	CONTACT = 1,
-	CHATCONTACT = 2,
-	CHATROOMCONTACT = 4,
-	BLACKLISTCONTACT = 8,
-	DOMAINCONTACT = 16,
-	HIDECONTACT = 32,
-	FAVOURCONTACT = 64,
-	RDAPPCONTACT = 128,
-	SNSBLACKLISTCONTACT = 256,
-	NOTIFYCLOSECONTACT = 512,
-	TOPCONTACT = 2048,
-}
-
-
-export enum EUserAttrVerifyFlag{
-	BIZ = 1,
-	FAMOUS = 2,
-	BIZ_BIG = 4,
-	BIZ_BRAND = 8,
-	BIZ_VERIFIED = 16,
-}
-
-export enum EChatRoomNotify{
-	CLOSE = 0,
-	OPEN = 1
-}
-
-export interface IContactHeadImgParams{
-	UserName : string;
-	MsgId?: string;
-	EncryChatRoomId?:string;
-}
