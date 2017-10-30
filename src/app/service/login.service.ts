@@ -3,8 +3,11 @@ import {Injectable} from '@angular/core';
 import {CoreService} from './core.service'
 
 
-import {IBaseResponse,IInitInfoResResponse} from '../interface/network.interface'
-import {IUser} from '../interface/user.interface'
+import {
+	IUser,
+	IBaseResponse,
+	IInitInfoResResponse
+} from '../defined'
 
 const GETUUID_URL = 'https://login.weixin.qq.com/jslogin';
 const GETQRCODE_URL = 'https://login.weixin.qq.com/qrcode/';

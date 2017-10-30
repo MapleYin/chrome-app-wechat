@@ -71,6 +71,7 @@ class ContactManager extends BaseManager{
 
 	addContact(userInfo:IUser|IGroupMember,isFromBatchGet?:boolean){
 		if(userInfo) {
+			
 			let user = new UserModel(userInfo);
 			if(user.EncryChatRoomId && user.UserName || isFromBatchGet) {
 				user.MMFromBatchget = true;

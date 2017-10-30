@@ -5,11 +5,14 @@ import {AccountService} from '../service/account.service'
 import {CoreService} from '../service/core.service'
 
 import {UserModel} from '../models/user.model'
-import {IUser,IContactHeadImgParams} from '../interface/user.interface'
-import {IGroupMember} from '../interface/group.interface'
-import {IBatchgetContactParams} from '../interface/network.interface'
 
-import TextInfoMap = require("../interface/text.interface");
+import {
+	IUser,
+	IContactHeadImgParams,
+	IGroupMember,
+	IBatchgetContactParams,
+	MText
+} from '../defined'
 
 
 const GET_HEAD_IMG = '/cgi-bin/mmwebwx-bin/webwxgetheadimg';
@@ -225,10 +228,10 @@ export class AccountManager {
 
 	private specialContactHandler(user:UserModel) {
 		let specialContacts = {
-			weixin: TextInfoMap["6c2fc35"],
-			filehelper: TextInfoMap["eb7ec65"],
-			newsapp: TextInfoMap["0469c27"],
-			fmessage: TextInfoMap["a82c4c4"]
+			weixin: MText["6c2fc35"],
+			filehelper: MText["eb7ec65"],
+			newsapp: MText["0469c27"],
+			fmessage: MText["a82c4c4"]
 		};
 		if(specialContacts[user.UserName]) {
 			user.NickName = specialContacts[user.UserName];

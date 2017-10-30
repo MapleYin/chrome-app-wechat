@@ -1,13 +1,17 @@
 // import {IUser,IGroupMember,ContactFlag,ChatRoomNotify,UserAttrVerifyFlag,IContactHeadImgParams} from './wxInterface'
 
-import {IUser} from '../interface/user.interface'
-import {IGroupMember} from '../interface/group.interface'
-import {EContactFlag,EUserAttrVerifyFlag,EChatRoomNotify} from '../interface/user.interface'
+import {
+	IUser,
+	IGroupMember,
+	EContactFlag,
+	EUserAttrVerifyFlag,
+	EChatRoomNotify
+} from '../defined'
 
 
 
-let SpicalAccounts = ["weibo", "qqmail", "fmessage", "tmessage", "qmessage", "qqsync", "floatbottle", "lbsapp", "shakeapp", "medianote", "qqfriend", "readerapp", "blogapp", "facebookapp", "masssendapp", "meishiapp", "feedsapp", "voip", "blogappweixin", "weixin", "brandsessionholder", "weixinreminder", "wxid_novlwrv3lqwv11", "gh_22b87fa7cb3c", "officialaccounts", "notification_messages"];
-let ShieldAccounts = ["newsapp", "wxid_novlwrv3lqwv11", "gh_22b87fa7cb3c", "notification_messages"];
+const SpicalAccounts = ["weibo", "qqmail", "fmessage", "tmessage", "qmessage", "qqsync", "floatbottle", "lbsapp", "shakeapp", "medianote", "qqfriend", "readerapp", "blogapp", "facebookapp", "masssendapp", "meishiapp", "feedsapp", "voip", "blogappweixin", "weixin", "brandsessionholder", "weixinreminder", "wxid_novlwrv3lqwv11", "gh_22b87fa7cb3c", "officialaccounts", "notification_messages"];
+const ShieldAccounts = ["newsapp", "wxid_novlwrv3lqwv11", "gh_22b87fa7cb3c", "notification_messages"];
 
 export class UserModel {
 
@@ -27,7 +31,7 @@ export class UserModel {
 
 	// group
 	EncryChatRoomId : string;
-	MemberList : Array<IGroupMember>;
+	MemberList : IGroupMember[];
 	MemberCount : number;
 
 	private _contactFlag : number;
@@ -79,7 +83,7 @@ export class UserModel {
 		this.HeadImgUrl = 'https://wx.qq.com'+memberInfo.HeadImgUrl;
 	}
 
-	updateUserInfo(userInfo:IUser,isSelf?:boolean){
+	updateUserInfo(userInfo:IUser,isSelf:boolean=false){
 		// property
 		this.UserName = userInfo.UserName;
 		this.NickName = userInfo.NickName;
@@ -103,11 +107,8 @@ export class UserModel {
 		this.isShieldUser = this.class.isShieldUser(this.UserName);
 
 		this.isBrandContact = !!(userInfo.VerifyFlag & EUserAttrVerifyFlag.BIZ_BRAND);
-		if(isSelf != undefined) {
-			this.isSelf = isSelf;
-		}else if(contactManager.account){
-			this.isSelf = userInfo.UserName == contactManager.account.UserName;
-		}
+		
+		this.isSelf = isSelf;
 	}
 
 	increaseUnreadMsgNum(){
@@ -118,10 +119,12 @@ export class UserModel {
 		let self = this;
 		var name = "";
 
+		// 群聊
 		if(this.isRoomContact) {
 			name = this.RemarkName || this.NickName;
 			if(!name && !this.MemberCount) {
-				this.MemberList.slice(0,10).forEach(membr=>{
+				// 未命名，则将前十位群成员名字拼起来作为群名字
+				this.MemberList.slice(0,10).forEach(membr => {
 					let contactUser = contactManager.getContact(membr.UserName);
 					if(contactUser) {
 						name += contactUser.RemarkName || contactUser.NickName
@@ -129,25 +132,25 @@ export class UserModel {
 						name += membr.NickName;
 					}
 				});
-			}else if(!name){
+			} else if(!name) {
 				name = this.UserName;
 			}
-		}else{
+		} else {
 			name = this.RemarkName || this.NickName;
 		}
 
 		return name;
 	}
 
-	static isSpUser(username:string){
+	static isSpUser(username:string) {
 		return /@qqim$/.test(username) || SpicalAccounts.indexOf(username) != -1;
 	}
 
-	static isShieldUser(username:string){
+	static isShieldUser(username:string) {
 		return /@lbsroom$/.test(username) || /@talkroom$/.test(username) || ShieldAccounts.indexOf(username) != -1;
 	}
 
-	static isRoomContact(username:string){
+	static isRoomContact(username:string) {
 		return username ? /^@@|@chatroom$/.test(username) : false;
 	}
 }

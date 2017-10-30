@@ -1,7 +1,7 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 
 
-import {IBaseRequest} from '../interface/network.interface'
+import {IBaseRequest} from '../defined'
 
 
 

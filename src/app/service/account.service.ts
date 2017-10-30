@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 
 import {CoreService} from './core.service'
 
-import {IUser} from '../interface/user.interface'
+import {IUser} from '../defined'
 import {IBatchgetContactParams,IContactResponse,IBatchContactResponse} from '../interface/network.interface'
 
 

@@ -1,13 +1,13 @@
 import { Injectable } from '@angular/core';
 
-import EmojiCodeMap = require("../interface/emoji.interface");
+import {MEmoji} from '../defined'
 
 @Injectable()
 export class EmoticonManager {
 	transformSpanToImg(text:string):string{
 		if(text) {
 			text = text.replace(/<span.*?class="emoji emoji(.*?)"><\/span>/g,(str,substring)=>{
-				let emoji = EmojiCodeMap[substring];
+				let emoji = MEmoji[substring];
 				return emoji;
 			});
 		}
@@ -21,6 +21,3 @@ export class EmoticonManager {
 	// 	return `<img class="${className}" src="' + o.RES_IMG_PLACEHOLDER + '" />`;
 	// }
 }
-
-
-export let emoticonManager = new EmoticonManager();
